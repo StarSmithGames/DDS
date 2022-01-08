@@ -1,5 +1,0 @@
-sceneSetups:
-- path: Assets/Character Movement Fundamentals/Example Scenes/Showcase/ShowcaseScene.unity
-  isLoaded: 1
-  isActive: 1
-  isSubScene: 0
