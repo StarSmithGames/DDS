@@ -76,7 +76,7 @@ namespace CMF
 		public Transform cameraTransform;
 		
 		//Get references to all necessary components;
-		void Awake () {
+		protected virtual void Awake () {
 			mover = GetComponent<Mover>();
 			tr = transform;
 			characterInput = GetComponent<CharacterInput>();
