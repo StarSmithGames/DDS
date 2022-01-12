@@ -9,7 +9,7 @@ public class MobileInput : IInput
 	private UIPlayerLook playerLook;
 	private UIPlayerMove playerMove;
 
-	public MobileInput(InputSettings data, UIManager uiManager)
+	public MobileInput(GlobalSettings data, UIManager uiManager)
 	{
 		this.settings = data.mobile;
 

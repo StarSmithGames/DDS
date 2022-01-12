@@ -4,23 +4,33 @@ using Zenject;
 
 public class ItemInspectorHandler : IInitializable, IDisposable, ITickable
 {
+	private ItemInspectorSettings settings;
+
 	private IItem item;
-	private bool isItemIn = false;
+	private bool isInspection = false;
 
 	private SignalBus signalBus;
 	private UIManager uiManager;
 	private ItemViewer itemViewer;
 	private Player player;
+	private Camera camera;
 
-	public ItemInspectorHandler(SignalBus signalBus,
+	private Transform cachedItem = null;
+
+	public ItemInspectorHandler
+		(GlobalSettings settings,
+		SignalBus signalBus,
 		UIManager uiManager,
 		ItemViewer itemViewer,
-		Player player)
+		Player player,
+		Camera camera)
 	{
+		this.settings = settings.itemInspector;
 		this.signalBus = signalBus;
 		this.uiManager = uiManager;
 		this.itemViewer = itemViewer;
 		this.player = player;
+		this.camera = camera;
 	}
 	public void Initialize()
 	{
@@ -35,29 +45,57 @@ public class ItemInspectorHandler : IInitializable, IDisposable, ITickable
 
 	public void Tick()
 	{
-		if(item != null)
+		if (cachedItem != null && isInspection)
 		{
-			if (isItemIn)
+			if (Input.touchCount > 0)
 			{
-				float rotationSpeedX = 10f;
-				float rotationSpeedY = 10f;
+				float rotX = Input.touches[0].deltaPosition.x * settings.mobileRotationSpeed.x;
+				float rotY = Input.touches[0].deltaPosition.y * settings.mobileRotationSpeed.y;
 
-				if (Input.touchCount > 0)
-				{
-					float rotX = Input.touches[0].deltaPosition.x * rotationSpeedX;
-					float rotY = Input.touches[0].deltaPosition.y * rotationSpeedY;
+				RotateItem(cachedItem, camera.transform, rotX, rotY);
+			}
+			if (Input.GetMouseButton(0))
+			{
+				float rotX = Input.GetAxis("Mouse X") * settings.pcRotationSpeed.x;
+				float rotY = Input.GetAxis("Mouse Y") * settings.pcRotationSpeed.y;
 
-					RotateItem((item as Item).transform, Camera.main.transform, rotX, rotY);
-				}
-				if (Input.GetMouseButton(0))
-				{
-					float rotX = Input.GetAxis("Mouse X") * rotationSpeedX;
-					float rotY = Input.GetAxis("Mouse Y") * rotationSpeedY;
-
-					RotateItem((item as Item).transform, Camera.main.transform, rotX, rotY);
-				}
+				RotateItem(cachedItem, camera.transform, rotX, rotY);
 			}
 		}
+	}
+
+	public void SetItem(ItemModel item)
+	{
+		cachedItem = item.transform;
+
+		player.Freeze();
+		uiManager.Control.DisableButtons();
+		itemViewer.SetItem(cachedItem).TransitionIn(
+			delegate
+			{
+				uiManager.Show<UIItemInspectorWindow>();
+				isInspection = true;
+			});
+	}
+
+	private void OnTakeItem(SignalUITakeItem signal)
+	{
+		isInspection = false;
+		uiManager.Hide<UIItemInspectorWindow>();
+		GameObject.Destroy(cachedItem.gameObject);
+		item = null;
+		cachedItem = null;
+		player.UnFreeze();
+		uiManager.Control.EnableButtons();
+	}
+	private void OnDropItem(SignalUIDropItem signal)
+	{
+		isInspection = false;
+		itemViewer.TransitionOut(uiManager.Hide<UIItemInspectorWindow>);
+		item = null;
+		cachedItem = null;
+		player.UnFreeze();
+		uiManager.Control.EnableButtons();
 	}
 
 	private void RotateItem(Transform obj, Transform camera, float rotX, float rotY)
@@ -68,34 +106,11 @@ public class ItemInspectorHandler : IInitializable, IDisposable, ITickable
 		obj.rotation = Quaternion.AngleAxis(rotY, right) * obj.rotation;
 	}
 
-	public void PutItem(IItem item)
-	{
-		this.item = item;
-		
-		player.Freeze();
-		uiManager.Control.DisableButtons();
-		itemViewer.SetItem(item as Item).TransitionIn(
-			delegate
-			{
-				uiManager.Show<UIItemInspectorWindow>();
-				isItemIn = true;
-				//uiManager.Control.PlayerInspect.Show();
-			});
-	}
 
-	private void OnTakeItem(SignalUITakeItem signal)
+	[System.Serializable]
+	public class ItemInspectorSettings
 	{
-		uiManager.Hide<UIItemInspectorWindow>();
-		GameObject.Destroy((item as Item).gameObject);
-		item = null;
-		player.UnFreeze();
-		uiManager.Control.EnableButtons();
-	}
-	private void OnDropItem(SignalUIDropItem signal)
-	{
-		itemViewer.TransitionOut(uiManager.Hide<UIItemInspectorWindow>);
-		player.UnFreeze();
-		uiManager.Control.PlayerInspect.Hide();
-		uiManager.Control.EnableButtons();
+		public Vector2 mobileRotationSpeed;
+		public Vector2 pcRotationSpeed;
 	}
 }

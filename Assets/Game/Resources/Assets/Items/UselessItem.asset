@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f769646e45cbef04f91f8d39637b5e6b, type: 3}
+  m_Name: UselessItem
+  m_EditorClassIdentifier: 
+  itemSprite: {fileID: 0}
+  itemName: 
+  itemDescription: 
+  interact:
+    interactableType: 0
+    holdDuration: 0
+  prefab: {fileID: 0}
+  prefabPossitionOffsetView: {x: 0, y: 0, z: 0}
+  prefabRotationOffsetView: {x: 0, y: 0, z: 0, w: 0}
+  isInfinityStack: 0
+  stackSize: 1
+  isInfinityWeight: 0
+  weight: 0.01
+  isBreakable: 0
+  decay:
+    decayOverTime: 0
+    decayInside: 0
+    decayOutsie: 0

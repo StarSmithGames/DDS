@@ -2,10 +2,13 @@ using UnityEngine;
 
 using Zenject;
 
-public class Item : MonoBehaviour, IItem
+/// <summary>
+/// Физическое представление Item.
+/// </summary>
+public class ItemModel : MonoBehaviour, IEntity, IInteractable
 {
-	public ItemData ItemData => data;
-	[SerializeField] private ItemData data;
+	[SerializeField] private Item item;
+	public Item Item => item;
 
 	private ItemInspectorHandler itemInspector;
 
@@ -17,17 +20,15 @@ public class Item : MonoBehaviour, IItem
 
 	public void Interact()
 	{
-		itemInspector.PutItem(this);
-	}
-
-	public void StartObserve()
-	{
+		itemInspector.SetItem(this);
 	}
 
 	public void Observe()
 	{
 	}
-
+	public void StartObserve()
+	{
+	}
 	public void EndObserve()
 	{
 	}

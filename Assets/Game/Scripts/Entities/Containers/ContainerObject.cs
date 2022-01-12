@@ -7,19 +7,23 @@ public class ContainerObject : MonoBehaviour, IContainer
 	public ContainerData ContainerData => containerData;
 	[SerializeField] private ContainerData containerData;
 
-	private UIManager uiManager;
+	public IInventory Inventory { get; private set; }
+
+	private ContainerInventoryHandler containerInventory;
 
 	private Data data;
 
 	[Inject]
-	private void Construct(UIManager uiManager)
+	private void Construct(ContainerInventoryHandler containerInventory)
 	{
-		this.uiManager = uiManager;
+		this.containerInventory = containerInventory;
 
 		if(data == null)
 		{
 			data = new Data();
 		}
+
+		Inventory = new Inventory(ContainerData.inventory);
 	}
 
 	public void Interact()
@@ -34,6 +38,8 @@ public class ContainerObject : MonoBehaviour, IContainer
 		}
 
 		data.isInspected = true;
+
+		containerInventory.SetContainer(this);
 	}
 
 	public bool IsInspected() => data.isInspected;

@@ -22,7 +22,6 @@ public class UIManager : MonoBehaviour
     private void Awake()
 	{
         Control.ButtonA.Hide();
-        Control.PlayerInspect.Hide();
 
         Target.HideTarget();
         Target.HideFiller();
@@ -65,9 +64,6 @@ public class UIControl
 
     public UIPlayerMove PlayerMove => playerMove;
     [SerializeField] private UIPlayerMove playerMove;
-
-    public UIPlayerInspect PlayerInspect => playerInspect;
-    [SerializeField] private UIPlayerInspect playerInspect;
 
     public PointerInteractableButton ButtonA => buttonA;
     [SerializeField] private PointerInteractableButton buttonA;

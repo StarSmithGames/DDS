@@ -9,6 +9,7 @@ public class UIScriptableInstaller : ScriptableObjectInstaller
 		Container.Bind<UIManager>().FromInstance(FindObjectOfType<UIManager>()).AsSingle();
 
 		BindInspectorWindow();
+		BindContainerWindow();
 	}
 
 	private void BindInspectorWindow()
@@ -21,5 +22,12 @@ public class UIScriptableInstaller : ScriptableObjectInstaller
 		Container.Bind<ItemViewer>().AsSingle();
 
 		Container.BindInterfacesAndSelfTo<ItemInspectorHandler>().AsSingle();
+	}
+
+	private void BindContainerWindow()
+	{
+		Container.DeclareSignal<SignalUIContainerBack>();
+
+		Container.BindInterfacesAndSelfTo<ContainerInventoryHandler>().AsSingle();
 	}
 }

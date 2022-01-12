@@ -9,7 +9,7 @@ public class ItemViewer
 	public bool IsTransitionProccess => transitionCoroutine != null;
 	private Coroutine transitionCoroutine = null;
 
-	private Item item;
+	private Transform item;
 	private Vector3 lastPosition;
 	private Quaternion lastRotation;
 
@@ -17,14 +17,14 @@ public class ItemViewer
 	private Transform origin;
 	private AsyncManager asyncManager;
 
-	public ItemViewer(InputSettings settings, Transform origin, AsyncManager asyncManager)
+	public ItemViewer(GlobalSettings settings, Transform origin, AsyncManager asyncManager)
 	{
 		this.settings = settings.transitionSettings;
 		this.origin = origin;
 		this.asyncManager = asyncManager;
 	}
 
-	public ItemViewer SetItem(Item item)
+	public ItemViewer SetItem(Transform item)
 	{
 		this.item = item;
 		return this;
@@ -34,8 +34,8 @@ public class ItemViewer
 	{
 		StopTransition();
 
-		lastPosition = item.transform.position;
-		lastRotation = item.transform.rotation;
+		lastPosition = item.position;
+		lastRotation = item.rotation;
 
 		transitionCoroutine = asyncManager.StartCoroutine(
 			Transition(
@@ -67,19 +67,18 @@ public class ItemViewer
 	{
 		float t = 0;
 
-		Transform cache = item.transform; 
 		while (t < time)
 		{
 			t += Time.deltaTime;
 
-			cache.position = Vector3.Lerp(data.fromPosition, data.toPosition, t / time);
-			cache.rotation = Quaternion.Lerp(data.fromRotation, data.toRotation, t / time);
+			item.position = Vector3.Lerp(data.fromPosition, data.toPosition, t / time);
+			item.rotation = Quaternion.Lerp(data.fromRotation, data.toRotation, t / time);
 
 			yield return null;
 		}
 
-		cache.position = data.toPosition;
-		cache.rotation = data.toRotation;
+		item.position = data.toPosition;
+		item.rotation = data.toRotation;
 
 		StopTransition();
 

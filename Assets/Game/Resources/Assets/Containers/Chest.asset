@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 369749c24949a77449cb3957038a1163, type: 3}
+  m_Name: Chest
+  m_EditorClassIdentifier: 
+  interact:
+    interactableType: 4
+    holdDuration: 0.5
+  inspect:
+    interactableType: 4
+    holdDuration: 5
+  inventory:
+    useRandomItems: 0
+    items: []
+    randomSettings:
+      useRandomCount: 0
+      itemsCount: 1
+      itemsMinMaxCount: {x: 1, y: 5}
+      staticItems: []
+      useConsumableItems: 1
+      useFireItems: 1
+      useAccelerantItems: 1
+      useFuelItems: 1
+      useStarterItems: 1
+      useTinderItems: 1
+      useToolItems: 1
+      useMaterialItems: 1
+      ignoreList: []

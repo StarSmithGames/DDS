@@ -1,6 +1,7 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
 
+[InlineProperty]
 [System.Serializable]
 public class InteractableSettings
 {
@@ -10,9 +11,9 @@ public class InteractableSettings
 }
 public enum InteractableType
 {
-    None,
-    Press,
-    Click,
-    DoubleClick,
-    Hold,
+    None            = 0,
+    Press           = 1,
+    Click           = 2,
+    DoubleClick     = 3,
+    Hold            = 4,
 }

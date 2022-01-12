@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scriptableObjectInstallers:
   - {fileID: 11400000, guid: e89801fb412e467489127f50a4258c69, type: 2}
+  - {fileID: 11400000, guid: 834c17db4c8e1e64cadc87ea0527722b, type: 2}
   - {fileID: 11400000, guid: c3791d6f4f35dd34b89d5fc012dadfae, type: 2}
   _monoInstallers:
   - {fileID: -4899067202190853748}
@@ -75,6 +76,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3e7e3b2fb8961d4f92d5ecd22ba71b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectSettings:
-    isMobile: 1
   inputData: {fileID: 11400000, guid: 6e911242f5f3be8449e82042d16b9e18, type: 2}

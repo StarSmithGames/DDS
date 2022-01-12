@@ -10,8 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ba4c54340948459458a6629530fbac29, type: 3}
-  m_Name: InputSettings
+  m_Name: GlobalSettings
   m_EditorClassIdentifier: 
+  projectSettings:
+    isMobile: 1
   vision:
     interactLayers:
       serializedVersion: 2
@@ -37,6 +39,9 @@ MonoBehaviour:
     invertHorizontalInput: 0
     invertVerticalInput: 1
     inputMultiplier: 0.016
+  itemInspector:
+    mobileRotationSpeed: {x: 0.35, y: 0.35}
+    pcRotationSpeed: {x: 20, y: 20}
   transitionSettings:
     timeIn: 0.25
     timeOut: 0.15

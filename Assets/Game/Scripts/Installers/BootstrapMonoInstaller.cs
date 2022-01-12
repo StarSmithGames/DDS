@@ -4,8 +4,7 @@ using Zenject;
 
 public class BootstrapMonoInstaller : MonoInstaller
 {
-	[SerializeField] private ProjectSettings projectSettings;
-	[SerializeField] private InputSettings inputData;
+	[SerializeField] private GlobalSettings inputData;
 
 	public override void InstallBindings()
 	{
@@ -13,18 +12,19 @@ public class BootstrapMonoInstaller : MonoInstaller
 
 		Container.Bind<AsyncManager>().FromNewComponentOnNewGameObject().AsSingle();
 
+		Container.Bind<GlobalSettings>().FromInstance(inputData);
+
 #if UNITY_EDITOR
-		UnityEditor.EditorSettings.unityRemoteDevice = projectSettings.isMobile ? "Any Android Device" : "None";
+		UnityEditor.EditorSettings.unityRemoteDevice = inputData.projectSettings.isMobile ? "Any Android Device" : "None";
 #endif
 
-		Container.Bind<ProjectSettings>().FromInstance(projectSettings);
-
-		Container.Bind<InputSettings>().FromInstance(inputData);
+		if (inputData.projectSettings.isMobile)
+		{
+			Container.Bind<IInput>().To<MobileInput>().AsSingle();
+		}
+		else
+		{
+			Container.Bind<IInput>().To<KeyboardInput>().AsSingle();
+		}
 	}
-}
-
-[System.Serializable]
-public class ProjectSettings
-{
-	public bool isMobile = true;
 }

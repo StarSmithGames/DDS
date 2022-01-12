@@ -7,6 +7,10 @@ public class PlayerScriptableInstaller : ScriptableObjectInstaller
 {
 	public override void InstallBindings()
 	{
-		Container.Bind<Player>().FromInstance(FindObjectOfType<Player>()).AsSingle();
+		Player p = FindObjectOfType<Player>();
+		Camera c = p.GetComponentInChildren<Camera>();
+
+		Container.Bind<Camera>().FromInstance(c).AsSingle();
+		Container.Bind<Player>().FromInstance(p).AsSingle();
 	}
 }

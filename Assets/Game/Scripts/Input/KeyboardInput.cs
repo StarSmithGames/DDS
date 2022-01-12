@@ -4,7 +4,7 @@ public class KeyboardInput : IInput
 {
 	private KeyboardSettings settings;
 
-	public KeyboardInput(InputSettings data)
+	public KeyboardInput(GlobalSettings data)
 	{
 		this.settings = data.keyboard;
 	}

@@ -42,7 +42,7 @@ public class CameraVision : MonoBehaviour
 
 
 	[Inject]
-	private void Construct(InputSettings data, UIManager uiManager)
+	private void Construct(GlobalSettings data, UIManager uiManager)
 	{
 		this.settings = data.vision;
 		this.uiManager = uiManager;
@@ -153,7 +153,7 @@ public class CameraVision : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
-		if (settings != null)
+		if (Application.isPlaying && settings != null)
 		{
 			Color color = Color.blue;
 			color.a = 0.1f;

@@ -80,7 +80,7 @@ public class PointerInteractableButton : Button
 			{
 				case IItem item:
 				{
-					var interactData = item.ItemData.interact;
+					var interactData = item.Item.ItemData.interact;
 					if (interactData.interactableType == InteractableType.Click)
 					{
 						if (isPressed)
