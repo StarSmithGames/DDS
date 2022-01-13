@@ -1,16 +1,25 @@
+using Game.Entities;
+
 using UnityEngine;
 
 using Zenject;
 
-[CreateAssetMenu(fileName = "PlayerInstaller", menuName = "Installers/PlayerInstaller")]
-public class PlayerScriptableInstaller : ScriptableObjectInstaller
+namespace Game.Installers
 {
-	public override void InstallBindings()
+	[CreateAssetMenu(fileName = "PlayerInstaller", menuName = "Installers/PlayerInstaller")]
+	public class PlayerScriptableInstaller : ScriptableObjectInstaller
 	{
-		Player p = FindObjectOfType<Player>();
-		Camera c = p.GetComponentInChildren<Camera>();
+		[SerializeField] private PlayerSettings settings;
 
-		Container.Bind<Camera>().FromInstance(c).AsSingle();
-		Container.Bind<Player>().FromInstance(p).AsSingle();
+		public override void InstallBindings()
+		{
+			Player p = FindObjectOfType<Player>();
+			Camera c = p.GetComponentInChildren<Camera>();
+
+			Container.Bind<PlayerSettings>().FromInstance(settings).WhenInjectedInto<Player>();
+
+			Container.Bind<Camera>().FromInstance(c).AsSingle();
+			Container.Bind<Player>().FromInstance(p).AsSingle();
+		}
 	}
 }

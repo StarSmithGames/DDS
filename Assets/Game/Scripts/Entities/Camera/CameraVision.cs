@@ -83,11 +83,11 @@ public class CameraVision : MonoBehaviour
 
 				if (collidersIntersects.Length > 0)
 				{
-					uiManager.Target.ShowTarget();
+					uiManager.Targets.ShowTarget();
 				}
 				else
 				{
-					uiManager.Target.HideTarget();
+					uiManager.Targets.HideTarget();
 				}
 
 				//каст для интерактивных объектов
@@ -110,7 +110,7 @@ public class CameraVision : MonoBehaviour
 			else
 			{
 				CurrentEntity = null;
-				uiManager.Target.HideTarget();
+				uiManager.Targets.HideTarget();
 			}
 
 			CheckEntity();
@@ -139,13 +139,13 @@ public class CameraVision : MonoBehaviour
 	{
 		if(CurrentEntity == null)
 		{
-			uiManager.Control.ButtonA.Hide();
+			uiManager.Controls.ButtonA.Hide();
 		}
 		else
 		{
 			if (CurrentEntity is IInteractable interactable)
 			{
-				uiManager.Control.ButtonA.SetTarget(interactable).Show();
+				uiManager.Controls.ButtonA.SetTarget(interactable).Show();
 			}
 		}
 	}

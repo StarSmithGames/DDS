@@ -99,7 +99,7 @@ public class PointerInteractableButton : Button
 
 	private IEnumerator Holding(float duration)
 	{
-		uiManager.Target.ShowFiller();
+		uiManager.Targets.ShowFiller();
 
 		float t = 0;
 
@@ -121,7 +121,7 @@ public class PointerInteractableButton : Button
 				}
 			}
 
-			uiManager.Target.SetFiller(t / duration);
+			uiManager.Targets.SetFiller(t / duration);
 
 			if(t > duration)
 			{
@@ -145,7 +145,7 @@ public class PointerInteractableButton : Button
 			StopCoroutine(coroutine);
 			coroutine = null;
 
-			uiManager.Target.HideFiller();
+			uiManager.Targets.HideFiller();
 		}
 	}
 }

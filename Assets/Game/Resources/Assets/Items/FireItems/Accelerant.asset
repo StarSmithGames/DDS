@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58fc74cf7d060cc46ab5af36ccf35eae, type: 3}
   m_Name: Accelerant
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 0}
+  itemSprite: {fileID: 21300000, guid: fe5f20aed2a842f41930c93c8732c96d, type: 3}
   itemName: qwerty
   itemDescription: 
   interact:

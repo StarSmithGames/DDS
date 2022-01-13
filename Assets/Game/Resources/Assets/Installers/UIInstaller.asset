@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e0ac5b0f864fbc48b33142afda4bde5, type: 3}
   m_Name: UIInstaller
   m_EditorClassIdentifier: 
-  uiManager: {fileID: 3676796966325944722, guid: e411fb2314f850f4d8c3ef61cb14ffb0, type: 3}
+  slotPrefab: {fileID: 9042277606205120619, guid: 7b74d51150589ee4fa1a39b42fbef6a8, type: 3}
+  initialSlotFactorySize: 20

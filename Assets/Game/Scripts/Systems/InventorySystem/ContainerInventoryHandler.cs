@@ -1,8 +1,10 @@
+using Game.Entities;
+using Game.Signals;
+
 using System;
 using UnityEngine;
 
 using Zenject;
-using Zenject.SpaceFighter;
 
 public class ContainerInventoryHandler : IInitializable, IDisposable
 {
@@ -24,24 +26,24 @@ public class ContainerInventoryHandler : IInitializable, IDisposable
 
 	public void Initialize()
 	{
-		signalBus?.Subscribe<SignalUIContainerBack>(OnContainerBack);
+		signalBus?.Subscribe<SignalUIWindowsBack>(OnContainerBack);
 	}
 
 	public void Dispose()
 	{
-		signalBus?.Unsubscribe<SignalUIContainerBack>(OnContainerBack);
+		signalBus?.Unsubscribe<SignalUIWindowsBack>(OnContainerBack);
 	}
 
 	public void SetContainer(IContainer container)
 	{
 		this.container = container;
 		player.Freeze();
-		uiManager.Show<UIContainerInventoryWindow>();
+		uiManager.WindowsManager.Show<UIContainerInventoryWindow>();
 	}
 
-	private void OnContainerBack(SignalUIContainerBack signal)
+	private void OnContainerBack(SignalUIWindowsBack signal)
 	{
-		uiManager.Hide<UIContainerInventoryWindow>();
+		uiManager.WindowsManager.Hide<UIContainerInventoryWindow>();
 		player.UnFreeze();
 	}
 }

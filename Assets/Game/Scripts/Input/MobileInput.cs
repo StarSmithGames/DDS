@@ -13,8 +13,8 @@ public class MobileInput : IInput
 	{
 		this.settings = data.mobile;
 
-		playerLook = uiManager.Control.PlayerLook;
-		playerMove = uiManager.Control.PlayerMove;
+		playerLook = uiManager.Controls.PlayerLook;
+		playerMove = uiManager.Controls.PlayerMove;
 	}
 
 	public float GetHorizontalCameraInput()

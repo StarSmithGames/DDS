@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class Inventory : IInventory
 {
-    private List<Item> items;
+    public List<Item> Items { get; private set; }
 
     public Inventory(InventorySettings settings)
 	{
-        items = settings.GenerateItems();
+        Items = settings.GenerateItems();
     }
 }
 

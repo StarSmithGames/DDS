@@ -1,33 +1,57 @@
+using Game.Entities;
+using Game.Signals;
+using Game.Systems.InventorySystem.Signals;
+
 using UnityEngine;
 using Zenject;
 
-[CreateAssetMenu(fileName = "UIInstaller", menuName = "Installers/UIInstaller")]
-public class UIScriptableInstaller : ScriptableObjectInstaller
+namespace Game.Installers
 {
-	public override void InstallBindings()
+	[CreateAssetMenu(fileName = "UIInstaller", menuName = "Installers/UIInstaller")]
+	public class UIScriptableInstaller : ScriptableObjectInstaller
 	{
-		Container.Bind<UIManager>().FromInstance(FindObjectOfType<UIManager>()).AsSingle();
+		[SerializeField] private UISlot slotPrefab;
+		[SerializeField] private int initialSlotFactorySize = 20;//5*4
 
-		BindInspectorWindow();
-		BindContainerWindow();
-	}
+		public override void InstallBindings()
+		{
+			Container.Bind<UIManager>().FromInstance(FindObjectOfType<UIManager>()).AsSingle();
 
-	private void BindInspectorWindow()
-	{
-		Container.DeclareSignal<SignalUITakeItem>();
-		Container.DeclareSignal<SignalUIDropItem>();
+			Container.DeclareSignal<SignalUIWindowsBack>();
 
-		Player p = Container.Resolve<Player>();
-		Container.Bind<Transform>().FromInstance(p.ItemViewPoint).WhenInjectedInto<ItemViewer>();
-		Container.Bind<ItemViewer>().AsSingle();
+			BindInspectorWindow();
+			BindContainerInventoryWindow();
+			BindPlayerContainerWindow();
 
-		Container.BindInterfacesAndSelfTo<ItemInspectorHandler>().AsSingle();
-	}
+			Container.DeclareSignal<SignalUISlotClick>();
 
-	private void BindContainerWindow()
-	{
-		Container.DeclareSignal<SignalUIContainerBack>();
+			Container.BindFactory<UISlot, UISlot.Factory>()
+					.FromMonoPoolableMemoryPool((x) => x.WithInitialSize(initialSlotFactorySize)
+					.FromComponentInNewPrefab(slotPrefab));
+		}
 
-		Container.BindInterfacesAndSelfTo<ContainerInventoryHandler>().AsSingle();
+		private void BindInspectorWindow()
+		{
+			Container.DeclareSignal<SignalUITakeItem>();
+			Container.DeclareSignal<SignalUIDropItem>();
+
+			Player p = Container.Resolve<Player>();
+			Container.Bind<Transform>().FromInstance(p.ItemViewPoint).WhenInjectedInto<ItemViewer>();
+			Container.Bind<ItemViewer>().AsSingle();
+
+			Container.BindInterfacesAndSelfTo<ItemInspectorHandler>().AsSingle();
+		}
+
+		private void BindPlayerContainerWindow()
+		{
+			Container.Bind<int>().FromInstance(initialSlotFactorySize).WhenInjectedInto<UIInventory>();
+
+			Container.BindInterfacesAndSelfTo<PlayerInventoryHandler>().AsSingle();
+		}
+
+		private void BindContainerInventoryWindow()
+		{
+			Container.BindInterfacesAndSelfTo<ContainerInventoryHandler>().AsSingle();
+		}
 	}
 }

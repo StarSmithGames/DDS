@@ -25450,6 +25450,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Item
       objectReference: {fileID: 0}
+    - target: {fileID: 4598622157941667097, guid: e2f3688d70ac3a24990cc42e13a836a0, type: 3}
+      propertyPath: item.currentWeight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4598622157941667097, guid: e2f3688d70ac3a24990cc42e13a836a0, type: 3}
+      propertyPath: item.currentStackSize
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e2f3688d70ac3a24990cc42e13a836a0, type: 3}
 --- !u!1001 &8764249528919492131

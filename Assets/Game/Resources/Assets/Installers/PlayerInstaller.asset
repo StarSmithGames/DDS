@@ -12,3 +12,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 200356057f152ab4b88fd03a9aabfa9d, type: 3}
   m_Name: PlayerInstaller
   m_EditorClassIdentifier: 
+  settings:
+    inventory:
+      useRandomItems: 0
+      items:
+      - useRandom: 0
+        data: {fileID: 11400000, guid: 26f9ceb76c84dcb4f9c9f5826b435383, type: 2}
+        currentStackSize: 1
+        currentWeight: 0.01
+        currentDurability: 100
+        currentCalories: 0
+        currentMagazineCapacity: 0
+      - useRandom: 0
+        data: {fileID: 11400000, guid: 97e4a2e01daa3d2409f9faac31cffa0c, type: 2}
+        currentStackSize: 1
+        currentWeight: 0.01
+        currentDurability: 100
+        currentCalories: 0
+        currentMagazineCapacity: 0
+      randomSettings:
+        useRandomCount: 1
+        itemsCount: 1
+        itemsMinMaxCount: {x: 1, y: 5}
+        staticItems: []
+        useConsumableItems: 1
+        useFireItems: 1
+        useAccelerantItems: 1
+        useFuelItems: 1
+        useStarterItems: 1
+        useTinderItems: 1
+        useToolItems: 1
+        useMaterialItems: 1
+        ignoreList: []

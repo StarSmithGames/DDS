@@ -1,3 +1,5 @@
+using Game.Entities;
+
 using System;
 using UnityEngine;
 using Zenject;
@@ -69,11 +71,11 @@ public class ItemInspectorHandler : IInitializable, IDisposable, ITickable
 		cachedItem = item.transform;
 
 		player.Freeze();
-		uiManager.Control.DisableButtons();
+		uiManager.Controls.DisableButtons();
 		itemViewer.SetItem(cachedItem).TransitionIn(
 			delegate
 			{
-				uiManager.Show<UIItemInspectorWindow>();
+				uiManager.WindowsManager.Show<UIItemInspectorWindow>();
 				isInspection = true;
 			});
 	}
@@ -81,21 +83,21 @@ public class ItemInspectorHandler : IInitializable, IDisposable, ITickable
 	private void OnTakeItem(SignalUITakeItem signal)
 	{
 		isInspection = false;
-		uiManager.Hide<UIItemInspectorWindow>();
+		uiManager.WindowsManager.Hide<UIItemInspectorWindow>();
 		GameObject.Destroy(cachedItem.gameObject);
 		item = null;
 		cachedItem = null;
 		player.UnFreeze();
-		uiManager.Control.EnableButtons();
+		uiManager.Controls.EnableButtons();
 	}
 	private void OnDropItem(SignalUIDropItem signal)
 	{
 		isInspection = false;
-		itemViewer.TransitionOut(uiManager.Hide<UIItemInspectorWindow>);
+		itemViewer.TransitionOut(uiManager.WindowsManager.Hide<UIItemInspectorWindow>);
 		item = null;
 		cachedItem = null;
 		player.UnFreeze();
-		uiManager.Control.EnableButtons();
+		uiManager.Controls.EnableButtons();
 	}
 
 	private void RotateItem(Transform obj, Transform camera, float rotX, float rotY)
