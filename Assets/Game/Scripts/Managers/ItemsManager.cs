@@ -13,13 +13,13 @@ public class ItemsManager : ScriptableObjectInstaller
 	[AssetList(AutoPopulate = true, Path = Assets)]
 	[ReadOnly] [SerializeField] private List<ItemData> allItems = new List<ItemData>();
 
-	//[TitleGroup("Consumable Items")]
-	//[AssetList(AutoPopulate = true, Path = Assets, CustomFilterMethod = "Limits")]
-	//[ReadOnly] [SerializeField] private List<ConsumableItemSD> allConsumables = new List<ConsumableItemSD>();
-	//[HorizontalGroup("Consumable Items/Split")]
-	//[VerticalGroup("Consumable Items/Split/Left")]
-	//[AssetList(AutoPopulate = true, Path = Assets, CustomFilterMethod = "Limits")]
-	//[ReadOnly] [SerializeField] private List<PotionItemSD> allDrinks = new List<PotionItemSD>();
+	[TitleGroup("Consumable Items")]
+	[AssetList(AutoPopulate = true, Path = Assets, CustomFilterMethod = "Limits")]
+	[ReadOnly] [SerializeField] private List<ConsumableItemData> allConsumables = new List<ConsumableItemData>();
+	[HorizontalGroup("Consumable Items/Split")]
+	[VerticalGroup("Consumable Items/Split/Left")]
+	[AssetList(AutoPopulate = true, Path = Assets, CustomFilterMethod = "Limits")]
+	[ReadOnly] [SerializeField] private List<PotionItemData> allDrinks = new List<PotionItemData>();
 
 	//[LabelWidth(100)]
 	//[VerticalGroup("Consumable Items/Split/Left")]
@@ -31,16 +31,16 @@ public class ItemsManager : ScriptableObjectInstaller
 	//[ReadOnly] [SerializeField] private WaterItemSD unsafeWater;
 	//public WaterItemSD UnSafeWater => unsafeWater;
 
-	//[VerticalGroup("Consumable Items/Split/Right")]
-	//[AssetList(AutoPopulate = true, Path = Assets, CustomFilterMethod = "Limits")]
-	//[ReadOnly] [SerializeField] private List<FoodItemSD> allFood = new List<FoodItemSD>();
+	[VerticalGroup("Consumable Items/Split/Right")]
+	[AssetList(AutoPopulate = true, Path = Assets, CustomFilterMethod = "Limits")]
+	[ReadOnly] [SerializeField] private List<FoodItemData> allFood = new List<FoodItemData>();
 	//[LabelWidth(100)]
 	//[VerticalGroup("Consumable Items/Split/Right")]
 	//[ReadOnly] [SerializeField] private SnowItemSD snow;
-	//[LabelWidth(100)]
-	//[VerticalGroup("Consumable Items/Split/Right")]
-	//[AssetList(AutoPopulate = true, Path = Assets)]
-	//[ReadOnly] [SerializeField] private List<MeatItemSD> allMeat = new List<MeatItemSD>();
+	[LabelWidth(100)]
+	[VerticalGroup("Consumable Items/Split/Right")]
+	[AssetList(AutoPopulate = true, Path = Assets)]
+	[ReadOnly] [SerializeField] private List<MeatItemData> allMeat = new List<MeatItemData>();
 
 
 	[TitleGroup("Fire Items")]

@@ -40,6 +40,9 @@ public class UIManager : MonoBehaviour
 	}
     private void OnViewClicked()
     {
+        var window = WindowsManager.GetAs<UIPlayerInventoryWindow>();
+        window.ItemViewer.SetItem(null);
+        window.ReOrganizeSpace(UIPlayerInventoryWindow.InventoryType.InventoryWithViewer);
         WindowsManager.Show<UIPlayerInventoryWindow>();
     }
 }

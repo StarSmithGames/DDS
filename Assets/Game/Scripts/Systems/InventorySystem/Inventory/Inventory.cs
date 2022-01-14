@@ -2,21 +2,41 @@ using Sirenix.OdinInspector;
 
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+using UnityEngine.Events;
+using System;
 
 public class Inventory : IInventory
 {
+    public event UnityAction OnInventoryChanged;
+
     public List<Item> Items { get; private set; }
 
     public Inventory(InventorySettings settings)
 	{
         Items = settings.GenerateItems();
     }
+
+	public bool Add(Item item)
+	{
+        Items.Add(item);
+        OnInventoryChanged?.Invoke();
+        return true;
+	}
+    public bool Remove(Item item)
+	{
+        Items.Remove(item);
+        OnInventoryChanged?.Invoke();
+        return true;
+	}
 }
 
 [System.Serializable]
 public class InventorySettings
 {
     public bool useRandomItems = true;
+    public bool shuffleList = true;
+    //sort by
 
     [HideIf("useRandomItems")]
     [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "Tittle")]
@@ -49,6 +69,11 @@ public class InventorySettings
 			}
 		}
 
+		if (shuffleList)
+		{
+            result = result.OrderBy(x => Guid.NewGuid()).ToList();
+        }
+
         return result;
 	}
 }
@@ -56,6 +81,8 @@ public class InventorySettings
 [System.Serializable]
 public class RandomInventorySettings
 {
+    [Tooltip("Items не повтор€ютс€.")]
+    public bool isUnique = false;
     public bool useRandomCount = true;
 
     [HideIf("useRandomCount")]
@@ -66,7 +93,7 @@ public class RandomInventorySettings
     [MinMaxSlider(1, 10)]
     public Vector2Int itemsMinMaxCount = new Vector2Int(1, 5);
 
-    [Tooltip("Item'ы которые точно будут включены рандомайзером.(Ѕудут добавлены к текущим.)")]
+    [Tooltip("Items которые точно будут включены рандомайзером.(Ѕудут добавлены к текущим.)")]
     [ListDrawerSettings(ShowIndexLabels = true, ListElementLabelName = "Tittle")]
     public List<Item> staticItems = new List<Item>();
 

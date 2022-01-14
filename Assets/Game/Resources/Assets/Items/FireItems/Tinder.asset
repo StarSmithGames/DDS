@@ -12,9 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dc25c53c821d0648909cba860663cf1, type: 3}
   m_Name: Tinder
   m_EditorClassIdentifier: 
+  itemSprite: {fileID: 21300000, guid: b57e7b19f0c93a74b838a1ca8b65d908, type: 3}
+  itemName: Tinder
+  itemDescription: Just tinder
   interact:
-    interactableType: 0
+    interactableType: 2
     holdDuration: 0
-  itemSprite: {fileID: 0}
-  prefab: {fileID: 0}
+  prefab: {fileID: 4598622157941667097, guid: e2f3688d70ac3a24990cc42e13a836a0, type: 3}
+  prefabPossitionOffsetView: {x: 0, y: 0, z: 0}
+  prefabRotationOffsetView: {x: 0, y: 0, z: 0, w: 0}
+  isInfinityStack: 0
+  stackSize: 15
+  isStackable: 1
+  stackInnerSize: 1
+  isInfinityWeight: 0
+  isFloatingWeight: 0
+  baseWeight: 1
+  weight: 0.01
+  isBreakable: 0
+  decay:
+    decayOverTime: 0
+    decayInside: 0
+    decayOutsie: 0
   chance: 0

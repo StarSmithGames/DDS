@@ -7,16 +7,20 @@ public class ContainerObject : MonoBehaviour, IContainer
 	public ContainerData ContainerData => containerData;
 	[SerializeField] private ContainerData containerData;
 
+	[SerializeField] private Collider coll;
+
 	public IInventory Inventory { get; private set; }
 
-	private ContainerInventoryHandler containerInventory;
+	private InspectorHandler inspector;
+	private BackpackHandler backpack;
 
 	private Data data;
 
 	[Inject]
-	private void Construct(ContainerInventoryHandler containerInventory)
+	private void Construct(BackpackHandler backpack, InspectorHandler inspector)
 	{
-		this.containerInventory = containerInventory;
+		this.inspector = inspector;
+		this.backpack = backpack;
 
 		if(data == null)
 		{
@@ -30,17 +34,22 @@ public class ContainerObject : MonoBehaviour, IContainer
 	{
 		if (data.isInspected)
 		{
-			Debug.LogError("Opened");
+			backpack.SetContainerInventory(Inventory);
 		}
 		else
 		{
-			Debug.LogError("Opening");
+			inspector.SetInventory(Inventory);
 		}
 
 		data.isInspected = true;
-
-		containerInventory.SetContainer(this);
 	}
+
+	public void Enable(bool trigger)
+	{
+		if (coll == null) coll = GetComponent<Collider>();
+		coll.enabled = trigger;
+	}
+
 
 	public bool IsInspected() => data.isInspected;
 
@@ -57,6 +66,7 @@ public class ContainerObject : MonoBehaviour, IContainer
 	{
 	}
 
+	
 	public class Data
 	{
 		public bool isInspected = false;

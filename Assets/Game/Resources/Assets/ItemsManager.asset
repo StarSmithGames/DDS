@@ -12,4 +12,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 277219354629a1940a76daecc0b30f70, type: 3}
   m_Name: ItemsManager
   m_EditorClassIdentifier: 
-  allItems: []
+  allItems:
+  - {fileID: 11400000, guid: 698448eb4c4a285489dca34ba6ac952a, type: 2}
+  - {fileID: 11400000, guid: 15652984f910cb044aca7fbdf40a83b5, type: 2}
+  - {fileID: 11400000, guid: 38a785910ddedc94bb42f0b69ba66500, type: 2}
+  - {fileID: 11400000, guid: c49dd869a69a2174b833e14f047055be, type: 2}
+  - {fileID: 11400000, guid: 26f9ceb76c84dcb4f9c9f5826b435383, type: 2}
+  - {fileID: 11400000, guid: 97e4a2e01daa3d2409f9faac31cffa0c, type: 2}
+  - {fileID: 11400000, guid: 855f178f41040014a898aec49dc545a2, type: 2}
+  - {fileID: 11400000, guid: 3ba165faf5c32834498602b6b19c822f, type: 2}
+  - {fileID: 11400000, guid: 4833e7f8b1248e843bb9d2d79e779abc, type: 2}
+  allConsumables:
+  - {fileID: 11400000, guid: 698448eb4c4a285489dca34ba6ac952a, type: 2}
+  - {fileID: 11400000, guid: 15652984f910cb044aca7fbdf40a83b5, type: 2}
+  - {fileID: 11400000, guid: 38a785910ddedc94bb42f0b69ba66500, type: 2}
+  - {fileID: 11400000, guid: c49dd869a69a2174b833e14f047055be, type: 2}
+  allDrinks:
+  - {fileID: 11400000, guid: 698448eb4c4a285489dca34ba6ac952a, type: 2}
+  - {fileID: 11400000, guid: 15652984f910cb044aca7fbdf40a83b5, type: 2}
+  - {fileID: 11400000, guid: 38a785910ddedc94bb42f0b69ba66500, type: 2}
+  - {fileID: 11400000, guid: c49dd869a69a2174b833e14f047055be, type: 2}
+  allFood: []
+  allMeat: []
+  allFireItems:
+  - {fileID: 11400000, guid: 26f9ceb76c84dcb4f9c9f5826b435383, type: 2}
+  - {fileID: 11400000, guid: 97e4a2e01daa3d2409f9faac31cffa0c, type: 2}
+  - {fileID: 11400000, guid: 855f178f41040014a898aec49dc545a2, type: 2}
+  - {fileID: 11400000, guid: 3ba165faf5c32834498602b6b19c822f, type: 2}
+  allStarterItems:
+  - {fileID: 11400000, guid: 855f178f41040014a898aec49dc545a2, type: 2}
+  allFuelItems:
+  - {fileID: 11400000, guid: 97e4a2e01daa3d2409f9faac31cffa0c, type: 2}
+  allTinderItems:
+  - {fileID: 11400000, guid: 3ba165faf5c32834498602b6b19c822f, type: 2}
+  allAccelerantItems:
+  - {fileID: 11400000, guid: 26f9ceb76c84dcb4f9c9f5826b435383, type: 2}

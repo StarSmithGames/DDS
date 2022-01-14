@@ -1,3 +1,5 @@
+using Sirenix.OdinInspector;
+
 using UnityEngine;
 
 using Zenject;
@@ -10,10 +12,12 @@ public class ItemModel : MonoBehaviour, IEntity, IInteractable
 	[SerializeField] private Item item;
 	public Item Item => item;
 
-	private ItemInspectorHandler itemInspector;
+	[SerializeField] private Collider coll;
+
+	private InspectorHandler itemInspector;
 
 	[Inject]
-	private void Construct(ItemInspectorHandler itemInspector)
+	private void Construct(InspectorHandler itemInspector)
 	{
 		this.itemInspector = itemInspector;
 	}
@@ -21,6 +25,12 @@ public class ItemModel : MonoBehaviour, IEntity, IInteractable
 	public void Interact()
 	{
 		itemInspector.SetItem(this);
+	}
+
+	public void Enable(bool trigger)
+	{
+		if (coll == null) coll = GetComponent<Collider>();
+		coll.enabled = trigger;
 	}
 
 	public void Observe()
@@ -32,4 +42,12 @@ public class ItemModel : MonoBehaviour, IEntity, IInteractable
 	public void EndObserve()
 	{
 	}
+
+	[Button]
+	private void SavePositionAndRoation()
+	{
+		//Item.ItemData.prefabPossitionOffsetView = transform.position;
+	}
+
+	
 }

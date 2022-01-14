@@ -15,7 +15,7 @@ public class ItemData : ScriptableObject
 	public string itemDescription;
 
 	[Space]
-	public InteractableSettings interact;
+	public InteractableSettings interact = new InteractableSettings() { interactableType = InteractableType.Click };
 	[Space]
 	[AssetList]
 	[InlineEditor(InlineEditorModes.GUIAndPreview)]
@@ -29,19 +29,31 @@ public class ItemData : ScriptableObject
 	[HideIf("isInfinityStack")]
 	[Range(1, 999)]
 	public int stackSize = 1;
+	[HideIf("isInfinityStack")]
+	public bool isStackable = true;
+	[ShowIf("@isStackable && !isInfinityStack")]
+	[Range(1, 999)]
+	public int stackInnerSize = 1;
 
 	[Space]
 	public bool isInfinityWeight = false;
+	public bool isFloatingWeight = false;
+	[ShowIf("isFloatingWeight")]
+	[SuffixLabel("kg", true)]
+	[MinValue(0.01f)]
+	public float baseWeight = 0.25f;
 	[HideIf("isInfinityWeight")]
 	[SuffixLabel("kg", true)]
-	[Range(0.01f, 99.99f)]
+	[MinValue("MinimumWeight"), MaxValue(99.99f)]
 	public float weight = 0.01f;
 
 	[Space]
 	public bool isBreakable = false;
 	[ShowIf("isBreakable")]
 	public DecaySettings decay;
-	
+
+
+	private float MinimumWeight => isFloatingWeight ? baseWeight + 0.15f : 0.01f;
 }
 [InlineProperty]
 [System.Serializable]

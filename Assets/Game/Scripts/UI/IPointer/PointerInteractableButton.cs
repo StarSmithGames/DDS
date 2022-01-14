@@ -13,7 +13,8 @@ public class PointerInteractableButton : Button
 
 	private IInteractable lastInteract = null;
 
-	private Coroutine coroutine;
+	public bool IsHoldingProcess => holdingCoroutine != null;
+	private Coroutine holdingCoroutine = null;
 
 	private bool isPressed = false;
 
@@ -33,7 +34,7 @@ public class PointerInteractableButton : Button
 	{
 		gameObject.SetActive(false);
 
-		HoldStop();
+		HoldingStop();
 
 		return this;
 	}
@@ -52,21 +53,19 @@ public class PointerInteractableButton : Button
 
 		if (lastInteract != null)
 		{
-			switch (lastInteract)
+			if (lastInteract is IContainer container)
 			{
-				case IContainer container:
-				{
-					var interactData = container.IsInspected() ?
-														container.ContainerData.interact :
-														container.ContainerData.inspect;
+				var interactData = container.IsInspected() ?
+													container.ContainerData.interact :
+													container.ContainerData.inspect;
 
-					if (interactData.interactableType == InteractableType.Hold)
+				if (interactData.interactableType == InteractableType.Hold)
+				{
+					if (!IsHoldingProcess)
 					{
-						coroutine = StartCoroutine(Holding(interactData.holdDuration));
+						holdingCoroutine = StartCoroutine(Holding(interactData.holdDuration));
 					}
-					break;
 				}
-				
 			}
 		}
 	}
@@ -76,20 +75,15 @@ public class PointerInteractableButton : Button
 
 		if (lastInteract != null)
 		{
-			switch (lastInteract)
+			if (lastInteract is ItemModel item)
 			{
-				case IItem item:
+				var interactData = item.Item.ItemData.interact;
+				if (interactData.interactableType == InteractableType.Click)
 				{
-					var interactData = item.Item.ItemData.interact;
-					if (interactData.interactableType == InteractableType.Click)
+					if (isPressed)
 					{
-						if (isPressed)
-						{
-							lastInteract.Interact();
-						}
+						lastInteract.Interact();
 					}
-
-					break;
 				}
 			}
 		}
@@ -136,14 +130,14 @@ public class PointerInteractableButton : Button
 			lastInteract.Interact();
 		}
 
-		HoldStop();
+		HoldingStop();
 	}
-	private void HoldStop()
+	private void HoldingStop()
 	{
-		if (coroutine != null)
+		if (IsHoldingProcess)
 		{
-			StopCoroutine(coroutine);
-			coroutine = null;
+			StopCoroutine(holdingCoroutine);
+			holdingCoroutine = null;
 
 			uiManager.Targets.HideFiller();
 		}

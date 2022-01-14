@@ -13,9 +13,9 @@ public class GlobalSettings : ScriptableObject
     public VisionSettings vision;
     [Space]
     [Tooltip("Используется для ItemInspectorHandler")]
-    public ItemInspectorHandler.ItemInspectorSettings itemInspector;
+    public InspectorHandler.Settings inspectorSettings;
     [Tooltip("Используется для ItemViewer")]
-    public ItemViewer.TransitionSettings transitionSettings;
+    public TransformTransition.Settings transitionSettings;
 }
 
 [System.Serializable]

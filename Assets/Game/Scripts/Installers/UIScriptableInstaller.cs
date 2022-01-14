@@ -1,5 +1,6 @@
 using Game.Entities;
 using Game.Signals;
+using Game.Systems.InspectorSystem.Signals;
 using Game.Systems.InventorySystem.Signals;
 
 using UnityEngine;
@@ -20,10 +21,7 @@ namespace Game.Installers
 			Container.DeclareSignal<SignalUIWindowsBack>();
 
 			BindInspectorWindow();
-			BindContainerInventoryWindow();
-			BindPlayerContainerWindow();
-
-			Container.DeclareSignal<SignalUISlotClick>();
+			BindBackpack();
 
 			Container.BindFactory<UISlot, UISlot.Factory>()
 					.FromMonoPoolableMemoryPool((x) => x.WithInitialSize(initialSlotFactorySize)
@@ -32,26 +30,25 @@ namespace Game.Installers
 
 		private void BindInspectorWindow()
 		{
-			Container.DeclareSignal<SignalUITakeItem>();
-			Container.DeclareSignal<SignalUIDropItem>();
+			Container.DeclareSignal<SignalUIInspectorTake>();
+			Container.DeclareSignal<SignalUIInspectorUse>();
+			Container.DeclareSignal<SignalUIInspectorLeave>();
 
 			Player p = Container.Resolve<Player>();
-			Container.Bind<Transform>().FromInstance(p.ItemViewPoint).WhenInjectedInto<ItemViewer>();
-			Container.Bind<ItemViewer>().AsSingle();
+			Container.Bind<Transform>().FromInstance(p.ItemViewPoint).WhenInjectedInto<TransformTransition>();
+			Container.Bind<TransformTransition>().AsSingle();
 
-			Container.BindInterfacesAndSelfTo<ItemInspectorHandler>().AsSingle();
+			Container.BindInterfacesAndSelfTo<InspectorHandler>().AsSingle();
 		}
 
-		private void BindPlayerContainerWindow()
+		private void BindBackpack()
 		{
+			Container.DeclareSignal<SignalUIInventoryDrop>();
+			Container.DeclareSignal<SignalUIInventorySlotClick>();
+
 			Container.Bind<int>().FromInstance(initialSlotFactorySize).WhenInjectedInto<UIInventory>();
 
-			Container.BindInterfacesAndSelfTo<PlayerInventoryHandler>().AsSingle();
-		}
-
-		private void BindContainerInventoryWindow()
-		{
-			Container.BindInterfacesAndSelfTo<ContainerInventoryHandler>().AsSingle();
+			Container.BindInterfacesAndSelfTo<BackpackHandler>().AsSingle();
 		}
 	}
 }

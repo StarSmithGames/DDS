@@ -14,16 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectSettings:
     isMobile: 1
-  vision:
-    interactLayers:
-      serializedVersion: 2
-      m_Bits: 55
-    ignoringLayers:
-      serializedVersion: 2
-      m_Bits: 4
-    maxRayDistance: 5
-    rayDistance: 5
-    sphereRadius: 1
   keyboard:
     mouseHorizontalAxis: Mouse X
     mouseVerticalAxis: Mouse Y
@@ -39,9 +29,35 @@ MonoBehaviour:
     invertHorizontalInput: 0
     invertVerticalInput: 1
     inputMultiplier: 0.016
-  itemInspector:
-    mobileRotationSpeed: {x: 0.35, y: 0.35}
-    pcRotationSpeed: {x: 20, y: 20}
+  vision:
+    interactLayers:
+      serializedVersion: 2
+      m_Bits: 55
+    ignoringLayers:
+      serializedVersion: 2
+      m_Bits: 4
+    maxRayDistance: 5
+    rayDistance: 5
+    sphereRadius: 1
+  inspectorSettings:
+    mobileRotationSpeed: {x: 0.1, y: 0.15}
+    pcRotationSpeed: {x: 5, y: 5}
   transitionSettings:
-    timeIn: 0.25
-    timeOut: 0.15
+    transtionIn:
+      type: 1
+      time: 0.25
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    transtionOut:
+      type: 1
+      time: 0.15
+      curve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4

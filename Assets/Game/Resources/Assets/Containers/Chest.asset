@@ -20,10 +20,39 @@ MonoBehaviour:
     holdDuration: 5
   inventory:
     useRandomItems: 0
-    items: []
+    items:
+    - useRandom: 0
+      data: {fileID: 11400000, guid: 698448eb4c4a285489dca34ba6ac952a, type: 2}
+      currentStackSize: 1
+      currentWeight: 0.35
+      currentDurability: 100
+      currentCalories: 250
+      currentMagazineCapacity: 0
+    - useRandom: 0
+      data: {fileID: 11400000, guid: 15652984f910cb044aca7fbdf40a83b5, type: 2}
+      currentStackSize: 1
+      currentWeight: 0.35
+      currentDurability: 100
+      currentCalories: 250
+      currentMagazineCapacity: 0
+    - useRandom: 0
+      data: {fileID: 11400000, guid: 38a785910ddedc94bb42f0b69ba66500, type: 2}
+      currentStackSize: 1
+      currentWeight: 0.35
+      currentDurability: 100
+      currentCalories: 250
+      currentMagazineCapacity: 0
+    - useRandom: 0
+      data: {fileID: 11400000, guid: c49dd869a69a2174b833e14f047055be, type: 2}
+      currentStackSize: 1
+      currentWeight: 0.35
+      currentDurability: 100
+      currentCalories: 250
+      currentMagazineCapacity: 0
     randomSettings:
+      isUnique: 0
       useRandomCount: 0
-      itemsCount: 1
+      itemsCount: 4
       itemsMinMaxCount: {x: 1, y: 5}
       staticItems: []
       useConsumableItems: 1
