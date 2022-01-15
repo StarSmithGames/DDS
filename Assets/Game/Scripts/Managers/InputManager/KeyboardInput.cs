@@ -6,7 +6,7 @@ public class KeyboardInput : IInput
 
 	public KeyboardInput(GlobalSettings data)
 	{
-		this.settings = data.keyboard;
+		this.settings = data.input.keyboard;
 	}
 
 	public float GetHorizontalCameraInput()
@@ -81,26 +81,4 @@ public class KeyboardInput : IInput
 		}
 		return false;
 	}
-}
-
-[System.Serializable]
-public class KeyboardSettings
-{
-	public string mouseHorizontalAxis = "Mouse X";
-	public string mouseVerticalAxis = "Mouse Y";
-
-	public bool invertHorizontalInput = false;
-	public bool invertVerticalInput = false;
-
-	public float mouseInputMultiplier = 0.01f;
-
-	[Space]
-	public string horizontalInputAxis = "Horizontal";
-	public string verticalInputAxis = "Vertical";
-
-	public bool useJump = true;
-	public KeyCode jumpKey = KeyCode.Space;
-
-	//If this is enabled, Unity's internal input smoothing is bypassed;
-	public bool useRawInput = true;
 }

@@ -8,12 +8,12 @@ public class UIControls : MonoBehaviour
     public UIPlayerMove PlayerMove => playerMove;
     [SerializeField] private UIPlayerMove playerMove;
 
-    public PointerInteractableButton ButtonA => buttonA;
-    [SerializeField] private PointerInteractableButton buttonA;
+    public UIInteractionButton ButtonA => buttonA;
+    [SerializeField] private UIInteractionButton buttonA;
 
-    [SerializeField] private PointerInteractableButton buttonB;
-    [SerializeField] private PointerInteractableButton buttonY;
-    [SerializeField] private PointerInteractableButton buttonX;
+    [SerializeField] private UIInteractionButton buttonB;
+    [SerializeField] private UIInteractionButton buttonY;
+    [SerializeField] private UIInteractionButton buttonX;
 
     public void EnableButtons()
 	{

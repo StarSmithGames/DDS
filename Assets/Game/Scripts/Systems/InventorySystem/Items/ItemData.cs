@@ -15,7 +15,7 @@ public class ItemData : ScriptableObject
 	public string itemDescription;
 
 	[Space]
-	public InteractableSettings interact = new InteractableSettings() { interactableType = InteractableType.Click };
+	public InteractionSettings interact = new InteractionSettings() { interactionType = InteractionType.Click };
 	[Space]
 	[AssetList]
 	[InlineEditor(InlineEditorModes.GUIAndPreview)]

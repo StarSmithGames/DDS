@@ -7,19 +7,26 @@ public class GlobalSettings : ScriptableObject
     [InlineProperty]
     public ProjectSettings projectSettings;
     [Space]
-    public KeyboardSettings keyboard;
-    public MobileSettings mobile;
+    public InputSettings input;
     [Space]
-    public VisionSettings vision;
+    public CameraSettings cameraSettings;
+    public VisionSettings visionSettings;
     [Space]
     [Tooltip("Используется для ItemInspectorHandler")]
     public InspectorHandler.Settings inspectorSettings;
     [Tooltip("Используется для ItemViewer")]
     public TransformTransition.Settings transitionSettings;
 }
-
 [System.Serializable]
 public class ProjectSettings
 {
-    public bool isMobile = true;
+    //public BuildTarget buildTarget;
+    public PlatformType platform;
+}
+public enum PlatformType
+{
+    Desktop = 0,
+    Mobile = 1,
+    Consoles = 2,
+    ExtendedReality = 3,
 }

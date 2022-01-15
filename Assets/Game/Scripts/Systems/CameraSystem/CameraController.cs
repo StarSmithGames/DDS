@@ -1,5 +1,7 @@
 using CMF;
 
+using Sirenix.OdinInspector;
+
 using UnityEngine;
 
 using Zenject;
@@ -12,40 +14,24 @@ public class CameraController : MonoBehaviour
 	//References to transform and camera components;
 	protected Transform tr;
 	[SerializeField] protected Camera cam;
+
 	protected IInput cameraInput;
+	private CameraSettings settings;
 
 	[Inject]
-	private void Construct(IInput input)
+	private void Construct(IInput input, GlobalSettings globalSettings)
 	{
 		this.cameraInput = input;
+		this.settings = globalSettings.cameraSettings;
 	}
 
 	//Current rotation values (in degrees);
 	float currentXAngle = 0f;
 	float currentYAngle = 0f;
 
-	//Upper and lower limits (in degrees) for vertical rotation (along the local x-axis of the gameobject);
-	[Range(0f, 90f)]
-	public float upperVerticalLimit = 60f;
-	[Range(0f, 90f)]
-	public float lowerVerticalLimit = 60f;
-
 	//Variables to store old rotation values for interpolation purposes;
 	float oldHorizontalInput = 0f;
 	float oldVerticalInput = 0f;
-
-	//Camera turning speed; 
-	public float cameraSpeed = 250f;
-
-	//Whether camera rotation values will be smoothed;
-	public bool smoothCameraRotation = false;
-
-	//This value controls how smoothly the old camera rotation angles will be interpolated toward the new camera rotation angles;
-	//Setting this value to '50f' (or above) will result in no smoothing at all;
-	//Setting this value to '1f' (or below) will result in very noticable smoothing;
-	//For most situations, a value of '25f' is recommended;
-	[Range(1f, 50f)]
-	public float cameraSmoothingFactor = 25f;
 
 	//Variables for storing current facing direction and upwards direction;
 	Vector3 facingDirection;
@@ -89,11 +75,11 @@ public class CameraController : MonoBehaviour
 	//Rotate camera; 
 	protected void RotateCamera(float _newHorizontalInput, float _newVerticalInput)
 	{
-		if (smoothCameraRotation)
+		if (settings.smoothCameraRotation)
 		{
 			//Lerp input;
-			oldHorizontalInput = Mathf.Lerp(oldHorizontalInput, _newHorizontalInput, Time.deltaTime * cameraSmoothingFactor);
-			oldVerticalInput = Mathf.Lerp(oldVerticalInput, _newVerticalInput, Time.deltaTime * cameraSmoothingFactor);
+			oldHorizontalInput = Mathf.Lerp(oldHorizontalInput, _newHorizontalInput, Time.deltaTime * settings.cameraSmoothingFactor);
+			oldVerticalInput = Mathf.Lerp(oldVerticalInput, _newVerticalInput, Time.deltaTime * settings.cameraSmoothingFactor);
 		}
 		else
 		{
@@ -103,11 +89,11 @@ public class CameraController : MonoBehaviour
 		}
 
 		//Add input to camera angles;
-		currentXAngle += oldVerticalInput * cameraSpeed * Time.deltaTime;
-		currentYAngle += oldHorizontalInput * cameraSpeed * Time.deltaTime;
+		currentXAngle += oldVerticalInput * settings.cameraSpeed * Time.deltaTime;
+		currentYAngle += oldHorizontalInput * settings.cameraSpeed * Time.deltaTime;
 
 		//Clamp vertical rotation;
-		currentXAngle = Mathf.Clamp(currentXAngle, -upperVerticalLimit, lowerVerticalLimit);
+		currentXAngle = Mathf.Clamp(currentXAngle, -settings.upperVerticalLimit, settings.lowerVerticalLimit);
 
 		UpdateRotation();
 	}
@@ -191,7 +177,7 @@ public class CameraController : MonoBehaviour
 		//Set new angles;
 		currentYAngle = _currentAngles.y;
 		//Clamp vertical rotation;
-		currentXAngle = Mathf.Clamp(_currentAngles.x, -upperVerticalLimit, lowerVerticalLimit);
+		currentXAngle = Mathf.Clamp(_currentAngles.x, -settings.upperVerticalLimit, settings.lowerVerticalLimit);
 
 		UpdateRotation();
 	}
@@ -231,4 +217,26 @@ public class CameraController : MonoBehaviour
 	{
 		return upwardsDirection;
 	}
+}
+
+[System.Serializable]
+public class CameraSettings
+{
+	//Upper and lower limits (in degrees) for vertical rotation (along the local x-axis of the gameobject);
+	[Range(0f, 90f)]
+	public float upperVerticalLimit = 60f;
+	[Range(0f, 90f)]
+	public float lowerVerticalLimit = 60f;
+	public float cameraSpeed = 250f;
+
+	//Whether camera rotation values will be smoothed;
+	public bool smoothCameraRotation = false;
+
+	//This value controls how smoothly the old camera rotation angles will be interpolated toward the new camera rotation angles;
+	//Setting this value to '50f' (or above) will result in no smoothing at all;
+	//Setting this value to '1f' (or below) will result in very noticable smoothing;
+	//For most situations, a value of '25f' is recommended;
+	[ShowIf("smoothCameraRotation")]
+	[Range(1f, 50f)]
+	public float cameraSmoothingFactor = 25f;
 }

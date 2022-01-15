@@ -3,13 +3,13 @@ using Sirenix.OdinInspector;
 
 [InlineProperty]
 [System.Serializable]
-public class InteractableSettings
+public class InteractionSettings
 {
-    public InteractableType interactableType;
-    [ShowIf("interactableType", InteractableType.Hold)]
+    public InteractionType interactionType;
+    [ShowIf("interactionType", InteractionType.Hold)]
     public float holdDuration;
 }
-public enum InteractableType
+public enum InteractionType
 {
     None            = 0,
     Press           = 1,

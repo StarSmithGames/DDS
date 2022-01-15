@@ -13,26 +13,35 @@ MonoBehaviour:
   m_Name: GlobalSettings
   m_EditorClassIdentifier: 
   projectSettings:
-    isMobile: 1
-  keyboard:
-    mouseHorizontalAxis: Mouse X
-    mouseVerticalAxis: Mouse Y
-    invertHorizontalInput: 0
-    invertVerticalInput: 0
-    mouseInputMultiplier: 0.01
-    horizontalInputAxis: Horizontal
-    verticalInputAxis: Vertical
-    useJump: 1
-    jumpKey: 32
-    useRawInput: 1
-  mobile:
-    invertHorizontalInput: 0
-    invertVerticalInput: 1
-    inputMultiplier: 0.016
-  vision:
+    platform: 1
+  input:
+    keyboard:
+      mouseHorizontalAxis: Mouse X
+      mouseVerticalAxis: Mouse Y
+      invertHorizontalInput: 0
+      invertVerticalInput: 0
+      mouseInputMultiplier: 0.01
+      horizontalInputAxis: Horizontal
+      verticalInputAxis: Vertical
+      useJump: 1
+      jumpKey: 32
+      interactionKey: 101
+      inventoryKey: 105
+      useRawInput: 1
+    mobile:
+      invertHorizontalInput: 0
+      invertVerticalInput: 1
+      inputMultiplier: 0.016
+  cameraSettings:
+    upperVerticalLimit: 60
+    lowerVerticalLimit: 60
+    cameraSpeed: 250
+    smoothCameraRotation: 0
+    cameraSmoothingFactor: 25
+  visionSettings:
     interactLayers:
       serializedVersion: 2
-      m_Bits: 55
+      m_Bits: 51
     ignoringLayers:
       serializedVersion: 2
       m_Bits: 4

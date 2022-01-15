@@ -13,6 +13,10 @@ namespace Game.Installers
 
 		public override void InstallBindings()
 		{
+
+			Container.BindInterfacesAndSelfTo<InteractionHandler>().AsSingle();
+
+
 			Player p = FindObjectOfType<Player>();
 			Camera c = p.GetComponentInChildren<Camera>();
 

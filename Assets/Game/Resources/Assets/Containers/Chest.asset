@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Chest
   m_EditorClassIdentifier: 
   interact:
-    interactableType: 4
+    interactionType: 4
     holdDuration: 0.5
   inspect:
-    interactableType: 4
+    interactionType: 4
     holdDuration: 5
   inventory:
     useRandomItems: 0
+    shuffleList: 1
     items:
     - useRandom: 0
       data: {fileID: 11400000, guid: 698448eb4c4a285489dca34ba6ac952a, type: 2}

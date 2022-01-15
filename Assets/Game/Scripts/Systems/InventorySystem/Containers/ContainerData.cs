@@ -3,8 +3,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ContainerData", menuName = "ContainerData")]
 public class ContainerData : ScriptableObject
 {
-    public InteractableSettings interact;
-    public InteractableSettings inspect;
+    public InteractionSettings interact;
+    public InteractionSettings inspect;
     [Space]
     public InventorySettings inventory;
 }

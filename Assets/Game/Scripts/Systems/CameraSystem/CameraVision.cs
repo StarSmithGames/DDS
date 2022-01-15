@@ -8,9 +8,6 @@ public class CameraVision : MonoBehaviour
 {
 	[SerializeField] private Camera camera;
 
-	private VisionSettings settings;
-	private UIManager uiManager;
-
 	private Coroutine visionCoroutine = null;
 	public bool IsVisionProccess => visionCoroutine != null;
 
@@ -40,12 +37,16 @@ public class CameraVision : MonoBehaviour
 		}
 	}
 
+	private VisionSettings settings;
+	private UIManager uiManager;
+	private InteractionHandler interaction;
 
 	[Inject]
-	private void Construct(GlobalSettings data, UIManager uiManager)
+	private void Construct(GlobalSettings data, UIManager uiManager, InteractionHandler interaction)
 	{
-		this.settings = data.vision;
+		this.settings = data.visionSettings;
 		this.uiManager = uiManager;
+		this.interaction = interaction;
 
 		StartVision();
 	}
@@ -139,13 +140,13 @@ public class CameraVision : MonoBehaviour
 	{
 		if(CurrentEntity == null)
 		{
-			uiManager.Controls.ButtonA.Hide();
+			interaction.Hide();
 		}
 		else
 		{
 			if (CurrentEntity is IInteractable interactable)
 			{
-				uiManager.Controls.ButtonA.SetTarget(interactable).Show();
+				interaction.SetTarget(interactable).Show();
 			}
 		}
 	}

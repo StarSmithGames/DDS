@@ -11,7 +11,7 @@ public class MobileInput : IInput
 
 	public MobileInput(GlobalSettings data, UIManager uiManager)
 	{
-		this.settings = data.mobile;
+		this.settings = data.input.mobile;
 
 		playerLook = uiManager.Controls.PlayerLook;
 		playerMove = uiManager.Controls.PlayerMove;
@@ -76,13 +76,4 @@ public class MobileInput : IInput
 	{
 		return false;
 	}
-}
-
-[System.Serializable]
-public class MobileSettings 
-{
-	public bool invertHorizontalInput = false;
-	public bool invertVerticalInput = false;
-
-	public float inputMultiplier = 0.01f;
 }
