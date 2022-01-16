@@ -25,15 +25,12 @@ public class ItemData : ScriptableObject
 	public Quaternion prefabRotationOffsetView;
 
 	[Space]
-	public bool isInfinityStack = false;
-	[HideIf("isInfinityStack")]
-	[Range(1, 999)]
-	public int stackSize = 1;
-	[HideIf("isInfinityStack")]
 	public bool isStackable = true;
+	[ShowIf("isStackable")]
+	public bool isInfinityStack = false;
 	[ShowIf("@isStackable && !isInfinityStack")]
 	[Range(1, 999)]
-	public int stackInnerSize = 1;
+	public int stackSize = 1;
 
 	[Space]
 	public bool isInfinityWeight = false;

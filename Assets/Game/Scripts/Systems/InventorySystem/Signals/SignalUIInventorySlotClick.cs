@@ -2,6 +2,7 @@ namespace Game.Systems.InventorySystem.Signals
 {
 	public struct SignalUIInventorySlotClick
 	{
-		public UISlot slot;
+		public UIInventory inventory;
+		public UIInventorySlot slot;
 	}
 }

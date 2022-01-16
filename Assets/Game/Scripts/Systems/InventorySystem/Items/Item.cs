@@ -1,10 +1,13 @@
 using UnityEngine;
 
 using Sirenix.OdinInspector;
+using UnityEngine.Events;
 
 [System.Serializable]
 public class Item
 {
+	public UnityAction OnItemChanged;
+
 	[ShowInInspector]
 	public System.Guid ID { get; protected set; }
 
@@ -14,7 +17,7 @@ public class Item
 	[OnValueChanged("OnDataChanged")]
 	[SerializeField] private ItemData data;
 
-	[HideIf("@IsInfinityStack || useRandom")]
+	[ShowIf("@IsStackable && !useRandom")]
 	[MinValue("MinimumStackSize"), MaxValue("MaximumStackSize")]
 	[SerializeField] private int currentStackSize = 1;
 	public int CurrentStackSize
@@ -23,10 +26,26 @@ public class Item
 		set
 		{
 			currentStackSize = value;
+
+			OnItemChanged?.Invoke();
 		}
 	}
-	public int MaximumStackSize => data?.stackSize ?? 1;
+	public int MaximumStackSize {
+		get
+		{
+			if (IsInfinityStack) return 999;
+			return data?.stackSize ?? 1;
+		}
+	}
 	public int MinimumStackSize => 1;
+
+	public bool IsStackSizeFull => CurrentStackSize == MaximumStackSize;
+	public bool IsStackSizeEmpty => CurrentStackSize == 0;
+
+	/// <summary>
+	/// Разница между максимальной вместительностью и текущим размером стека. Размер свободного пространства в стеке.
+	/// </summary>
+	public int StackDifference => MaximumStackSize - CurrentStackSize;
 
 	[HideIf("@!IsFloatingWeight || useRandom")]
 	[MinValue("MinimumWeight"), MaxValue("MaximumWeight")]
@@ -38,6 +57,8 @@ public class Item
 		set
 		{
 			currentWeight = value;
+
+			OnItemChanged?.Invoke();
 		}
 	}
 	public float CurrentWeightRounded => (float)System.Math.Round(CurrentWeight, 2);
@@ -67,6 +88,8 @@ public class Item
 		set
 		{
 			currentDurability = value;
+
+			OnItemChanged?.Invoke();
 		}
 	}
 	public float MaximumDurability => 100f;
@@ -82,6 +105,8 @@ public class Item
 		set
 		{
 			currentCalories = value;
+
+			OnItemChanged?.Invoke();
 		}
 	}
 	public float MaximumCalories => IsConsumable ? (data as ConsumableItemData).calories : 0;//добавить зависимость веса от калорий
@@ -97,6 +122,8 @@ public class Item
 		set
 		{
 			currentMagazineCapacity = value;
+
+			OnItemChanged?.Invoke();
 		}
 	}
 	public int MaxMagaizneCapacity => 15;
@@ -111,13 +138,28 @@ public class Item
 		ID = System.Guid.NewGuid();
 	}
 
-	public Item GenerateItem()
+	public Item GenerateItem()//rnd item
 	{
 		return null;
 	}
 
+	public Item Copy()
+	{
+		Item item = new Item();
+
+		item.data = data;
+		item.currentStackSize = CurrentStackSize;
+		item.currentWeight = CurrentWeight;
+		item.currentDurability = CurrentDurability;
+		item.currentCalories = CurrentCalories;//
+		item.currentMagazineCapacity = CurrentMagazineCapacity;//
+
+		return item;
+	}
+
 	private string Tittle => data?.itemName ?? "";
 
+	private bool IsStackable => data?.isStackable ?? false;
 	private bool IsInfinityStack => data?.isInfinityStack ?? false;
 	private bool IsInfinityWeight => data?.isInfinityWeight ?? false;
 	private bool IsFloatingWeight => data?.isFloatingWeight ?? false;
@@ -125,7 +167,9 @@ public class Item
 
 	private void OnDataChanged()
 	{
+		currentStackSize = MaximumStackSize;
 		currentWeight = MaximumWeight;
 		currentCalories = MaximumCalories;
+		currentMagazineCapacity = MaxMagaizneCapacity;
 	}
 }

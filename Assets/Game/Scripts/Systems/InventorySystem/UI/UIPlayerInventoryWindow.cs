@@ -20,24 +20,4 @@ public class UIPlayerInventoryWindow : WindowBase
 	{
 		this.signalBus = signalBus;
 	}
-
-	public void ReOrganizeSpace(InventoryType inventory)
-	{
-		if(inventory == InventoryType.InventoryWithViewer)
-		{
-			container.gameObject.SetActive(false);
-			itemViewer.gameObject.SetActive(true);
-		}
-		else if(inventory == InventoryType.InventoryWithContainer)
-		{
-			container.gameObject.SetActive(true);
-			itemViewer.gameObject.SetActive(false);
-		}
-	}
-
-	public enum InventoryType
-	{
-		InventoryWithViewer,
-		InventoryWithContainer,
-	}
 }

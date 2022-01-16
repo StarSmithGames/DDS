@@ -19,15 +19,81 @@ public class Inventory : IInventory
 
 	public bool Add(Item item)
 	{
-        Items.Add(item);
-        OnInventoryChanged?.Invoke();
-        return true;
+		if (item.ItemData.isStackable)
+		{
+            if (GetAllByData(item.ItemData, out List<Item> items))
+            {
+                int currentStackSize = item.CurrentStackSize;
+
+                for (int i = 0; i < items.Count; i++)
+                {
+                    if (!items[i].IsStackSizeFull)
+                    {
+                        int otherStackDifference = items[i].StackDifference;
+
+                        int diff = currentStackSize - otherStackDifference;
+
+                        if (diff > 0)
+                        {
+                            item.CurrentStackSize -= (currentStackSize - diff);
+                            items[i].CurrentStackSize += (currentStackSize - diff);
+
+                            if (item.IsStackSizeEmpty) return true;
+                        }
+                        else if (diff == 0)//item полностью входит в items[i]
+						{
+                            item.CurrentStackSize -= currentStackSize;
+                            items[i].CurrentStackSize += currentStackSize;
+
+                            OnInventoryChanged?.Invoke();
+
+                            return true;
+                        }
+						else // < 0
+						{
+                            items[i].CurrentStackSize += item.CurrentStackSize;
+                            item.CurrentStackSize -= item.CurrentStackSize;
+
+                            OnInventoryChanged?.Invoke();
+
+                            return true;
+                        }
+					}
+                }
+
+                Items.Add(item);
+
+                OnInventoryChanged?.Invoke();
+                return true;
+            }
+			else
+			{
+                Items.Add(item);
+
+                OnInventoryChanged?.Invoke();
+                return true;
+            }
+        }
+		else
+		{
+            Items.Add(item);
+
+            OnInventoryChanged?.Invoke();
+            return true;
+        }
 	}
     public bool Remove(Item item)
 	{
         Items.Remove(item);
         OnInventoryChanged?.Invoke();
         return true;
+	}
+
+    public bool GetAllByData(ItemData data, out List<Item> items)
+	{
+        items = Items.Where((item) => item.ItemData == data).ToList();
+
+        return items.Count > 0;
 	}
 }
 
@@ -64,7 +130,7 @@ public class InventorySettings
                 }
 				else
 				{
-                    result.Add(items[i]);
+                    result.Add(items[i].Copy());
 				}
 			}
 		}

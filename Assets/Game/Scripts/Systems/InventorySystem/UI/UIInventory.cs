@@ -8,15 +8,16 @@ public class UIInventory : MonoBehaviour
 {
 	[SerializeField] private Transform content;
 
+	public IInventory Inventory => inventory;
 	private IInventory inventory;
 
-	private List<UISlot> slots = new List<UISlot>();
+	private List<UIInventorySlot> slots = new List<UIInventorySlot>();
 
 	private SignalBus signalBus;
-	private UISlot.Factory slotFactory;
+	private UIInventorySlot.Factory slotFactory;
 
 	[Inject]
-	private void Construct(SignalBus signalBus, UISlot.Factory slotFactory, int initialSlotCount)
+	private void Construct(SignalBus signalBus, UIInventorySlot.Factory slotFactory, int initialSlotCount)
 	{
 		this.signalBus = signalBus;
 		this.slotFactory = slotFactory;
@@ -75,7 +76,7 @@ public class UIInventory : MonoBehaviour
 
 	private void AddItem(Item item)
 	{
-		UISlot slot = slots.Where((slot) => slot.IsEmpty()).FirstOrDefault();
+		UIInventorySlot slot = slots.Where((slot) => slot.IsEmpty).FirstOrDefault();
 		
 		if(slot != null)
 		{
@@ -84,17 +85,17 @@ public class UIInventory : MonoBehaviour
 		else
 		{
 			SpawnSlotRow();
-			slot = slots.Where((slot) => slot.IsEmpty()).FirstOrDefault();
+			slot = slots.Where((slot) => slot.IsEmpty).FirstOrDefault();
 			slot.SetItem(item);
 		}
 	}
 
 	private void SpawnSlot()
 	{
-		UISlot slot = slotFactory.Create();
+		UIInventorySlot slot = slotFactory.Create();
 
 		slot.SetItem(null);
-
+		slot.SetOwner(this);
 		slot.transform.parent = content;
 
 		slots.Add(slot);
@@ -108,12 +109,13 @@ public class UIInventory : MonoBehaviour
 		}
 	}
 
-	private void DespawnSlot(UISlot slot)
+	private void DespawnSlot(UIInventorySlot slot)
 	{
 		if (slots.Contains(slot))
 		{
 			slots.Remove(slot);
 			slot.SetItem(null);
+			slot.SetOwner(null);
 			slot.DespawnIt();
 		}
 	}

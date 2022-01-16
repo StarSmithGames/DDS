@@ -2,6 +2,7 @@ using Game.Entities;
 using Game.Signals;
 using Game.Systems.InspectorSystem.Signals;
 using Game.Systems.InventorySystem.Signals;
+using Game.Systems.TransactorSystem.Signals;
 
 using UnityEngine;
 using Zenject;
@@ -11,8 +12,8 @@ namespace Game.Installers
 	[CreateAssetMenu(fileName = "UIInstaller", menuName = "Installers/UIInstaller")]
 	public class UIScriptableInstaller : ScriptableObjectInstaller
 	{
-		[SerializeField] private UISlot slotPrefab;
-		[SerializeField] private int initialSlotFactorySize = 20;//5*4
+		[SerializeField] private UIInventorySlot slotPrefab;
+		[SerializeField] private int initialSlotFactorySize = 32;//5 * 4 + 3 * 4
 
 		public override void InstallBindings()
 		{
@@ -20,15 +21,16 @@ namespace Game.Installers
 
 			Container.DeclareSignal<SignalUIWindowsBack>();
 
-			BindInspectorWindow();
+			BindInspector();
+			BindTransactor();
 			BindBackpack();
 
-			Container.BindFactory<UISlot, UISlot.Factory>()
+			Container.BindFactory<UIInventorySlot, UIInventorySlot.Factory>()
 					.FromMonoPoolableMemoryPool((x) => x.WithInitialSize(initialSlotFactorySize)
 					.FromComponentInNewPrefab(slotPrefab));
 		}
 
-		private void BindInspectorWindow()
+		private void BindInspector()
 		{
 			Container.DeclareSignal<SignalUIInspectorTake>();
 			Container.DeclareSignal<SignalUIInspectorUse>();
@@ -39,6 +41,15 @@ namespace Game.Installers
 			Container.Bind<TransformTransition>().AsSingle();
 
 			Container.BindInterfacesAndSelfTo<InspectorHandler>().AsSingle();
+		}
+
+		private void BindTransactor()
+		{
+			Container.DeclareSignal<SignalUITransactorAll>();
+			Container.DeclareSignal<SignalUITransactorGive>();
+			Container.DeclareSignal<SignalUITransactorBack>();
+
+			Container.BindInterfacesAndSelfTo<TransactorHandler>().AsSingle();
 		}
 
 		private void BindBackpack()

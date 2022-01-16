@@ -9,26 +9,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b049b0d50feb44241a1159e13bc9c376, type: 3}
-  m_Name: Fuel
+  m_Script: {fileID: 11500000, guid: 34dd3772f38ccf340a16359be240ae60, type: 3}
+  m_Name: Matches
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 21300000, guid: 8a73efe4fbd4239418c56985a7d766c0, type: 3}
-  itemName: 
-  itemDescription: 
+  itemSprite: {fileID: 21300000, guid: 5e2ff739dedf3404ba5d705e6cb11ac3, type: 3}
+  itemName: True American Matches
+  itemDescription: Very Nice Signal Light Match Boxes - True American is rough shape!
   interact:
-    interactableType: 0
+    interactionType: 2
     holdDuration: 0
-  prefab: {fileID: 0}
+  prefab: {fileID: 352410451950932823, guid: 066ce0d7cb61335499f4a47a24d6eaf0, type: 3}
   prefabPossitionOffsetView: {x: 0, y: 0, z: 0}
   prefabRotationOffsetView: {x: 0, y: 0, z: 0, w: 0}
+  isStackable: 1
   isInfinityStack: 0
-  stackSize: 1
+  stackSize: 45
   isInfinityWeight: 0
-  weight: 0.01
+  isFloatingWeight: 0
+  baseWeight: 0.25
+  weight: 0.1
   isBreakable: 0
   decay:
     decayOverTime: 0
     decayInside: 0
     decayOutsie: 0
-  chance: 0
-  addTemperature: 0
+  chance: 5
+  isMathces: 0
+  holdTime: 5

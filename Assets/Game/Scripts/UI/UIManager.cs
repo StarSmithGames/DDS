@@ -5,7 +5,9 @@ using Zenject;
 
 public class UIManager : MonoBehaviour
 {
+    public Button MenuButton => menuButton;
     [SerializeField] private Button menuButton;
+    public Button ViewButton => viewButton;
     [SerializeField] private Button viewButton;
     [Space]
     [SerializeField] private UITargets targets;
@@ -29,20 +31,5 @@ public class UIManager : MonoBehaviour
         Targets.HideFiller();
 
         WindowsManager.HideAllWindows();
-
-        menuButton.onClick.AddListener(OnMenuClicked);
-        viewButton.onClick.AddListener(OnViewClicked);
-    }
-
-    private void OnMenuClicked()
-	{
-
-	}
-    private void OnViewClicked()
-    {
-        var window = WindowsManager.GetAs<UIPlayerInventoryWindow>();
-        window.ItemViewer.SetItem(null);
-        window.ReOrganizeSpace(UIPlayerInventoryWindow.InventoryType.InventoryWithViewer);
-        WindowsManager.Show<UIPlayerInventoryWindow>();
     }
 }

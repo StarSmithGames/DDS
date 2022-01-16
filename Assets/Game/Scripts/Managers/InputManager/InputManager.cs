@@ -22,6 +22,8 @@ public class InputManager : IInitializable, ITickable, IDisposable
 	{
 		if (globalSettings.projectSettings.platform == PlatformType.Mobile)
 		{
+			uiManager.ViewButton.onClick.AddListener(() => Click(InputType.Inventory));
+
 			uiManager.Controls.ButtonA.onClick.AddListener(() => { Click(InputType.Interaction); });
 			uiManager.Controls.ButtonA.onPress.AddListener(() => { Press(InputType.Interaction); });
 			uiManager.Controls.ButtonA.onUnPress.AddListener(() => { UnPress(InputType.Interaction); });
@@ -32,6 +34,8 @@ public class InputManager : IInitializable, ITickable, IDisposable
 	{
 		if (globalSettings.projectSettings.platform == PlatformType.Mobile)
 		{
+			uiManager.ViewButton.onClick.RemoveAllListeners();
+
 			uiManager.Controls.ButtonA.onClick.RemoveAllListeners();
 			uiManager.Controls.ButtonA.onPress.RemoveAllListeners();
 			uiManager.Controls.ButtonA.onUnPress.RemoveAllListeners();

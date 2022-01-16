@@ -15,22 +15,24 @@ MonoBehaviour:
   settings:
     inventory:
       useRandomItems: 0
+      shuffleList: 1
       items:
       - useRandom: 0
-        data: {fileID: 11400000, guid: 26f9ceb76c84dcb4f9c9f5826b435383, type: 2}
+        data: {fileID: 11400000, guid: 698448eb4c4a285489dca34ba6ac952a, type: 2}
         currentStackSize: 1
-        currentWeight: 0.01
+        currentWeight: 0.35
         currentDurability: 100
-        currentCalories: 0
+        currentCalories: 250
         currentMagazineCapacity: 0
       - useRandom: 0
-        data: {fileID: 11400000, guid: 97e4a2e01daa3d2409f9faac31cffa0c, type: 2}
-        currentStackSize: 1
-        currentWeight: 0.01
+        data: {fileID: 11400000, guid: 855f178f41040014a898aec49dc545a2, type: 2}
+        currentStackSize: 45
+        currentWeight: 0.1
         currentDurability: 100
         currentCalories: 0
         currentMagazineCapacity: 0
       randomSettings:
+        isUnique: 0
         useRandomCount: 1
         itemsCount: 1
         itemsMinMaxCount: {x: 1, y: 5}
