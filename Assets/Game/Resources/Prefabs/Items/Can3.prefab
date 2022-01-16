@@ -68,6 +68,7 @@ MonoBehaviour:
     currentDurability: 100
     currentCalories: 250
     currentMagazineCapacity: 0
+  coll: {fileID: 352410451950932822}
 --- !u!1 &2990283993158125582
 GameObject:
   m_ObjectHideFlags: 0

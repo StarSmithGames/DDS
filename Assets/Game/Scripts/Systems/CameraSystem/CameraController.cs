@@ -13,7 +13,7 @@ public class CameraController : MonoBehaviour
 
 	//References to transform and camera components;
 	protected Transform tr;
-	[SerializeField] protected Camera cam;
+	[SerializeField] protected Camera camera;
 
 	protected IInput cameraInput;
 	private CameraSettings settings;
@@ -113,8 +113,8 @@ public class CameraController : MonoBehaviour
 	//Set the camera's field-of-view (FOV);
 	public void SetFOV(float _fov)
 	{
-		if (cam)
-			cam.fieldOfView = _fov;
+		if (camera)
+			camera.fieldOfView = _fov;
 	}
 
 	//Set x and y angle directly;

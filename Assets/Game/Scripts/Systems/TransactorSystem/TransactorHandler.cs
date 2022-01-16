@@ -1,12 +1,7 @@
 using Game.Systems.TransactorSystem.Signals;
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Zenject;
-
-using static UnityEditor.Progress;
 
 public class TransactorHandler : IInitializable, IDisposable
 {
@@ -40,6 +35,12 @@ public class TransactorHandler : IInitializable, IDisposable
 		signalBus?.Unsubscribe<SignalUITransactorBack>(OnTransactionBack);
 	}
 
+	/// <summary>
+	/// ѕередача одного айтема откуда-то куда-то.
+	/// </summary>
+	/// <param name="item"></param>
+	/// <param name="from"></param>
+	/// <param name="to">ћожет быть null, тогда from будет считатьс€ как общее пространство(мир)</param>
 	public void Transact(Item item, IInventory from, IInventory to)
 	{
 		this.item = item;
@@ -54,14 +55,29 @@ public class TransactorHandler : IInitializable, IDisposable
 		else
 		{
 			from.Remove(item);
-			to.Add(item);
+
+			if(to != null)
+			{
+				to.Add(item);
+			}
+			else
+			{
+
+			}
 		}
 	}
 
 	private void OnTransactionAll(SignalUITransactorAll signal)
 	{
 		from.Remove(item);
-		to.Add(item);
+		if(to != null)
+		{
+			to.Add(item);
+		}
+		else
+		{
+
+		}
 
 		uiManager.WindowsManager.Hide<UIItemTransactorWindow>();
 	}
@@ -70,14 +86,25 @@ public class TransactorHandler : IInitializable, IDisposable
 		if(signal.count == item.CurrentStackSize)
 		{
 			from.Remove(item);
-			to.Add(item);
+			if (to != null)
+			{
+				to.Add(item);
+			}
+			else
+			{
+
+			}
 		}
 		else
 		{
 			Item newItem = item.Copy();
 			newItem.CurrentStackSize = signal.count;
 			item.CurrentStackSize = item.CurrentStackSize - newItem.CurrentStackSize;
-			to.Add(newItem);
+			
+			if(to != null)
+			{
+				to.Add(newItem);
+			}
 		}
 
 		uiManager.WindowsManager.Hide<UIItemTransactorWindow>();

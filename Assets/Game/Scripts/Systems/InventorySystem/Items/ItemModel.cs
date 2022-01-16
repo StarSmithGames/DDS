@@ -1,3 +1,5 @@
+using Game.Systems.LocalizationSystem;
+
 using Sirenix.OdinInspector;
 
 using UnityEngine;
@@ -15,11 +17,15 @@ public class ItemModel : MonoBehaviour, IEntity, IInteractable
 	[SerializeField] private Collider coll;
 
 	private InspectorHandler itemInspector;
+	private UIManager uiManager;
+	private LocalizationSystem localization;
 
 	[Inject]
-	private void Construct(InspectorHandler itemInspector)
+	private void Construct(InspectorHandler itemInspector, UIManager uiManager, LocalizationSystem localization)
 	{
 		this.itemInspector = itemInspector;
+		this.uiManager = uiManager;
+		this.localization = localization;
 	}
 
 	public void Interact()
@@ -33,14 +39,17 @@ public class ItemModel : MonoBehaviour, IEntity, IInteractable
 		coll.enabled = trigger;
 	}
 
-	public void Observe()
-	{
-	}
 	public void StartObserve()
+	{
+		var texts = item.ItemData.GetLocalization(localization.CurrentLanguage);
+		uiManager.Targets.ShowTargetInformation(texts.itemName);
+	}
+	public void Observe()
 	{
 	}
 	public void EndObserve()
 	{
+		uiManager.Targets.HideTargetInformation();
 	}
 
 	[Button]

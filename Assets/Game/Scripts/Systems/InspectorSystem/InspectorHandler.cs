@@ -94,6 +94,7 @@ public class InspectorHandler : IInitializable, IDisposable, ITickable
 		currentModel = model;
 
 		player.Freeze();
+		player.DisableVision();
 		uiManager.Controls.DisableButtons();
 		viewer
 			.SetItem(currentModel.transform)
@@ -107,6 +108,7 @@ public class InspectorHandler : IInitializable, IDisposable, ITickable
 		currentInventory = inventory;
 
 		player.Freeze();
+		player.DisableVision();
 		uiManager.Controls.DisableButtons();
 
 		itemsReviewCoroutine = asyncManager.StartCoroutine(ItemsReview(inventory.Items));
@@ -158,6 +160,7 @@ public class InspectorHandler : IInitializable, IDisposable, ITickable
 			GameObject.Destroy(currentModel.gameObject);
 
 			player.UnFreeze();
+			player.EnableVision();
 			uiManager.Controls.EnableButtons();
 		}
 		else if (inspectType == InspectType.Inventory)
@@ -171,6 +174,7 @@ public class InspectorHandler : IInitializable, IDisposable, ITickable
 				GameObject.Destroy(currentModel.gameObject);
 
 				player.UnFreeze();
+				player.EnableVision();
 				uiManager.Controls.EnableButtons();
 			}
 			else
@@ -200,6 +204,7 @@ public class InspectorHandler : IInitializable, IDisposable, ITickable
 					uiManager.WindowsManager.Hide<UIItemInspectorWindow>();
 
 					player.UnFreeze();
+					player.EnableVision();
 					uiManager.Controls.EnableButtons();
 				});
 		}
@@ -210,6 +215,7 @@ public class InspectorHandler : IInitializable, IDisposable, ITickable
 				uiManager.WindowsManager.Hide<UIItemInspectorWindow>();
 
 				player.UnFreeze();
+				player.EnableVision();
 				uiManager.Controls.EnableButtons();
 			}
 

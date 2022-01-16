@@ -46,12 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91f9132aafdeb7846a6af190ec1b05cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 6263907146095838760}
-  upperVerticalLimit: 60
-  lowerVerticalLimit: 60
-  cameraSpeed: 250
-  smoothCameraRotation: 0
-  cameraSmoothingFactor: 25
+  camera: {fileID: 6263907146095838760}
 --- !u!114 &1571900101026807573
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -296,6 +291,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerController: {fileID: 4112725259185905043}
   cameraController: {fileID: 831911573245456722}
+  cameraVision: {fileID: 1571900101026807573}
   itemViewPoint: {fileID: 5807670706683083397}
 --- !u!114 &4112725259185905043
 MonoBehaviour:

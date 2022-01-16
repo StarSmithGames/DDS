@@ -5,6 +5,7 @@ public class UITargets : MonoBehaviour
 {
     [SerializeField] private Image target;
     [SerializeField] private Image filler;
+    [SerializeField] private UITargetInformation targetInformation;
 
     public void ShowTarget()
     {
@@ -13,6 +14,16 @@ public class UITargets : MonoBehaviour
     public void HideTarget()
     {
         target.enabled = false;
+    }
+
+    public void ShowTargetInformation(string name, string information = "")
+    {
+        targetInformation.SetInformation(name, information);
+        targetInformation.gameObject.SetActive(true);
+    }
+    public void HideTargetInformation()
+	{
+        targetInformation.gameObject.SetActive(false);
     }
 
     public void ShowFiller()
@@ -28,4 +39,6 @@ public class UITargets : MonoBehaviour
     {
         filler.enabled = false;
     }
+
+    
 }

@@ -230,3 +230,4 @@ MonoBehaviour:
     currentDurability: 100
     currentCalories: 250
     currentMagazineCapacity: 0
+  coll: {fileID: 7797219009220906773}

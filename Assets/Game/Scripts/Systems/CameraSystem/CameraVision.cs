@@ -64,6 +64,8 @@ public class CameraVision : MonoBehaviour
 	{
 		while (true)
 		{
+			if (isVisionPaused) yield return null;
+
 			RaycastHit hit;
 			Ray ray = new Ray(camera.transform.position, camera.transform.forward);
 
@@ -123,7 +125,11 @@ public class CameraVision : MonoBehaviour
 	}
 	public void PauseVision()
 	{
-		isVisionPaused = !isVisionPaused;
+		isVisionPaused = true;
+	}
+	public void UnPauseVision()
+	{
+		isVisionPaused = false;
 	}
 	public void StopVision()
 	{

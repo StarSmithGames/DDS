@@ -13,19 +13,20 @@ MonoBehaviour:
   m_Name: Can0
   m_EditorClassIdentifier: 
   itemSprite: {fileID: 21300000, guid: 4059b35d924614b48b3da280009e9efe, type: 3}
-  itemName: Can "Bubble-Cola"
-  itemDescription: "\"The Bubble-Cola Company is a beverage retailer, manufacturer
-    and\r marketer of non-alcoholic beverage concentrates and syrups.\""
+  localizations:
+  - language: 10
+    itemName: Can "Bubble-Cola"
+    itemDescription: "\"The Bubble-Cola Company is a beverage retailer, manufacturer
+      and\r marketer of non-alcoholic beverage concentrates and syrups.\""
   interact:
-    interactableType: 2
+    interactionType: 2
     holdDuration: 0
   prefab: {fileID: 7797219009220906772, guid: dacfaf479b0de2c41976aa65dda44717, type: 3}
   prefabPossitionOffsetView: {x: 0, y: 0, z: 0}
   prefabRotationOffsetView: {x: 0, y: 0, z: 0, w: 0}
+  isStackable: 0
   isInfinityStack: 0
   stackSize: 1
-  isStackable: 0
-  stackInnerSize: 1
   isInfinityWeight: 0
   isFloatingWeight: 1
   baseWeight: 0.1

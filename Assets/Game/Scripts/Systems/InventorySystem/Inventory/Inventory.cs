@@ -49,8 +49,8 @@ public class Inventory : IInventory
 
                             return true;
                         }
-						else // < 0
-						{
+                        else // < 0 item полностью входит в items[i]
+                        {
                             items[i].CurrentStackSize += item.CurrentStackSize;
                             item.CurrentStackSize -= item.CurrentStackSize;
 
@@ -62,26 +62,21 @@ public class Inventory : IInventory
                 }
 
                 Items.Add(item);
-
-                OnInventoryChanged?.Invoke();
-                return true;
             }
 			else
 			{
                 Items.Add(item);
-
-                OnInventoryChanged?.Invoke();
-                return true;
             }
         }
 		else
 		{
             Items.Add(item);
-
-            OnInventoryChanged?.Invoke();
-            return true;
         }
-	}
+
+        OnInventoryChanged?.Invoke();
+        return true;
+    }
+
     public bool Remove(Item item)
 	{
         Items.Remove(item);

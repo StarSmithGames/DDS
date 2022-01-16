@@ -8,6 +8,7 @@ namespace Game.Entities
 	{
 		[SerializeField] private PlayerController playerController;
 		[SerializeField] private CameraController cameraController;
+		[SerializeField] private CameraVision cameraVision;
 
 		public Transform ItemViewPoint => itemViewPoint;
 		[SerializeField] private Transform itemViewPoint;
@@ -41,6 +42,16 @@ namespace Game.Entities
 
 			uiManager.Controls.PlayerLook.Show();
 			uiManager.Controls.PlayerMove.Show();
+		}
+
+		public void EnableVision()
+		{
+			cameraVision.PauseVision();
+		}
+
+		public void DisableVision()
+		{
+			cameraVision.UnPauseVision();
 		}
 	}
 	[System.Serializable]

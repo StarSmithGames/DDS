@@ -2,14 +2,12 @@ using UnityEngine;
 
 using Sirenix.OdinInspector;
 using UnityEngine.Events;
+using Zenject;
 
 [System.Serializable]
 public class Item
 {
 	public UnityAction OnItemChanged;
-
-	[ShowInInspector]
-	public System.Guid ID { get; protected set; }
 
 	public bool useRandom = false;
 	public ItemData ItemData => data;
@@ -109,7 +107,7 @@ public class Item
 			OnItemChanged?.Invoke();
 		}
 	}
-	public float MaximumCalories => IsConsumable ? (data as ConsumableItemData).calories : 0;//добавить зависимость веса от калорий
+	public float MaximumCalories => IsConsumable ? (data as ConsumableItemData).calories : 0;//TODO: добавить зависимость веса от калорий
 	public float MinimumCalories => 0f;
 
 	[ShowIf("@IsWeapon && !useRandom")]
@@ -129,14 +127,10 @@ public class Item
 	public int MaxMagaizneCapacity => 15;
 	public int MinimumMagaizneCapacity => 0;
 
-
 	public bool IsConsumable => data is ConsumableItemData;
 	public bool IsWeapon => false;
 
-	public Item()
-	{
-		ID = System.Guid.NewGuid();
-	}
+	public Item() { }
 
 	public Item GenerateItem()//rnd item
 	{
@@ -157,8 +151,18 @@ public class Item
 		return item;
 	}
 
-	private string Tittle => data?.itemName ?? "";
+	private string Tittle
+	{
+		get
+		{
+			if(data != null && data.localizations.Count > 0)
+			{
+				return data.GetLocalization(SystemLanguage.English).itemName;
+			}
 
+			return "";
+		}
+	}
 	private bool IsStackable => data?.isStackable ?? false;
 	private bool IsInfinityStack => data?.isInfinityStack ?? false;
 	private bool IsInfinityWeight => data?.isInfinityWeight ?? false;

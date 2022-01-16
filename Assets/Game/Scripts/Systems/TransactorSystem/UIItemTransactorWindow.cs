@@ -1,3 +1,5 @@
+using Game.Systems.LocalizationSystem;
+using Game.Systems.LocalizationSystem.Signals;
 using Game.Systems.TransactorSystem.Signals;
 
 using System;
@@ -23,14 +25,16 @@ public class UIItemTransactorWindow : WindowBase
     private int currentCount = 1;
 
     private SignalBus signalBus;
+    private LocalizationSystem localization;
 
     [Inject]
-    private void Construct(SignalBus signalBus)
+    private void Construct(SignalBus signalBus, LocalizationSystem localization)
 	{
         this.signalBus = signalBus;
+        this.localization = localization;
 
-        inscreaseButton.onClick.AddListener(Increase);
-        decreaseButton.onClick.AddListener(Decrease);
+        inscreaseButton.onClick.AddListener(ButtonIncreaseClicked);
+        decreaseButton.onClick.AddListener(ButtonDecreaseClicked);
 
         allButton.onClick.AddListener(ButtonAllClicked);
         giveButton.onClick.AddListener(ButtonGiveClicked);
@@ -46,7 +50,7 @@ public class UIItemTransactorWindow : WindowBase
         backButton.onClick.RemoveAllListeners();
     }
 
-	public void SetTransaction(Item item)
+    public void SetTransaction(Item item)
 	{
         this.item = item;
 
@@ -57,7 +61,9 @@ public class UIItemTransactorWindow : WindowBase
 
     private void UpdateTransaction()
 	{
-        itemName.text = item.ItemData.itemName;
+        var texts = item?.ItemData.GetLocalization(localization.CurrentLanguage) ?? null;
+
+        itemName.text = texts?.itemName ?? "";
         UpdateTranstitionCount();
     }
 
@@ -66,7 +72,7 @@ public class UIItemTransactorWindow : WindowBase
         itemCount.text = currentCount + "/" + item.CurrentStackSize;
     }
 
-    private void Increase()
+    private void ButtonIncreaseClicked()
 	{
         if(currentCount < item.CurrentStackSize)
 		{
@@ -75,7 +81,7 @@ public class UIItemTransactorWindow : WindowBase
             UpdateTranstitionCount();
         }
     }
-    private void Decrease()
+    private void ButtonDecreaseClicked()
 	{
 		if (currentCount > item.MinimumStackSize)
 		{

@@ -1,4 +1,6 @@
 using Game.Systems.InspectorSystem.Signals;
+using Game.Systems.LocalizationSystem;
+using Game.Systems.LocalizationSystem.Signals;
 
 using System.Collections.Generic;
 
@@ -19,11 +21,13 @@ public class UIItemInspectorWindow : WindowBase
 	private Item item;
 
 	private SignalBus signalBus;
+	private LocalizationSystem localization;
 
 	[Inject]
-	private void Construct(SignalBus signalBus)
+	private void Construct(SignalBus signalBus, LocalizationSystem localization)
 	{
 		this.signalBus = signalBus;
+		this.localization = localization;
 
 		takeButton.onClick.AddListener(OnButtonTake);
 		useButton.onClick.AddListener(OnButtonUse);
@@ -44,15 +48,12 @@ public class UIItemInspectorWindow : WindowBase
 		UpdateInspector();
 	}
 
-	public void SetItems(List<Item> items)
-	{
-
-	}
-
 	private void UpdateInspector()
 	{
-		itemName.text = item.ItemData.itemName;
-		itemDescription.text = item.ItemData.itemDescription;
+		var texts = item?.ItemData.GetLocalization(localization.CurrentLanguage) ?? null;
+
+		itemName.text = texts?.itemName ?? "";
+		itemDescription.text = texts?.itemDescription ?? "";
 
 		useButton.gameObject.SetActive(item.IsConsumable);
 	}

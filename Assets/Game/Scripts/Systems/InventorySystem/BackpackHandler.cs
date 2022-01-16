@@ -2,15 +2,17 @@ using Game.Entities;
 using Game.Signals;
 using Game.Systems.InventorySystem;
 using Game.Systems.InventorySystem.Signals;
+using Game.Systems.TransactorSystem.Signals;
 
 using System;
 using System.ComponentModel;
+using System.Transactions;
 
 using Zenject;
 
 public class BackpackHandler : IInitializable, IDisposable
 {
-	private UIPlayerInventoryWindow window;
+	private UIPlayerInventoryWindow playerInventoryWindow;
 	private InventoryType inventoryType;
 
 	private SignalBus signalBus;
@@ -32,9 +34,9 @@ public class BackpackHandler : IInitializable, IDisposable
 
 	public void Initialize()
 	{
-		window = uiManager.WindowsManager.GetAs<UIPlayerInventoryWindow>();
-		window.Inventory.SetInventory(player.Inventory);
-		window.ItemViewer.SetItem(null);
+		playerInventoryWindow = uiManager.WindowsManager.GetAs<UIPlayerInventoryWindow>();
+		playerInventoryWindow.Inventory.SetInventory(player.Inventory);
+		playerInventoryWindow.ItemViewer.SetItem(null);
 
 		signalBus?.Subscribe<SignalUIInventorySlotClick>(OnSlotClicked);
 		signalBus?.Subscribe<SignalUIInventoryDrop>(OnItemDroped);
@@ -55,8 +57,9 @@ public class BackpackHandler : IInitializable, IDisposable
 	public void SetContainerInventory(IInventory inventory)
 	{
 		player.Freeze();
+		player.DisableVision();
 
-		window.Container.SetInventory(inventory);
+		playerInventoryWindow.Container.SetInventory(inventory);
 		ReOrganizeSpace(InventoryType.InventoryWithContainer);
 		uiManager.WindowsManager.Show<UIPlayerInventoryWindow>();
 	}
@@ -65,14 +68,14 @@ public class BackpackHandler : IInitializable, IDisposable
 	{
 		if (type == InventoryType.InventoryWithViewer)
 		{
-			window.Container.gameObject.SetActive(false);
-			window.ItemViewer.gameObject.SetActive(true);
+			playerInventoryWindow.Container.gameObject.SetActive(false);
+			playerInventoryWindow.ItemViewer.gameObject.SetActive(true);
 
 		}
 		else if (type == InventoryType.InventoryWithContainer)
 		{
-			window.Container.gameObject.SetActive(true);
-			window.ItemViewer.gameObject.SetActive(false);
+			playerInventoryWindow.Container.gameObject.SetActive(true);
+			playerInventoryWindow.ItemViewer.gameObject.SetActive(false);
 		}
 
 		inventoryType = type;
@@ -83,19 +86,19 @@ public class BackpackHandler : IInitializable, IDisposable
 	{
 		if(inventoryType == InventoryType.InventoryWithViewer)
 		{
-			window.ItemViewer.SetItem(signal.slot.Item);
+			playerInventoryWindow.ItemViewer.SetItem(signal.slot.Item);
 		}
 		else if (inventoryType == InventoryType.InventoryWithContainer)
 		{
 			if (!signal.slot.IsEmpty)
 			{
-				if (signal.inventory == window.Inventory)
+				if (signal.inventory == playerInventoryWindow.Inventory)
 				{
-					transactor.Transact(signal.slot.Item, signal.inventory.Inventory, window.Container.Inventory);
+					transactor.Transact(signal.slot.Item, signal.inventory.Inventory, playerInventoryWindow.Container.Inventory);
 				}
-				else if (signal.inventory == window.Container)
+				else if (signal.inventory == playerInventoryWindow.Container)
 				{
-					transactor.Transact(signal.slot.Item, signal.inventory.Inventory, window.Inventory.Inventory);
+					transactor.Transact(signal.slot.Item, signal.inventory.Inventory, playerInventoryWindow.Inventory.Inventory);
 				}
 			}
 		}
@@ -103,21 +106,22 @@ public class BackpackHandler : IInitializable, IDisposable
 
 	private void OnItemDroped(SignalUIInventoryDrop signal)
 	{
-		player.Inventory.Remove(signal.item);
+		transactor.Transact(signal.item, player.Inventory, null);
 	}
 
 	private void OnWindowsBack(SignalUIWindowsBack signal)
 	{
-		window.ItemViewer.SetItem(null);
-		window.Container.SetInventory(null);
+		playerInventoryWindow.ItemViewer.SetItem(null);
+		playerInventoryWindow.Container.SetInventory(null);
 		player.UnFreeze();
+		player.EnableVision();
 	}
 
 	private void OnInputClicked(SignalInputClicked signal)
 	{
 		if(signal.input == InputType.Inventory)
 		{
-			window.ItemViewer.SetItem(null);
+			playerInventoryWindow.ItemViewer.SetItem(null);
 			ReOrganizeSpace(InventoryType.InventoryWithViewer);
 			uiManager.WindowsManager.Show<UIPlayerInventoryWindow>();
 		}

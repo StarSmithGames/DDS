@@ -10,9 +10,9 @@ public class ItemData : ScriptableObject
 	[PreviewField]
 	public Sprite itemSprite;
 
-	public string itemName;
-	[TextArea(5, 5)]
-	public string itemDescription;
+	[ListDrawerSettings(ListElementLabelName = "Tittle")]
+	[InfoBox("@LocalizationInfo", InfoMessageType.Warning)]
+	public List<Localization> localizations = new List<Localization>();
 
 	[Space]
 	public InteractionSettings interact = new InteractionSettings() { interactionType = InteractionType.Click };
@@ -49,8 +49,27 @@ public class ItemData : ScriptableObject
 	[ShowIf("isBreakable")]
 	public DecaySettings decay;
 
-
+	
 	private float MinimumWeight => isFloatingWeight ? baseWeight + 0.15f : 0.01f;
+
+
+	public Localization GetLocalization(SystemLanguage language)
+	{
+		return localizations.Find((x) => x.language == language) ?? localizations[0];
+	}
+
+	private string LocalizationInfo => "Required :\n" + SystemLanguage.English.ToString();
+	[System.Serializable]
+	public class Localization
+	{
+		public SystemLanguage language = SystemLanguage.English;
+
+		public string itemName;
+		[TextArea(5, 5)]
+		public string itemDescription;
+
+		private string Tittle => language.ToString() + " " + (!(string.IsNullOrEmpty(itemName) || string.IsNullOrWhiteSpace(itemName))) + " " + (!(string.IsNullOrEmpty(itemDescription) || string.IsNullOrWhiteSpace(itemDescription)));
+	}
 }
 [InlineProperty]
 [System.Serializable]

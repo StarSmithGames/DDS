@@ -1,4 +1,4 @@
-public class Chest : ContainerObject
+public class Chest : ContainerModel
 {
 
 }

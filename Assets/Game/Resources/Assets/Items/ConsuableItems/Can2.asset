@@ -13,19 +13,22 @@ MonoBehaviour:
   m_Name: Can2
   m_EditorClassIdentifier: 
   itemSprite: {fileID: 21300000, guid: 149f584c987713a4c9d94e559e93fe8b, type: 3}
-  itemName: Can "TonFa"
-  itemDescription: "Bright, bubbly and popular, TonFa is the soft drink that intensifies\r
-    fun."
+  localizations:
+  - language: 10
+    itemName: Can "TonFa"
+    itemDescription: "Bright, bubbly and popular, TonFa is the soft drink that intensifies\r
+      fun."
+  itemName: 
+  itemDescription: 
   interact:
-    interactableType: 2
+    interactionType: 2
     holdDuration: 0
   prefab: {fileID: 3695115960646697984, guid: 0db04be1228758d4f98414941244858a, type: 3}
   prefabPossitionOffsetView: {x: 0, y: 0, z: 0}
   prefabRotationOffsetView: {x: 0, y: 0, z: 0, w: 0}
+  isStackable: 0
   isInfinityStack: 0
   stackSize: 1
-  isStackable: 0
-  stackInnerSize: 1
   isInfinityWeight: 0
   isFloatingWeight: 1
   baseWeight: 0.1

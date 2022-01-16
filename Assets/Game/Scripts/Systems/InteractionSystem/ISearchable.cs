@@ -1,4 +1,4 @@
 public interface ISearchable
 {
-	bool IsInspected();
+	bool IsSearched { get; }
 }

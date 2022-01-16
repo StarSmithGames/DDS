@@ -148,7 +148,7 @@ public class InteractionHandler : IInitializable, IDisposable
 			{
 				if (interact is IContainer container)
 				{
-					var interactData = container.IsInspected() ?
+					var interactData = container.IsSearched ?
 														container.ContainerData.interact :
 														container.ContainerData.inspect;
 

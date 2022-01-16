@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 369749c24949a77449cb3957038a1163, type: 3}
   m_Name: Chest
   m_EditorClassIdentifier: 
+  localizations:
+  - language: 10
+    containerName: Container
   interact:
     interactionType: 4
     holdDuration: 0.5

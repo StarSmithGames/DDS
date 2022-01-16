@@ -1,4 +1,6 @@
 using Game.Systems.InventorySystem.Signals;
+using Game.Systems.LocalizationSystem;
+using Game.Systems.LocalizationSystem.Signals;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,11 +20,13 @@ public class UIItemViewer : MonoBehaviour
     private Item item;
 
     private SignalBus signalBus;
+    private LocalizationSystem localization;
 
     [Inject]
-    private void Construct(SignalBus signalBus)
+    private void Construct(SignalBus signalBus, LocalizationSystem localization)
     {
         this.signalBus = signalBus;
+        this.localization = localization;
 
         useButton.onClick.AddListener(OnUseClicked);
         actionsButton.onClick.AddListener(OnActionsClicked);
@@ -45,11 +49,13 @@ public class UIItemViewer : MonoBehaviour
 
     private void UpdateView()
     {
+        var texts = item?.ItemData.GetLocalization(localization.CurrentLanguage) ?? null;
+
         itemName.enabled = item != null;
-        itemName.text = item?.ItemData.itemName ?? "";
+        itemName.text = texts?.itemName ?? "";
 
         itemDescription.enabled = item != null;
-        itemDescription.text = item?.ItemData.itemDescription ?? "";
+        itemDescription.text = texts?.itemDescription ?? "";
 
         itemIcon.enabled = item != null;
         itemIcon.sprite = item?.ItemData.itemSprite ?? null;

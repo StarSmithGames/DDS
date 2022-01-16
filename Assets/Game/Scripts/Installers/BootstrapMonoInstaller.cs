@@ -11,11 +11,7 @@ public class BootstrapMonoInstaller : MonoInstaller
 		SignalBusInstaller.Install(Container);
 
 		Container.Bind<AsyncManager>().FromNewComponentOnNewGameObject().AsSingle();
-
-		Container.DeclareSignal<SignalInputClicked>();
-		Container.DeclareSignal<SignalInputPressed>();
-		Container.DeclareSignal<SignalInputUnPressed>();
-		Container.BindInterfacesAndSelfTo<InputManager>().AsSingle();
+		BindInputManager();
 
 		Container.Bind<GlobalSettings>().FromInstance(inputData);
 
@@ -31,5 +27,13 @@ public class BootstrapMonoInstaller : MonoInstaller
 		{
 			Container.Bind<IInput>().To<KeyboardInput>().AsSingle();
 		}
+	}
+
+	private void BindInputManager()
+	{
+		Container.DeclareSignal<SignalInputClicked>();
+		Container.DeclareSignal<SignalInputPressed>();
+		Container.DeclareSignal<SignalInputUnPressed>();
+		Container.BindInterfacesAndSelfTo<InputManager>().AsSingle();
 	}
 }
