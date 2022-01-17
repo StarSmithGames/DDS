@@ -15,21 +15,29 @@ public class UIManager : MonoBehaviour
     public UIControls Controls => controls;
     [SerializeField] private UIControls controls;
 
+    public UIStatus Status => status;
+    [SerializeField] private UIStatus status;
+
     public UIWindowsManager WindowsManager => windowsManager;
     [SerializeField] private UIWindowsManager windowsManager;
 
     private SignalBus signalBus;
 
     [Inject]
-    private void Construct(SignalBus signalBus)
+    private void Construct(SignalBus signalBus, GlobalSettings globalSettings)
 	{
         this.signalBus = signalBus;
 
         Controls.ButtonA.Hide();
 
-        Targets.HideTarget();
-        Targets.HideFiller();
+        Targets.HideAll();
 
         WindowsManager.HideAllWindows();
+
+        if(globalSettings.projectSettings.platform == PlatformType.Desktop)
+		{
+            menuButton.gameObject.SetActive(false);
+            viewButton.gameObject.SetActive(false);
+        }
     }
 }

@@ -4,8 +4,16 @@ using UnityEngine.UI;
 public class UITargets : MonoBehaviour
 {
     [SerializeField] private Image target;
-    [SerializeField] private Image filler;
+    public UITargetFiller Filler => filler;
+    [SerializeField] private UITargetFiller filler;
     [SerializeField] private UITargetInformation targetInformation;
+
+    public void HideAll()
+	{
+        HideTarget();
+        Filler.HideFiller();
+        HideTargetInformation();
+    }
 
     public void ShowTarget()
     {
@@ -25,20 +33,4 @@ public class UITargets : MonoBehaviour
 	{
         targetInformation.gameObject.SetActive(false);
     }
-
-    public void ShowFiller()
-    {
-        SetFiller(0);
-        filler.enabled = true;
-    }
-    public void SetFiller(float value)
-    {
-        filler.fillAmount = value;
-    }
-    public void HideFiller()
-    {
-        filler.enabled = false;
-    }
-
-    
 }

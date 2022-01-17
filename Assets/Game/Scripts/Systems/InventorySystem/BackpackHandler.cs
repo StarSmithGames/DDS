@@ -35,7 +35,7 @@ public class BackpackHandler : IInitializable, IDisposable
 	public void Initialize()
 	{
 		playerInventoryWindow = uiManager.WindowsManager.GetAs<UIPlayerInventoryWindow>();
-		playerInventoryWindow.Inventory.SetInventory(player.Inventory);
+		playerInventoryWindow.Inventory.SetInventory(player.Status.Inventory);
 		playerInventoryWindow.ItemViewer.SetItem(null);
 
 		signalBus?.Subscribe<SignalUIInventorySlotClick>(OnSlotClicked);
@@ -106,7 +106,7 @@ public class BackpackHandler : IInitializable, IDisposable
 
 	private void OnItemDroped(SignalUIInventoryDrop signal)
 	{
-		transactor.Transact(signal.item, player.Inventory, null);
+		transactor.Transact(signal.item, player.Status.Inventory, null);
 	}
 
 	private void OnWindowsBack(SignalUIWindowsBack signal)
@@ -115,12 +115,17 @@ public class BackpackHandler : IInitializable, IDisposable
 		playerInventoryWindow.Container.SetInventory(null);
 		player.UnFreeze();
 		player.EnableVision();
+		uiManager.Controls.EnableButtons();
 	}
 
 	private void OnInputClicked(SignalInputClicked signal)
 	{
 		if(signal.input == InputType.Inventory)
 		{
+			player.Freeze();
+			player.DisableVision();
+			uiManager.Controls.DisableButtons();
+
 			playerInventoryWindow.ItemViewer.SetItem(null);
 			ReOrganizeSpace(InventoryType.InventoryWithViewer);
 			uiManager.WindowsManager.Show<UIPlayerInventoryWindow>();

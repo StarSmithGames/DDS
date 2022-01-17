@@ -29,6 +29,8 @@ public class CameraVision : MonoBehaviour
 				currentEntity?.EndObserve();
 				currentEntity = value;
 				currentEntity?.StartObserve();
+
+				CheckEntity();
 			}
 			else
 			{
@@ -64,7 +66,10 @@ public class CameraVision : MonoBehaviour
 	{
 		while (true)
 		{
-			if (isVisionPaused) yield return null;
+			while (isVisionPaused)
+			{
+				yield return null;
+			}
 
 			RaycastHit hit;
 			Ray ray = new Ray(camera.transform.position, camera.transform.forward);
@@ -116,8 +121,6 @@ public class CameraVision : MonoBehaviour
 				uiManager.Targets.HideTarget();
 			}
 
-			CheckEntity();
-
 			yield return visionSeconds;
 		}
 
@@ -126,6 +129,8 @@ public class CameraVision : MonoBehaviour
 	public void PauseVision()
 	{
 		isVisionPaused = true;
+		CurrentEntity = null;
+		uiManager.Targets.HideTarget();
 	}
 	public void UnPauseVision()
 	{

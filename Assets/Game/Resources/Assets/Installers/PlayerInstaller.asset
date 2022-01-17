@@ -13,6 +13,13 @@ MonoBehaviour:
   m_Name: PlayerInstaller
   m_EditorClassIdentifier: 
   settings:
+    vitals:
+      condtion: 100
+      stamina: 100
+      warmth: 100
+      fatigue: 100
+      hungred: 2500
+      thrist: 100
     inventory:
       useRandomItems: 0
       shuffleList: 1

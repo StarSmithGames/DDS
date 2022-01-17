@@ -156,7 +156,7 @@ public class InspectorHandler : IInitializable, IDisposable, ITickable
 		{
 			uiManager.WindowsManager.Hide<UIItemInspectorWindow>();
 
-			player.Inventory.Add(currentItem);
+			player.Status.Inventory.Add(currentItem);
 			GameObject.Destroy(currentModel.gameObject);
 
 			player.UnFreeze();
@@ -169,7 +169,7 @@ public class InspectorHandler : IInitializable, IDisposable, ITickable
 			{
 				uiManager.WindowsManager.Hide<UIItemInspectorWindow>();
 
-				player.Inventory.Add(currentItem);
+				player.Status.Inventory.Add(currentItem);
 				currentInventory.Remove(currentItem);
 				GameObject.Destroy(currentModel.gameObject);
 
@@ -179,7 +179,7 @@ public class InspectorHandler : IInitializable, IDisposable, ITickable
 			}
 			else
 			{
-				player.Inventory.Add(currentItem);
+				player.Status.Inventory.Add(currentItem);
 				currentInventory.Remove(currentItem);
 				GameObject.Destroy(currentModel.gameObject);
 			}

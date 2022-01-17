@@ -9,20 +9,19 @@ namespace Game.Entities
 		[SerializeField] private PlayerController playerController;
 		[SerializeField] private CameraController cameraController;
 		[SerializeField] private CameraVision cameraVision;
-
 		public Transform ItemViewPoint => itemViewPoint;
 		[SerializeField] private Transform itemViewPoint;
 
-		public IInventory Inventory { get; private set; }
+		public IStatus Status { get; private set; }
 
 		private UIManager uiManager;
 
 		[Inject]
-		private void Construct(UIManager uiManager, PlayerSettings settings)
+		private void Construct(UIManager uiManager, IStatus status)
 		{
 			this.uiManager = uiManager;
 
-			Inventory = new Inventory(settings.inventory);
+			Status = status;
 		}
 
 		public void Freeze()
@@ -46,17 +45,18 @@ namespace Game.Entities
 
 		public void EnableVision()
 		{
-			cameraVision.PauseVision();
+			cameraVision.UnPauseVision();
 		}
 
 		public void DisableVision()
 		{
-			cameraVision.UnPauseVision();
+			cameraVision.PauseVision();
 		}
 	}
 	[System.Serializable]
 	public class PlayerSettings
 	{
+		public PlayerVitalsSettings vitals;
 		public InventorySettings inventory;
 	}
 }

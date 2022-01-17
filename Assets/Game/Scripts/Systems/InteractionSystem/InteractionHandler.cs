@@ -53,7 +53,7 @@ public class InteractionHandler : IInitializable, IDisposable
 
 	public void Show()
 	{
-		if(globalSettings.projectSettings.platform == PlatformType.Mobile)
+		if (globalSettings.projectSettings.platform == PlatformType.Mobile)
 		{
 			uiManager.Controls.ButtonA.Show();
 		}
@@ -71,7 +71,7 @@ public class InteractionHandler : IInitializable, IDisposable
 
 	private IEnumerator Holding(float duration)
 	{
-		uiManager.Targets.ShowFiller();
+		uiManager.Targets.Filler.ShowFiller();
 
 		float t = 0;
 
@@ -93,7 +93,7 @@ public class InteractionHandler : IInitializable, IDisposable
 				}
 			}
 
-			uiManager.Targets.SetFiller(t / duration);
+			uiManager.Targets.Filler.SetFiller(t / duration);
 
 			if (t > duration)
 			{
@@ -117,7 +117,7 @@ public class InteractionHandler : IInitializable, IDisposable
 			asyncManager.StopCoroutine(holdingCoroutine);
 			holdingCoroutine = null;
 
-			uiManager.Targets.HideFiller();
+			uiManager.Targets.Filler.HideFiller();
 		}
 	}
 
