@@ -5,7 +5,8 @@ Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: SkyboxMaterial
   m_Shader: {fileID: 4800000, guid: b7272137331ff45798477dc7643f8279, type: 3}
   m_ShaderKeywords: CLOUDS GRADIENT_BACKGROUND MOON_ALPHA_BLEND MOON_CUSTOM_TEXTURE
@@ -134,3 +135,4 @@ Material:
     - _SunColor: {r: 1, g: 1, b: 1, a: 1}
     - _SunPosition: {r: 0.8440528, g: 0.5362601, b: 0, a: 0}
     - _SunSpriteDimensions: {r: 8, g: 8, b: 0, a: 0}
+  m_BuildTextureStacks: []

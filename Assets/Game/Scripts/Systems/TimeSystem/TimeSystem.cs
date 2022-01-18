@@ -120,7 +120,11 @@ namespace Game.Systems.TimeSystem
                 if(timeEvents[i].triggetTime == globalTime)
 				{
                     timeEvents[i].onTrigger?.Invoke();
-                    RemoveEvent(timeEvents[i]);
+
+					if (!timeEvents[i].isInfinity)
+					{
+                        RemoveEvent(timeEvents[i]);
+                    }
                 }
 			}
 		}
@@ -282,6 +286,7 @@ namespace Game.Systems.TimeSystem
 	{
         public UnityAction onTrigger;
         public Time triggetTime;
+        public bool isInfinity = false;
     }
 
     public enum TimeState

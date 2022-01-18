@@ -5,7 +5,8 @@ Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_Name: SkyboxMaterial
   m_Shader: {fileID: 4800000, guid: b7272137331ff45798477dc7643f8279, type: 3}
   m_ShaderKeywords: GRADIENT_BACKGROUND STAR_LAYER_1 STAR_LAYER_2 STAR_LAYER_3 STAR_LAYER_3_CUSTOM_TEXTURE
@@ -132,3 +133,4 @@ Material:
     - _SunColor: {r: 0.66, g: 0.65, b: 0.55, a: 1}
     - _SunPosition: {r: 0, g: 0, b: 0, a: 0}
     - _SunSpriteDimensions: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []

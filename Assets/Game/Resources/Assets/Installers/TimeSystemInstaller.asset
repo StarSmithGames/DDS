@@ -31,7 +31,7 @@ MonoBehaviour:
     frequenceCycle:
       days: 0
       hours: 0
-      minutes: 0
+      minutes: 5
       seconds: 0
       currentState: 4
-      totalSeconds: 0
+      totalSeconds: 300

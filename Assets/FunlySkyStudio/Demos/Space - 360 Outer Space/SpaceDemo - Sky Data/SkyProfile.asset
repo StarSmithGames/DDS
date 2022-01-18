@@ -4,7 +4,8 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -1509,10 +1510,7 @@ MonoBehaviour:
     m_Values: 010000000001010100000000000000000000000000000100010100
   lightningArtSet: {fileID: 11400000, guid: fcd26c6d0379bd1498f9fbfeaf211979, type: 2}
   rainSplashArtSet: {fileID: 11400000, guid: bc520d172250ae746bd6c81b2ca80510, type: 2}
-  starLayer1DataTexture: {fileID: 2800000, guid: e5607996fe318504eba14127aa890916,
-    type: 2}
-  starLayer2DataTexture: {fileID: 2800000, guid: ec424810a62dca44d97a1b34c6246822,
-    type: 2}
-  starLayer3DataTexture: {fileID: 2800000, guid: 8236a431d1f3c5643b20f4c97186d404,
-    type: 2}
+  starLayer1DataTexture: {fileID: 2800000, guid: e5607996fe318504eba14127aa890916, type: 2}
+  starLayer2DataTexture: {fileID: 2800000, guid: ec424810a62dca44d97a1b34c6246822, type: 2}
+  starLayer3DataTexture: {fileID: 2800000, guid: 8236a431d1f3c5643b20f4c97186d404, type: 2}
   m_ProfileVersion: 1
