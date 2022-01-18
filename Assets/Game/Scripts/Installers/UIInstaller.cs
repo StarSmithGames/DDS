@@ -10,7 +10,7 @@ using Zenject;
 namespace Game.Installers
 {
 	[CreateAssetMenu(fileName = "UIInstaller", menuName = "Installers/UIInstaller")]
-	public class UIScriptableInstaller : ScriptableObjectInstaller
+	public class UIInstaller : ScriptableObjectInstaller<UIInstaller>
 	{
 		[SerializeField] private UIInventorySlot slotPrefab;
 		[SerializeField] private int initialSlotFactorySize = 32;//5 * 4 + 3 * 4

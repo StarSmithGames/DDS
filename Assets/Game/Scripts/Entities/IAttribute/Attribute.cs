@@ -1,17 +1,15 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Events;
 
 public abstract class Attribute : IAttribute
 {
-	public event UnityAction<string> onValueChanged;
+	public event UnityAction onAttributeChanged;
 
 	public override abstract string ToString();
 
 	protected virtual void ValueChanged()
 	{
-		onValueChanged?.Invoke(ToString());
+		onAttributeChanged?.Invoke();
 	}
 }
 public abstract class AttributeModifiable : Attribute, IModifiable
@@ -53,4 +51,3 @@ public abstract class AttributeModifiable : Attribute, IModifiable
 		}
 	}
 }
-

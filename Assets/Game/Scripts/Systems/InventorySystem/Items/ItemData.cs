@@ -4,8 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Items", fileName = "ItemData")]
-public class ItemData : ScriptableObject
+public abstract class ItemData : ScriptableObject
 {
 	[PreviewField]
 	public Sprite itemSprite;

@@ -3,7 +3,7 @@ using UnityEngine.Events;
 
 public abstract class Stat : AttributeModifiable, IStat
 {
-	public event UnityAction<float> onCurrentValueChanged;
+	public event UnityAction onStatChanged;
 
 	protected float currentValue;
 	/// <summary>
@@ -48,7 +48,7 @@ public abstract class Stat : AttributeModifiable, IStat
 	{
 		base.ValueChanged();
 
-		onCurrentValueChanged?.Invoke(currentValue);
+		onStatChanged?.Invoke();
 	}
 }
 

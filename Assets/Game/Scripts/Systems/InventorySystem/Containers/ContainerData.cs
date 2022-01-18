@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ContainerData", menuName = "ContainerData")]
+[CreateAssetMenu(fileName = "ContainerData", menuName = "Game/Inventory/Containers/ContainerData")]
 public class ContainerData : ScriptableObject
 {
     [ListDrawerSettings(ListElementLabelName = "Tittle")]

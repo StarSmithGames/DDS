@@ -1,9 +1,7 @@
 using UnityEngine.Events;
 
-public interface IStat
+public interface IStat  : IAttribute, IModifiable
 {
-	event UnityAction<float> onCurrentValueChanged;
-
     float CurrentValue { get; set; }
 
     float MaxBaseValue { get; }

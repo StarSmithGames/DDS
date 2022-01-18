@@ -1,10 +1,13 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 using Zenject;
 
 public class UIManager : MonoBehaviour
 {
+    public UnityAction OnDrawGUI;//REMOVE
+
     public Button MenuButton => menuButton;
     [SerializeField] private Button menuButton;
     public Button ViewButton => viewButton;
@@ -40,4 +43,9 @@ public class UIManager : MonoBehaviour
             viewButton.gameObject.SetActive(false);
         }
     }
+
+	private void OnGUI()
+	{
+        OnDrawGUI?.Invoke();
+	}
 }

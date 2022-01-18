@@ -24,6 +24,11 @@ namespace Game.Entities
 			Status = status;
 		}
 
+		private void Update()
+		{
+			Status.Tick();
+		}
+
 		public void Freeze()
 		{
 			playerController.IsJumpLocked = true;
@@ -56,7 +61,7 @@ namespace Game.Entities
 	[System.Serializable]
 	public class PlayerSettings
 	{
-		public PlayerVitalsSettings vitals;
+		public StatsSettings stats;
 		public InventorySettings inventory;
 	}
 }

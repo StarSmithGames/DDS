@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIAttribute : MonoBehaviour
+public class UIFillerAttribute : MonoBehaviour
 {
 	[SerializeField] private GameObject content;
 	[SerializeField] private Image filler;
@@ -9,6 +9,17 @@ public class UIAttribute : MonoBehaviour
 	[SerializeField] private Image fillerModifier;
 	[SerializeField] private Color colorIncrease;
 	[SerializeField] private Color colorDecrease;
+
+	private IStat stat;
+
+	public void SetAttribute(IStat stat)
+	{
+		this.stat = stat;
+
+		stat.onAttributeChanged += UpdateUI;
+
+		UpdateUI();
+	}
 
 	public void SetFillAmount(float value)
 	{
@@ -28,5 +39,17 @@ public class UIAttribute : MonoBehaviour
 
 		fillerModifier.gameObject.SetActive(value != 0);
 		fillerModifier.fillAmount = Mathf.Abs(value);
+	}
+
+	private void UpdateUI()
+	{
+		if(stat.ModifyValue != 0)
+		{
+			SetModifierFillAmount(0);//difficult percent
+		}
+		else
+		{
+			SetFillAmount(stat.PercentValue);
+		}
 	}
 }

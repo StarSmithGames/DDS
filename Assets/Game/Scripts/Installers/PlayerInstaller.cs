@@ -7,7 +7,7 @@ using Zenject;
 namespace Game.Installers
 {
 	[CreateAssetMenu(fileName = "PlayerInstaller", menuName = "Installers/PlayerInstaller")]
-	public class PlayerScriptableInstaller : ScriptableObjectInstaller
+	public class PlayerInstaller : ScriptableObjectInstaller<PlayerInstaller>
 	{
 		[SerializeField] private PlayerSettings settings;
 
@@ -18,17 +18,21 @@ namespace Game.Installers
 			Player p = FindObjectOfType<Player>();
 			Camera c = p.GetComponentInChildren<Camera>();
 
-			Container.Bind<InventorySettings>().FromInstance(settings.inventory).WhenInjectedInto<Inventory>();
-			Container.Bind<IInventory>().To<Inventory>().WhenInjectedInto<PlayerStatus>();
-
-			Container.Bind<PlayerVitalsSettings>().FromInstance(settings.vitals).WhenInjectedInto<PlayerVitals>();
-			Container.Bind<IVitals>().To<PlayerVitals>().WhenInjectedInto<PlayerStatus>();
-
-			Container.Bind<IStatus>().To<PlayerStatus>().WhenInjectedInto<Player>();
-
+			BindPlayerStatus();
 
 			Container.Bind<Camera>().FromInstance(c).AsSingle();
 			Container.Bind<Player>().FromInstance(p).AsSingle();
+		}
+
+		private void BindPlayerStatus()
+		{
+			Container.Bind<InventorySettings>().FromInstance(settings.inventory).WhenInjectedInto<Inventory>();
+			Container.Bind<IInventory>().To<Inventory>().WhenInjectedInto<PlayerStatus>();
+
+			Container.Bind<StatsSettings>().FromInstance(settings.stats).WhenInjectedInto<Stats>();
+			Container.Bind<IStats>().To<Stats>().WhenInjectedInto<PlayerStatus>();
+
+			Container.Bind<IStatus>().To<PlayerStatus>().WhenInjectedInto<Player>();
 		}
 	}
 }
