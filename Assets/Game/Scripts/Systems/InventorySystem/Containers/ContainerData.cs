@@ -11,6 +11,8 @@ public class ContainerData : ScriptableObject
     [InfoBox("@LocalizationInfo", InfoMessageType.Warning)]
     public List<Localization> localizations = new List<Localization>();
 
+    public bool useBasicInteraction = true;
+    [HideIf("useBasicInteraction")]
     public InteractionSettings interact;
     public InteractionSettings inspect;
     [Space]

@@ -24,11 +24,6 @@ namespace Game.Entities
 			Status = status;
 		}
 
-		private void Update()
-		{
-			Status.Tick();
-		}
-
 		public void Freeze()
 		{
 			playerController.IsJumpLocked = true;

@@ -15,6 +15,7 @@ MonoBehaviour:
   localizations:
   - language: 10
     containerName: Container
+  useBasicInteraction: 1
   interact:
     interactionType: 4
     holdDuration: 0.5

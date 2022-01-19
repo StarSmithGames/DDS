@@ -32,6 +32,9 @@ MonoBehaviour:
       invertHorizontalInput: 0
       invertVerticalInput: 1
       inputMultiplier: 0.016
+  basicInteraction:
+    interactionType: 4
+    holdDuration: 0.5
   cameraSettings:
     upperVerticalLimit: 80
     lowerVerticalLimit: 80
@@ -70,3 +73,5 @@ MonoBehaviour:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
+  skySettings:
+    skyUpdate: 0.1

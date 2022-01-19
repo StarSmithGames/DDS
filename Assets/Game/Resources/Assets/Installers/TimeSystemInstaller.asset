@@ -13,25 +13,19 @@ MonoBehaviour:
   m_Name: TimeSystemInstaller
   m_EditorClassIdentifier: 
   settings:
-    timeScale: 12
+    timeScale: 100
+    useRandom: 0
     startTime:
       days: 0
       hours: 0
       minutes: 0
       seconds: 0
-      currentState: 0
+      currentState: 4
       totalSeconds: 0
     freaquanceTime:
       days: 0
       hours: 0
       minutes: 0
-      seconds: 59
+      seconds: 1
       currentState: 4
-      totalSeconds: 59
-    frequenceCycle:
-      days: 0
-      hours: 0
-      minutes: 5
-      seconds: 0
-      currentState: 4
-      totalSeconds: 300
+      totalSeconds: 1

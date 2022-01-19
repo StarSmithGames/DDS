@@ -15,18 +15,7 @@ namespace Game.Systems.TimeSystem
 		{
 			Container.BindInstance(settings).WhenInjectedInto<TimeSystem>();
 
-			Container.Bind<TimeOfDayController>().FromInstance(FindObjectOfType<TimeOfDayController>()).AsSingle();
 			Container.BindInterfacesAndSelfTo<TimeSystem>().AsSingle();
-
-			/*TimeSystem timeSystem = Container.Resolve<TimeSystem>();
-
-			timeSystem.AddEvent(
-				new TimeEvent()
-				{
-					triggetTime = settings.frequenceCycle,
-					isInfinity = true,
-					onTrigger = Container.Resolve<TimeOfDayController>().UpdateSkyForCurrentTime
-				});*/
 		}
 	}
 }

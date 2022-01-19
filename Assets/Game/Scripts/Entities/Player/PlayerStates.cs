@@ -1,12 +1,9 @@
-using UnityEngine;
-using UnityEngine.Events;
+using Zenject;
 
 [System.Serializable]
 public class PlayerStates
 {
-	public UnityAction<State> onStateChanged;
-
-	[SerializeField] private State currentState = State.Standing;
+	private State currentState = State.Standing;
 	public State CurrentState
 	{
 		get => currentState;
@@ -15,13 +12,21 @@ public class PlayerStates
 			if(currentState != value)
 			{
 				currentState = value;
-				onStateChanged?.Invoke(currentState);
+
+				signalBus?.Fire(new SignalPlayerStateChanged() { state = currentState });
 			}
 			else
 			{
 
 			}
 		}
+	}
+
+	private SignalBus signalBus;
+
+	public PlayerStates(SignalBus signalBus)
+	{
+		this.signalBus = signalBus;
 	}
 
 	public enum State

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d7c8b30e8bf6a54d8ea9b3add723603, type: 3}
+  m_Name: BuildingSystemInstaller
+  m_EditorClassIdentifier: 
+  settings:
+    rayDistance: 5
+    anglePlacement: 30
+    groundLayers:
+      serializedVersion: 2
+      m_Bits: 8
+    accept: {fileID: 2100000, guid: 6c2eb83f509345e41b0252727931c2ea, type: 2}
+    reject: {fileID: 2100000, guid: b1ecf52d5d857bf43b419d7d0bf40328, type: 2}
+    model: {fileID: 5652316711907895074, guid: 64e3889b2095df84cb5eda9013c99508, type: 3}

@@ -8,7 +8,7 @@ using Zenject;
 public class InteractionHandler : IInitializable, IDisposable
 {
 	private bool isPressed = false;
-	private IInteractable interact = null;
+	private IInteractable interactable = null;
 
 	public bool IsHoldingProcess => holdingCoroutine != null;
 	private Coroutine holdingCoroutine = null;
@@ -46,7 +46,7 @@ public class InteractionHandler : IInitializable, IDisposable
 
 	public InteractionHandler SetTarget(IInteractable interact)
 	{
-		this.interact = interact;
+		this.interactable = interact;
 
 		return this;
 	}
@@ -105,7 +105,7 @@ public class InteractionHandler : IInitializable, IDisposable
 
 		if (isPressed)
 		{
-			interact.Interact();
+			interactable.Interact();
 		}
 
 		HoldingStop();
@@ -121,18 +121,35 @@ public class InteractionHandler : IInitializable, IDisposable
 		}
 	}
 
+	private InteractionSettings GetSettingsFromInteractable(IInteractable interactable)
+	{
+		if (this.interactable is IContainer container)
+		{
+			if (container.IsSearched)
+				return container.ContainerData.useBasicInteraction ? globalSettings.basicInteraction : container.ContainerData.interact;
+			else
+				return container.ContainerData.inspect;
+		}
+		else if (this.interactable is IConstruction construction)
+		{
+			return construction.ConstructionData.useBasicInteraction ? globalSettings.basicInteraction : construction.ConstructionData.interact;
+		}
+
+		return null;
+	}
+
 	private void OnInputClicked(SignalInputClicked signal)
 	{
 		if(signal.input == InputType.Interaction)
 		{
-			if (interact != null)
+			if (interactable != null)
 			{
-				if (interact is ItemModel item)
+				if (interactable is ItemModel item)
 				{
 					var interactData = item.Item.ItemData.interact;
 					if (interactData.interactionType == InteractionType.Click)
 					{
-						interact.Interact();
+						interactable.Interact();
 					}
 				}
 			}
@@ -144,14 +161,12 @@ public class InteractionHandler : IInitializable, IDisposable
 		{
 			isPressed = true;
 
-			if (interact != null)
+			if (interactable != null)
 			{
-				if (interact is IContainer container)
-				{
-					var interactData = container.IsSearched ?
-														container.ContainerData.interact :
-														container.ContainerData.inspect;
+				InteractionSettings interactData = GetSettingsFromInteractable(interactable);
 
+				if(interactData != null)
+				{
 					if (interactData.interactionType == InteractionType.Hold)
 					{
 						if (!IsHoldingProcess)

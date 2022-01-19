@@ -168,7 +168,7 @@ namespace Funly.SkyStudio
       // Link things together.
       tc.skyProfile = profile;
       tc.skyProfile.skyboxMaterial = skyboxMaterial;
-      tc.skyTime = .22f;
+      tc.UpdateSkyForCurrentTime(0.22f);
 
       // Configure the profile a bit and setup in the current scene.
       SkyProfileEditor.ApplyKeywordsToMaterial(tc.skyProfile, skyboxMaterial);

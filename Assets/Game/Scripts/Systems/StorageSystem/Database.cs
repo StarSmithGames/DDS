@@ -1,10 +1,7 @@
-using Game.Systems.StorageSystem;
 using Newtonsoft.Json.Linq;
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Game.Systems.StorageSystem
 {
@@ -46,12 +43,7 @@ namespace Game.Systems.StorageSystem
 			Data[key] = value;
 		}
 
-
-		public Dictionary<string, object> GetDictionary()
-		{
-			return Data;
-		}
-
+		public Dictionary<string, object> GetDictionary() => Data;
 
 		public string GetJson()
 		{

@@ -8,6 +8,7 @@ public class GlobalSettings : ScriptableObject
     public ProjectSettings projectSettings;
     [Space]
     public InputSettings input;
+    public InteractionSettings basicInteraction;
     [Space]
     public CameraSettings cameraSettings;
     public VisionSettings visionSettings;
@@ -16,6 +17,8 @@ public class GlobalSettings : ScriptableObject
     public InspectorHandler.Settings inspectorSettings;
     [Tooltip("Используется для ItemViewer")]
     public TransformTransition.Settings transitionSettings;
+    [Space]
+    public SkySettings skySettings;
 }
 [System.Serializable]
 public class ProjectSettings

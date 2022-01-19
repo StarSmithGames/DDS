@@ -1,9 +1,10 @@
+using Funly.SkyStudio;
+
 using Sirenix.OdinInspector;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -15,6 +16,7 @@ namespace Game.Systems.TimeSystem
 {
 	public class TimeSystem : IInitializable, IDisposable
 	{
+        public Time GlobalTime => globalTime;
         private Time globalTime;
         private List<TimeEvent> timeEvents = new List<TimeEvent>();
 
@@ -22,6 +24,8 @@ namespace Game.Systems.TimeSystem
         private Coroutine timeCoroutine = null;
         public bool IsPaused => isPaused;
         private bool isPaused = false;
+
+        public TimeSettings Settings => settings;
 
         private WaitForSeconds seconds;
 
@@ -40,9 +44,8 @@ namespace Game.Systems.TimeSystem
 
             uiManger.OnDrawGUI += OnGUI;
 
-            globalTime = settings.startTime;
+            globalTime = settings.useRandom? settings.random.GetRandomStart() : settings.startTime;
             settings.freaquanceTime.ConvertSeconds();
-            settings.frequenceCycle.ConvertSeconds();
 
             seconds = new WaitForSeconds(1f / settings.timeScale);
         }
@@ -77,7 +80,6 @@ namespace Game.Systems.TimeSystem
                 globalTime.TotalSeconds += settings.freaquanceTime.TotalSeconds;
 
                 TryInvokeEvents();
-
                 yield return seconds;
             }
 
@@ -115,14 +117,12 @@ namespace Game.Systems.TimeSystem
         }
         private void TryInvokeEvents()
 		{
-			for (int i = timeEvents.Count -1 ; i >= 0 ; i--)
+            for (int i = timeEvents.Count -1 ; i >= 0 ; i--)
 			{
-                if(timeEvents[i].triggetTime == globalTime)
+				if (timeEvents[i].TryInvoke(globalTime))
 				{
-                    timeEvents[i].onTrigger?.Invoke();
-
-					if (!timeEvents[i].isInfinity)
-					{
+                    if (!timeEvents[i].isInfinity)
+                    {
                         RemoveEvent(timeEvents[i]);
                     }
                 }
@@ -142,31 +142,84 @@ namespace Game.Systems.TimeSystem
         [Min(0.0f)]
         public float timeScale = 12f;
 
+        public bool useRandom = false;
+
+        [ShowIf("useRandom")]
+        public RandomTimeSettings random;
+
+        [HideIf("useRandom")]
         public Time startTime;
         [Tooltip("Насколько будет менятся время за один тик.")]
         public Time freaquanceTime;
-        public Time frequenceCycle;
     }
+    [System.Serializable]
+    public class RandomTimeSettings
+	{
+        public Time GetRandomStart()
+		{
+            Time time = new Time();
+            time.Seconds = UnityEngine.Random.Range(0, 60);
+            time.Minutes = UnityEngine.Random.Range(0, 60);
+            time.Hours = UnityEngine.Random.Range(0, 23);
+            return time;
+		}
+	}
 
     [System.Serializable]
     public struct Time
     {
+        public int Days
+		{
+            get => days;
+			set
+			{
+                days = value;
+                ConvertSeconds();
+            }
+		}
         [OnValueChanged("ConvertSeconds")]
         [SuffixLabel("d", true)]
         [Min(0), MaxValue(24500)]
-        public int days;
+        [SerializeField] private int days;
+        public int Hours
+		{
+            get => days;
+			set
+			{
+                days = value;
+                ConvertSeconds();
+            }
+		}
         [OnValueChanged("ConvertSeconds")]
         [SuffixLabel("h", true)]
         [Range(0, 24)]
-        public int hours;
+        [SerializeField] private int hours;
+        public int Minutes
+		{
+            get => minutes;
+			set
+			{
+                minutes = value;
+                ConvertSeconds();
+            }
+		}
         [OnValueChanged("ConvertSeconds")]
         [SuffixLabel("m", true)]
         [Range(0, 60)]
-        public int minutes;
+        [SerializeField] private int minutes;
+        public int Seconds
+		{
+            get => seconds;
+			set
+			{
+                seconds = value;
+                ConvertSeconds();//может быть не очень
+            }
+		}
         [OnValueChanged("ConvertSeconds")]
         [SuffixLabel("s", true)]
         [Range(0, 60)]
-        public int seconds;
+        [SerializeField] private int seconds;
 
         [Space]
         [ReadOnly] [SerializeField] private TimeState currentState;
@@ -192,6 +245,9 @@ namespace Game.Systems.TimeSystem
         }
 
         [ReadOnly] [SerializeField] private float totalSeconds;//max 2147483647 ~ 24855 дней
+        /// <summary>
+        /// Пепед тем как использовать надо убедится что выполнен ConvertSeconds()
+        /// </summary>
         public float TotalSeconds
         {
             get => totalSeconds;
@@ -228,6 +284,8 @@ namespace Game.Systems.TimeSystem
 
         public static bool operator >(Time time0, Time time1) => time0.totalSeconds > time1.totalSeconds;
         public static bool operator <(Time time0, Time time1) => time0.totalSeconds < time1.totalSeconds;
+
+        public static int operator %(Time time0, Time time1) => (int)time0.TotalSeconds % (int)time1.TotalSeconds;
 
         public override string ToString()
         {
@@ -285,8 +343,24 @@ namespace Game.Systems.TimeSystem
     public class TimeEvent
 	{
         public UnityAction onTrigger;
-        public Time triggetTime;
+        public Time triggerTime;
         public bool isInfinity = false;
+
+        public bool TryInvoke(Time global)
+		{
+            if(triggerTime.TotalSeconds == 1)
+			{
+                onTrigger?.Invoke();
+                return true;
+            }
+            else if (global % triggerTime == 0)
+			{
+                onTrigger?.Invoke();
+                return true;
+            }
+
+            return false;
+        }
     }
 
     public enum TimeState

@@ -121,6 +121,7 @@ public class InspectorHandler : IInitializable, IDisposable, ITickable
 			yield return new WaitWhile(() => isInspection);
 
 			currentItem = items[i];
+			Debug.LogWarning("REPLACE Instantiate");
 			currentModel = GameObject.Instantiate(items[i].ItemData.prefab);
 			currentModel.Enable(false);
 			viewer.SetItem(currentModel.transform).In();

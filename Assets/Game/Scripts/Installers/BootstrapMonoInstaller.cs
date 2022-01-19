@@ -1,3 +1,5 @@
+using Funly.SkyStudio;
+
 using UnityEngine;
 
 using Zenject;
@@ -11,6 +13,10 @@ public class BootstrapMonoInstaller : MonoInstaller
 		SignalBusInstaller.Install(Container);
 
 		Container.Bind<AsyncManager>().FromNewComponentOnNewGameObject().AsSingle();
+
+		Container.Bind<TimeOfDayController>().FromInstance(FindObjectOfType<TimeOfDayController>()).AsSingle();
+		Container.BindInterfacesAndSelfTo<SkySystem>().AsSingle();
+
 		BindInputManager();
 
 		Container.Bind<GlobalSettings>().FromInstance(inputData);

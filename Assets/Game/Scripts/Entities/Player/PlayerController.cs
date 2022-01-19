@@ -1,8 +1,12 @@
 using CMF;
 
+using Game.Entities;
+
 using UnityEngine;
 
 using Zenject;
+
+using static PlayerStates;
 
 public class PlayerController : Controller
 {
@@ -12,10 +16,13 @@ public class PlayerController : Controller
 	private bool isJumpLocked = false;
 	public bool IsJumpLocked { get => isJumpLocked; set => isJumpLocked = value; }
 
+	private PlayerStates playerStates;
+
 	[Inject]
-	private void Construct(IInput input)
+	private void Construct(Player player, IInput input)
 	{
 		this.characterInput = input;
+		this.playerStates = (player.Status as PlayerStatus).States;
 	}
 
 	//References to attached components;
@@ -164,6 +171,14 @@ public class PlayerController : Controller
 		//Store velocity for next frame;
 		savedVelocity = _velocity;
 
+		if(_velocity == Vector3.zero)
+		{
+			playerStates.CurrentState = State.Standing;
+		}
+		else
+		{
+			playerStates.CurrentState = State.Walking;
+		}
 
 		//Save controller movement velocity;
 		savedMovementVelocity = CalculateMovementVelocity();

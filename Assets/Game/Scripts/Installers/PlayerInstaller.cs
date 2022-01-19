@@ -26,6 +26,9 @@ namespace Game.Installers
 
 		private void BindPlayerStatus()
 		{
+			Container.DeclareSignal<SignalPlayerStateChanged>();
+			Container.Bind<PlayerStates>().WhenInjectedInto<PlayerStatus>();
+
 			Container.Bind<InventorySettings>().FromInstance(settings.inventory).WhenInjectedInto<Inventory>();
 			Container.Bind<IInventory>().To<Inventory>().WhenInjectedInto<PlayerStatus>();
 
