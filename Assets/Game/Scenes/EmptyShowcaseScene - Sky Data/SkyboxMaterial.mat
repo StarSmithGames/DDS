@@ -123,7 +123,7 @@ Material:
     - _GradientSkyUpperColor: {r: 0.0055147037, g: 0.04094827, b: 0.125, a: 1}
     - _HorizonFogColor: {r: 1, g: 1, b: 1, a: 1}
     - _MoonColor: {r: 0.97794116, g: 0.8656244, b: 0.49616134, a: 1}
-    - _MoonPosition: {r: -0.37006715, g: 0.92900485, b: 0.00059049745, a: 0}
+    - _MoonPosition: {r: -0.6054734, g: 0.795865, b: 0.0009652572, a: 0}
     - _MoonSpriteDimensions: {r: 0, g: 0, b: 0, a: 0}
     - _StarLayer1Color: {r: 1, g: 1, b: 1, a: 1}
     - _StarLayer1SpriteDimensions: {r: 0, g: 0, b: 0, a: 0}
@@ -132,6 +132,6 @@ Material:
     - _StarLayer3Color: {r: 1, g: 1, b: 1, a: 1}
     - _StarLayer3SpriteDimensions: {r: 0, g: 0, b: 0, a: 0}
     - _SunColor: {r: 0.8088235, g: 0.41835698, b: 0, a: 1}
-    - _SunPosition: {r: 0.3837351, g: -0.9234432, b: 0, a: 0}
+    - _SunPosition: {r: 0.6186454, g: -0.78567034, b: 0, a: 0}
     - _SunSpriteDimensions: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []

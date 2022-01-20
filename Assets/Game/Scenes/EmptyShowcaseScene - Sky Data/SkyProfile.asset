@@ -1635,7 +1635,7 @@ MonoBehaviour:
           m_Time: 0
           m_InterpolationCurve: 0
           m_InterpolationDirection: 0
-          texture: {fileID: 0}
+          texture: {fileID: 8900000, guid: 18e502ad4f72f424881608eb316e6091, type: 2}
         m_Name: Sky Cubemap
         m_Id: 5aae2799-beae-4f1e-8a35-240d7de9d385
       - keyframes:
