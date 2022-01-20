@@ -22,7 +22,8 @@ public class InputManager : IInitializable, ITickable, IDisposable
 	{
 		if (globalSettings.projectSettings.platform == PlatformType.Mobile)
 		{
-			uiManager.ViewButton.onClick.AddListener(() => Click(InputType.Inventory));
+			uiManager.BackpackButton.onClick.AddListener(() => Click(InputType.Inventory));
+			//uiManager.BackpackButton.onClick.AddListener(() => Click(InputType.));
 
 			uiManager.Controls.ButtonA.onClick.AddListener(() => { Click(InputType.Interaction); });
 			uiManager.Controls.ButtonA.onPress.AddListener(() => { Press(InputType.Interaction); });
@@ -34,7 +35,7 @@ public class InputManager : IInitializable, ITickable, IDisposable
 	{
 		if (globalSettings.projectSettings.platform == PlatformType.Mobile)
 		{
-			uiManager.ViewButton.onClick.RemoveAllListeners();
+			uiManager.BackpackButton.onClick.RemoveAllListeners();
 
 			uiManager.Controls.ButtonA.onClick.RemoveAllListeners();
 			uiManager.Controls.ButtonA.onPress.RemoveAllListeners();
@@ -47,7 +48,11 @@ public class InputManager : IInitializable, ITickable, IDisposable
 		if(globalSettings.projectSettings.platform == PlatformType.Desktop)
 		{
 			InputKey(inputSettings.keyboard.interactionKey, InputType.Interaction);
+			
 			InputKey(inputSettings.keyboard.inventoryKey, InputType.Inventory);
+
+			InputKey(inputSettings.keyboard.buildingAcceptKey, InputType.BuildingAccept);
+			InputKey(inputSettings.keyboard.buildingRejectKey, InputType.BuildingReject);
 		}
 	}
 

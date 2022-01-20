@@ -42,8 +42,6 @@ namespace Game.Systems.TimeSystem
             this.asyncManager = asyncManager;
             this.settings = settings;
 
-            uiManger.OnDrawGUI += OnGUI;
-
             globalTime = settings.useRandom? settings.random.GetRandomStart() : settings.startTime;
             settings.freaquanceTime.ConvertSeconds();
 

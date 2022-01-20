@@ -163,21 +163,21 @@ public class CameraVision : MonoBehaviour
 	}
 
 
-	private void OnDrawGizmos()
-	{
-		if (Application.isPlaying && settings != null)
-		{
-			Color color = Color.blue;
-			color.a = 0.1f;
-			Gizmos.color = color;
-			Gizmos.DrawSphere(camera.transform.position, settings.maxRayDistance);
+	//private void OnDrawGizmos()
+	//{
+	//	if (Application.isPlaying && settings != null)
+	//	{
+	//		Color color = Color.blue;
+	//		color.a = 0.1f;
+	//		Gizmos.color = color;
+	//		Gizmos.DrawSphere(camera.transform.position, settings.maxRayDistance);
 
-			color = Color.red;
-			color.a = 0.1f;
-			Gizmos.color = color;
-			Gizmos.DrawSphere(lastHitPoint, settings.sphereRadius);
-		}
-	}
+	//		color = Color.red;
+	//		color.a = 0.1f;
+	//		Gizmos.color = color;
+	//		Gizmos.DrawSphere(lastHitPoint, settings.sphereRadius);
+	//	}
+	//}
 }
 
 [System.Serializable]

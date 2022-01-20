@@ -1,8 +1,4 @@
-using UnityEngine;
-
-public interface IConstruction : IEntity, IInteractable
+public interface IConstruction : IEntity, IInteractable, IIntersectable
 {
 	ConstructionData ConstructionData { get; }
-
-	void SetMaterial(Material material);
 }

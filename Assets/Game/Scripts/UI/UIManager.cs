@@ -6,12 +6,12 @@ using Zenject;
 
 public class UIManager : MonoBehaviour
 {
-    public UnityAction OnDrawGUI;//REMOVE
-
     public Button MenuButton => menuButton;
     [SerializeField] private Button menuButton;
-    public Button ViewButton => viewButton;
-    [SerializeField] private Button viewButton;
+    public Button BuildingButton => buildingButton;
+    [SerializeField] private Button buildingButton;
+    public Button BackpackButton => backpackButton;
+    [SerializeField] private Button backpackButton;
     [Space]
     [SerializeField] private UITargets targets;
     public UITargets Targets => targets;
@@ -40,12 +40,10 @@ public class UIManager : MonoBehaviour
         if(globalSettings.projectSettings.platform == PlatformType.Desktop)
 		{
             menuButton.gameObject.SetActive(false);
-            viewButton.gameObject.SetActive(false);
+            buildingButton.gameObject.SetActive(false);
+            backpackButton.gameObject.SetActive(false);
+            Controls.PlayerLook.gameObject.SetActive(false);
+            Controls.PlayerMove.gameObject.SetActive(false);
         }
     }
-
-	private void OnGUI()
-	{
-        OnDrawGUI?.Invoke();
-	}
 }

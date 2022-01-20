@@ -10,7 +10,12 @@ namespace Game.Systems.BuildingSystem
 
 		public override void InstallBindings()
 		{
-			Container.BindInstance(settings).WhenInjectedInto<BuildingSystem>();
+			Container.DeclareSignal<SignalBuildingCancel>();
+			Container.DeclareSignal<SignalBuildingBuild>();
+
+			Container.BindFactory<ConstructionBlueprint, IConstruction, ConstructionModel.Factory>().FromFactory<BuildingSystem.Factory>();
+
+			Container.BindInstance(settings);
 
 			Container.BindInterfacesAndSelfTo<BuildingSystem>().AsSingle();
 		}

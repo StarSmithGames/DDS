@@ -1,6 +1,7 @@
-using Funly.SkyStudio;
+using Game.Entities;
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Game.Systems.BuildingSystem
 {
 	public class BuildingSystem : IInitializable, ITickable, IDisposable
 	{
-		private ConstructionModel currentConstruction;
+		private IConstruction currentConstruction;
 
 		public bool IsBuildingProcess => buildCoroutine != null;
 		private Coroutine buildCoroutine = null;
@@ -23,32 +24,58 @@ namespace Game.Systems.BuildingSystem
 		private Quaternion lastRotation;
 		private float lastAngle;
 
+		private SignalBus signalBus;
 		private BuildingSystemSettings settings;
 		private AsyncManager asyncManager;
+		private UIManager uiManager;
+		private ConstructionModel.Factory constructionFactory;
+		private Player player;
 		private Camera camera;
 
-		public BuildingSystem(BuildingSystemSettings settings, AsyncManager asyncManager, Camera camera)
+		private bool isDebug = false;
+
+		public BuildingSystem(
+			SignalBus signalBus,
+			BuildingSystemSettings settings,
+			AsyncManager asyncManager,
+			UIManager uiManager,
+			ConstructionModel.Factory constructionFactory,
+			Player player, Camera camera)
 		{
+			this.signalBus = signalBus;
 			this.settings = settings;
 			this.asyncManager = asyncManager;
+			this.uiManager = uiManager;
+			this.constructionFactory = constructionFactory;
+			this.player = player;
 			this.camera = camera;
-			Debug.LogError(camera != null);
 		}
 
 		public void Initialize()
 		{
 			buildingSeconds = new WaitForSeconds(0.05f);
+
+			signalBus?.Subscribe<SignalBuildingCancel>(OnBuildingCanceled);
+			signalBus?.Subscribe<SignalBuildingBuild>(OnBuildingBuilded);
+
+			signalBus?.Subscribe<SignalInputClicked>(OnInputClicked);
 		}
 
 		public void Dispose()
 		{
+			signalBus?.Unsubscribe<SignalBuildingCancel>(OnBuildingCanceled);
+			signalBus?.Unsubscribe<SignalBuildingBuild>(OnBuildingBuilded);
 
+			signalBus?.Unsubscribe<SignalInputClicked>(OnInputClicked);
 		}
 
-		public void SetConstruction(ConstructionModel model)
+		public void SetConstruction(IConstruction construction)
 		{
-			currentConstruction = model;
+			currentConstruction = construction;
 
+			player.DisableVision();
+			currentConstruction.IsPlaced = false;
+			uiManager.WindowsManager.Show<UIBuildingWindow>();
 			StartBuild();
 		}
 
@@ -57,10 +84,6 @@ namespace Game.Systems.BuildingSystem
 			if (!IsBuildingProcess)
 			{
 				buildCoroutine = asyncManager.StartCoroutine(Building());
-			}
-			else
-			{
-				StopBuild();
 			}
 		}
 		private IEnumerator Building()
@@ -71,10 +94,17 @@ namespace Game.Systems.BuildingSystem
 
 				Ray ray = new Ray(camera.transform.position, camera.transform.forward);
 
+				if(isDebug)
+					Debug.DrawLine(camera.transform.position, camera.transform.position + (settings.rayDistance * camera.transform.forward), Color.blue);
+
 				//первый чек проверяет на максимум до rayDistance
 				if (CheckCast(ray, out hit, settings.rayDistance) == false)
 				{
 					ray = new Ray(GetSpherePoint(), Vector3.down);
+					
+					if(isDebug)
+						Debug.DrawLine(GetSpherePoint(), GetSpherePoint() + (settings.rayDistance * 2 * Vector3.down), Color.green);
+
 					//второй чек проверяет луч от rayDistance конечной точки вниз Vector.down до rayDistance * 2f
 					CheckCast(ray, out hit, settings.rayDistance * 2f);
 				}
@@ -89,12 +119,6 @@ namespace Game.Systems.BuildingSystem
 			{
 				asyncManager.StopCoroutine(buildCoroutine);
 				buildCoroutine = null;
-
-				//cameraService.UnLockVision();
-
-				//GeneralAvailability.PlayerUI.OpenRadialMenu();
-
-				//onEndBuild?.Invoke();
 			}
 		}
 
@@ -107,13 +131,21 @@ namespace Game.Systems.BuildingSystem
 				lastRotation = Quaternion.FromToRotation(Vector3.up, hit.normal);
 				lastAngle = 90 - (Vector3.Angle(Vector3.up, hit.normal));
 
-				if (CheckPlacementAngle(lastAngle)/* && !currentBuilding.IsIntersects*/)
-					Draw(true);
+				currentConstruction.Transform.position = lastPosition;
+				currentConstruction.Transform.rotation = lastRotation;
+
+				if (CheckPlacementAngle(lastAngle) && !currentConstruction.IsIntersectsColliders)
+				{
+					currentConstruction.SetMaterial(settings.accept);
+				}
 				else
-					Draw(false);
+				{
+					currentConstruction.SetMaterial(settings.reject);
+				}
 
 				return true;
 			}
+
 			return false;
 		}
 		
@@ -129,27 +161,99 @@ namespace Game.Systems.BuildingSystem
 			return camera.transform.position + (camera.transform.forward * settings.rayDistance);
 		}
 
-		private void Draw(bool trigger)
-		{
-			//isCanBuild = trigger;
-
-			currentConstruction.transform.position = lastPosition;
-			currentConstruction.transform.rotation = lastRotation;
-
-			//currentBuilding.IsPlacement = false;
-
-			currentConstruction.SetMaterial(trigger ? settings.accept : settings.reject);
-		}
-
-
 		public void Tick()
 		{
 			if (Input.GetKeyDown(KeyCode.F))
 			{
-				Debug.LogError("HERER");
+				if(currentConstruction == null)
+				{
+					SetConstruction(constructionFactory.Create(settings.blueprints[0]));
+				}
+			}
+		}
 
-				ConstructionModel model = GameObject.Instantiate(settings.model);
-				SetConstruction(model);
+		private void Accept()
+		{
+			uiManager.WindowsManager.Hide<UIBuildingWindow>();
+			StopBuild();
+			currentConstruction.ResetMaterial();
+			currentConstruction.IsPlaced = true;
+			currentConstruction = null;
+
+			player.EnableVision();
+		}
+		private void Reject()
+		{
+			uiManager.WindowsManager.Hide<UIBuildingWindow>();
+			StopBuild();
+			GameObject.Destroy(currentConstruction.Transform.gameObject);
+			currentConstruction = null;
+
+			player.EnableVision();
+		}
+
+		private void OnBuildingCanceled(SignalBuildingCancel signal)
+		{
+			if (IsBuildingProcess)
+			{
+				Reject();
+			}
+		}
+		private void OnBuildingBuilded(SignalBuildingBuild signal)
+		{
+			if (IsBuildingProcess)
+			{
+				Accept();
+			}	
+		}
+		private void OnInputClicked(SignalInputClicked signal)
+		{
+			if (IsBuildingProcess)
+			{
+				if(signal.input == InputType.BuildingAccept)
+				{
+					Accept();
+				}
+				else if (signal.input == InputType.BuildingReject)
+				{
+					Reject();
+				}
+			}
+		}
+
+		public class Factory : IFactory<ConstructionBlueprint, IConstruction>
+		{
+			private DiContainer container;
+			private List<ConstructionBlueprint> blueprints;
+
+			public Factory(DiContainer container, BuildingSystemSettings settings)
+			{
+				this.container = container;
+				blueprints = settings.blueprints;
+			}
+
+			public IConstruction Create(ConstructionBlueprint param)
+			{
+				IConstruction construction = null;
+
+				if (blueprints.Any((x) => x == param))
+				{
+					construction = container.InstantiatePrefab(param.model).GetComponent<IConstruction>();
+				}
+
+				return construction;
+			}
+
+			public IConstruction Create<T>() where T : IConstruction
+			{
+				for (int i = 0; i < blueprints.Count; i++)
+				{
+					if(blueprints[i].model is T)
+					{
+						return container.InstantiatePrefab(blueprints[i].model).GetComponent<IConstruction>();
+					}
+				}
+				return null;
 			}
 		}
 	}
@@ -164,6 +268,12 @@ namespace Game.Systems.BuildingSystem
 		public Material reject;
 
 		[Space]
+		public List<ConstructionBlueprint> blueprints = new List<ConstructionBlueprint>();
+		
+	}
+	[System.Serializable]
+	public class ConstructionBlueprint
+	{
 		public ConstructionModel model;
 	}
 }

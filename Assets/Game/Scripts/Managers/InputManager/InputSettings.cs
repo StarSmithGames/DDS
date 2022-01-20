@@ -9,7 +9,11 @@ public class InputSettings
 public enum InputType
 {
     Interaction,
+    
     Inventory,
+
+    BuildingAccept,
+    BuildingReject,
 }
 
 [System.Serializable]
@@ -29,8 +33,12 @@ public class KeyboardSettings
 
     public bool useJump = true;
     public KeyCode jumpKey = KeyCode.Space;
+    [Space]
     public KeyCode interactionKey = KeyCode.E;
     public KeyCode inventoryKey = KeyCode.I;
+    [Space]
+    public KeyCode buildingAcceptKey = KeyCode.Mouse0;
+    public KeyCode buildingRejectKey = KeyCode.Mouse1;
 
     //If this is enabled, Unity's internal input smoothing is bypassed;
     public bool useRawInput = true;

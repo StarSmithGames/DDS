@@ -9,7 +9,7 @@ using Zenject;
 /// <summary>
 /// Физическое представление Item.
 /// </summary>
-public class ItemModel : MonoBehaviour, IEntity, IInteractable
+public class ItemModel : PoolableObject, IEntity, IInteractable
 {
 	[SerializeField] private Item item;
 	public Item Item => item;

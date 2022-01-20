@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3352456225814111767}
   - component: {fileID: 676285846959330013}
   - component: {fileID: 1324720287648658183}
+  - component: {fileID: 7027953687512255713}
   m_Layer: 0
   m_Name: SleepingBag0
   m_TagString: Untagged
@@ -26,13 +27,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1324720287648658184}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+  m_LocalRotation: {x: -0.7069834, y: 0, z: 0, w: 0.7072302}
   m_LocalPosition: {x: -14.333, y: -0.00000047683716, z: 7.365}
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -89.98, y: 0, z: 0}
 --- !u!33 &3352456225814111767
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -95,3 +96,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.008827959, y: 0.020086192, z: 0.0013349223}
   m_Center: {x: -0.0000026701018, y: 0.00011732567, z: 0.00065816246}
+--- !u!114 &7027953687512255713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1324720287648658184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6afe00f9d9caeb24bbdf74b9a78b2305, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  constructionData: {fileID: 11400000, guid: eb90b941567a15242b0f5c505954ef79, type: 2}
+  coll: {fileID: 1324720287648658183}
+  renderers:
+  - {fileID: 676285846959330013}
