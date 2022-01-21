@@ -1,5 +1,7 @@
 using Funly.SkyStudio;
 
+using Game.Managers.InputManger;
+
 using UnityEngine;
 
 using Zenject;
@@ -37,9 +39,12 @@ public class BootstrapMonoInstaller : MonoInstaller
 
 	private void BindInputManager()
 	{
-		Container.DeclareSignal<SignalInputClicked>();
 		Container.DeclareSignal<SignalInputPressed>();
 		Container.DeclareSignal<SignalInputUnPressed>();
+
+		Container.DeclareSignal<SignalInputKeyUp>();
+		Container.DeclareSignal<SignalInputKeyDown>();
+
 		Container.BindInterfacesAndSelfTo<InputManager>().AsSingle();
 	}
 }

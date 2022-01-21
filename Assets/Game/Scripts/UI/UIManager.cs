@@ -1,3 +1,5 @@
+using Game.Systems.RadialMenu;
+
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -6,9 +8,12 @@ using Zenject;
 
 public class UIManager : MonoBehaviour
 {
+    public UIRadialMenu RadialMenu => radialMenu;
+    [SerializeField] private UIRadialMenu radialMenu;
+
     public Button MenuButton => menuButton;
     [SerializeField] private Button menuButton;
-    public Button BuildingButton => buildingButton;
+    public Button RadialMenuButton => buildingButton;
     [SerializeField] private Button buildingButton;
     public Button BackpackButton => backpackButton;
     [SerializeField] private Button backpackButton;

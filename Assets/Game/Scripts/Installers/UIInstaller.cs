@@ -2,6 +2,7 @@ using Game.Entities;
 using Game.Signals;
 using Game.Systems.InspectorSystem.Signals;
 using Game.Systems.InventorySystem.Signals;
+using Game.Systems.RadialMenu;
 using Game.Systems.TransactorSystem.Signals;
 
 using UnityEngine;

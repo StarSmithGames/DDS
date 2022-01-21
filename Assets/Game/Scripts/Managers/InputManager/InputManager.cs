@@ -1,3 +1,5 @@
+using Game.Managers.InputManger;
+
 using System;
 using UnityEngine;
 
@@ -22,10 +24,10 @@ public class InputManager : IInitializable, ITickable, IDisposable
 	{
 		if (globalSettings.projectSettings.platform == PlatformType.Mobile)
 		{
-			uiManager.BackpackButton.onClick.AddListener(() => Click(InputType.Inventory));
-			//uiManager.BackpackButton.onClick.AddListener(() => Click(InputType.));
+			uiManager.BackpackButton.onClick.AddListener(() => Press(InputType.Inventory));
 
-			uiManager.Controls.ButtonA.onClick.AddListener(() => { Click(InputType.Interaction); });
+			uiManager.RadialMenuButton.onClick.AddListener(() => Press(InputType.RadialMenu));
+
 			uiManager.Controls.ButtonA.onPress.AddListener(() => { Press(InputType.Interaction); });
 			uiManager.Controls.ButtonA.onUnPress.AddListener(() => { UnPress(InputType.Interaction); });
 		}
@@ -45,11 +47,16 @@ public class InputManager : IInitializable, ITickable, IDisposable
 	
 	public void Tick()
 	{
+		//Проверка ввода KeyCode -> InputType
 		if(globalSettings.projectSettings.platform == PlatformType.Desktop)
 		{
+			InputKey(KeyCode.Escape, InputType.Escape);
+
 			InputKey(inputSettings.keyboard.interactionKey, InputType.Interaction);
 			
 			InputKey(inputSettings.keyboard.inventoryKey, InputType.Inventory);
+
+			InputKey(inputSettings.keyboard.radialMenuKey, InputType.RadialMenu);
 
 			InputKey(inputSettings.keyboard.buildingAcceptKey, InputType.BuildingAccept);
 			InputKey(inputSettings.keyboard.buildingRejectKey, InputType.BuildingReject);
@@ -58,23 +65,16 @@ public class InputManager : IInitializable, ITickable, IDisposable
 
 	private void InputKey(KeyCode key, InputType input)
 	{
-		if (Input.GetKey(key))
-		{
-			Click(input);
-		}
 		if (Input.GetKeyDown(key))
 		{
+			Down(key);
 			Press(input);
 		}
 		if (Input.GetKeyUp(key))
 		{
+			Up(key);
 			UnPress(input);
 		}
-	}
-
-	private void Click(InputType input)
-	{
-		signalBus?.Fire(new SignalInputClicked() { input = input });
 	}
 
 	private void Press(InputType input)
@@ -84,5 +84,14 @@ public class InputManager : IInitializable, ITickable, IDisposable
 	private void UnPress(InputType input)
 	{
 		signalBus?.Fire(new SignalInputUnPressed() { input = input });
+	}
+
+	private void Down(KeyCode key)
+	{
+		signalBus?.Fire(new SignalInputKeyDown() { key = key });
+	}
+	private void Up(KeyCode key)
+	{
+		signalBus?.Fire(new SignalInputKeyUp() { key = key });
 	}
 }

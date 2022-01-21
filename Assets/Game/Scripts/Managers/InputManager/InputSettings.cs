@@ -8,9 +8,13 @@ public class InputSettings
 }
 public enum InputType
 {
+    Escape,
+
     Interaction,
     
     Inventory,
+
+    RadialMenu,
 
     BuildingAccept,
     BuildingReject,
@@ -36,6 +40,7 @@ public class KeyboardSettings
     [Space]
     public KeyCode interactionKey = KeyCode.E;
     public KeyCode inventoryKey = KeyCode.I;
+    public KeyCode radialMenuKey = KeyCode.Tab;
     [Space]
     public KeyCode buildingAcceptKey = KeyCode.Mouse0;
     public KeyCode buildingRejectKey = KeyCode.Mouse1;

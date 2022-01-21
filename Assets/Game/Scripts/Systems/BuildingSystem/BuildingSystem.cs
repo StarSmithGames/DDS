@@ -58,7 +58,7 @@ namespace Game.Systems.BuildingSystem
 			signalBus?.Subscribe<SignalBuildingCancel>(OnBuildingCanceled);
 			signalBus?.Subscribe<SignalBuildingBuild>(OnBuildingBuilded);
 
-			signalBus?.Subscribe<SignalInputClicked>(OnInputClicked);
+			signalBus?.Subscribe<SignalInputUnPressed>(OnInputClicked);
 		}
 
 		public void Dispose()
@@ -66,7 +66,7 @@ namespace Game.Systems.BuildingSystem
 			signalBus?.Unsubscribe<SignalBuildingCancel>(OnBuildingCanceled);
 			signalBus?.Unsubscribe<SignalBuildingBuild>(OnBuildingBuilded);
 
-			signalBus?.Unsubscribe<SignalInputClicked>(OnInputClicked);
+			signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputClicked);
 		}
 
 		public void SetConstruction(IConstruction construction)
@@ -206,11 +206,16 @@ namespace Game.Systems.BuildingSystem
 				Accept();
 			}	
 		}
-		private void OnInputClicked(SignalInputClicked signal)
+		private void OnInputClicked(SignalInputUnPressed signal)
 		{
 			if (IsBuildingProcess)
 			{
-				if(signal.input == InputType.BuildingAccept)
+				if(signal.input == InputType.Escape)
+				{
+					Reject();
+
+				}
+				else if (signal.input == InputType.BuildingAccept)
 				{
 					Accept();
 				}
