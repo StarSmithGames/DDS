@@ -4,30 +4,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ConstructionData", menuName = "Game/Constructions/ConstructionData")]
-public class ConstructionData : ScriptableObject
+namespace Game.Systems.BuildingSystem
 {
-    [ListDrawerSettings(ListElementLabelName = "Tittle")]
-    [InfoBox("@LocalizationInfo", InfoMessageType.Warning)]
-    public List<Localization> localizations = new List<Localization>();
-
-    public bool useBasicInteraction = true;
-    [HideIf("useBasicInteraction")]
-    public InteractionSettings interact;
-
-    public Localization GetLocalization(SystemLanguage language)
+    [CreateAssetMenu(fileName = "ConstructionData", menuName = "Game/Constructions/ConstructionData")]
+    public class ConstructionData : ScriptableObject
     {
-        return localizations.Find((x) => x.language == language) ?? localizations[0];
-    }
+        [ListDrawerSettings(ListElementLabelName = "Tittle")]
+        [InfoBox("@LocalizationInfo", InfoMessageType.Warning)]
+        public List<Localization> localizations = new List<Localization>();
 
-    private string LocalizationInfo => "Required :\n" + SystemLanguage.English.ToString();
-    [System.Serializable]
-    public class Localization
-    {
-        public SystemLanguage language = SystemLanguage.English;
+        public bool useBasicInteraction = true;
+        [HideIf("useBasicInteraction")]
+        public InteractionSettings interact;
 
-        public string constructionName;
+        public Localization GetLocalization(SystemLanguage language)
+        {
+            return localizations.Find((x) => x.language == language) ?? localizations[0];
+        }
 
-        private string Tittle => language.ToString() + " " + (!(string.IsNullOrEmpty(constructionName) || string.IsNullOrWhiteSpace(constructionName)));
+        private string LocalizationInfo => "Required :\n" + SystemLanguage.English.ToString();
+        [System.Serializable]
+        public class Localization
+        {
+            public SystemLanguage language = SystemLanguage.English;
+
+            public string constructionName;
+
+            private string Tittle => language.ToString() + " " + (!(string.IsNullOrEmpty(constructionName) || string.IsNullOrWhiteSpace(constructionName)));
+        }
     }
 }

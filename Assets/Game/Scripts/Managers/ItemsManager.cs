@@ -19,7 +19,7 @@ public class ItemsManager : ScriptableObjectInstaller
 	[HorizontalGroup("Consumable Items/Split")]
 	[VerticalGroup("Consumable Items/Split/Left")]
 	[AssetList(AutoPopulate = true, Path = Assets, CustomFilterMethod = "Limits")]
-	[ReadOnly] [SerializeField] private List<PotionItemData> allDrinks = new List<PotionItemData>();
+	[ReadOnly] [SerializeField] private List<DrinkItemData> allDrinks = new List<DrinkItemData>();
 
 	//[LabelWidth(100)]
 	//[VerticalGroup("Consumable Items/Split/Left")]

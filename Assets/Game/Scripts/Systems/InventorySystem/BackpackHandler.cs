@@ -75,6 +75,8 @@ public class BackpackHandler : IInitializable, IDisposable
 		player.UnFreeze();
 		player.EnableVision();
 		uiManager.Controls.EnableButtons();
+		uiManager.WindowsManager.Hide<UIPlayerInventoryWindow>();
+		isInventoryWindowOpened = false;
 	}
 
 	public void SetContainerInventory(IInventory inventory)

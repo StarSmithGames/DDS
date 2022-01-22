@@ -1,4 +1,7 @@
-public interface IConstruction : IEntity, IInteractable, IIntersectable
+namespace Game.Systems.BuildingSystem
 {
-	ConstructionData ConstructionData { get; }
+	public interface IConstruction : IEntity, IInteractable, IIntersectable
+	{
+		ConstructionData ConstructionData { get; }
+	}
 }

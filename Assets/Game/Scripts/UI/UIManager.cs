@@ -10,9 +10,9 @@ public class UIManager : MonoBehaviour
 {
     public UIRadialMenu RadialMenu => radialMenu;
     [SerializeField] private UIRadialMenu radialMenu;
-
-    public Button MenuButton => menuButton;
+    [Space]
     [SerializeField] private Button menuButton;
+    public Button MenuButton => menuButton;
     public Button RadialMenuButton => buildingButton;
     [SerializeField] private Button buildingButton;
     public Button BackpackButton => backpackButton;

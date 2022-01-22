@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PlayerInstaller
   m_EditorClassIdentifier: 
   settings:
-    vitals:
+    stats:
       condtion: 100
       stamina: 100
       warmth: 100
@@ -32,12 +32,26 @@ MonoBehaviour:
         currentCalories: 250
         currentMagazineCapacity: 0
       - useRandom: 0
+        data: {fileID: 11400000, guid: 698448eb4c4a285489dca34ba6ac952a, type: 2}
+        currentStackSize: 1
+        currentWeight: 0.35
+        currentDurability: 100
+        currentCalories: 250
+        currentMagazineCapacity: 0
+      - useRandom: 0
         data: {fileID: 11400000, guid: 855f178f41040014a898aec49dc545a2, type: 2}
         currentStackSize: 45
         currentWeight: 0.1
         currentDurability: 100
         currentCalories: 0
         currentMagazineCapacity: 0
+      - useRandom: 0
+        data: {fileID: 11400000, guid: 38a785910ddedc94bb42f0b69ba66500, type: 2}
+        currentStackSize: 1
+        currentWeight: 0.35
+        currentDurability: 100
+        currentCalories: 250
+        currentMagazineCapacity: 15
       randomSettings:
         isUnique: 0
         useRandomCount: 1
