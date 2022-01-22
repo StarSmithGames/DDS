@@ -4,129 +4,132 @@ using UnityEngine;
 
 using Zenject;
 
-public class UIInventory : MonoBehaviour
+namespace Game.Systems.InventorySystem
 {
-	[SerializeField] private Transform content;
-
-	public IInventory Inventory => inventory;
-	private IInventory inventory;
-
-	private List<UIInventorySlot> slots = new List<UIInventorySlot>();
-
-	private SignalBus signalBus;
-	private UIInventorySlot.Factory slotFactory;
-
-	[Inject]
-	private void Construct(SignalBus signalBus, UIInventorySlot.Factory slotFactory, int initialSlotCount)
+	public class UIInventory : MonoBehaviour
 	{
-		this.signalBus = signalBus;
-		this.slotFactory = slotFactory;
+		[SerializeField] private Transform content;
 
-		for (int i = 0; i < initialSlotCount; i++)
+		public IInventory Inventory => inventory;
+		private IInventory inventory;
+
+		private List<UIInventorySlot> slots = new List<UIInventorySlot>();
+
+		private SignalBus signalBus;
+		private UIInventorySlot.Factory slotFactory;
+
+		[Inject]
+		private void Construct(SignalBus signalBus, UIInventorySlot.Factory slotFactory, int initialSlotCount)
 		{
-			SpawnSlot();
-		}
-	}
+			this.signalBus = signalBus;
+			this.slotFactory = slotFactory;
 
-	private void OnDestroy()
-	{
-		if (inventory != null)
-		{
-			inventory.OnInventoryChanged -= UpdateInventory;
-		}
-	}
-
-	public void SetInventory(IInventory inventory)
-	{
-		if (inventory != null)
-		{
-			inventory.OnInventoryChanged -= UpdateInventory;
-		}
-
-		this.inventory = inventory;
-		
-		if(inventory != null)
-		{
-			inventory.OnInventoryChanged += UpdateInventory;
-		}
-
-		UpdateInventory();
-	}
-
-	private void UpdateInventory()
-	{
-		ClearAllSlots();
-
-		if(inventory != null)
-		{
-			for (int i = 0; i < inventory.Items.Count; i++)
+			for (int i = 0; i < initialSlotCount; i++)
 			{
-				AddItem(inventory.Items[i]);
+				SpawnSlot();
 			}
 		}
-	}
 
-	private void ClearAllSlots()
-	{
-		for (int i = 0; i < slots.Count; i++)
+		private void OnDestroy()
 		{
-			slots[i].SetItem(null);
+			if (inventory != null)
+			{
+				inventory.OnInventoryChanged -= UpdateInventory;
+			}
 		}
-	}
 
-	private void AddItem(Item item)
-	{
-		UIInventorySlot slot = slots.Where((slot) => slot.IsEmpty).FirstOrDefault();
-		
-		if(slot != null)
+		public void SetInventory(IInventory inventory)
 		{
-			slot.SetItem(item);
+			if (inventory != null)
+			{
+				inventory.OnInventoryChanged -= UpdateInventory;
+			}
+
+			this.inventory = inventory;
+
+			if (inventory != null)
+			{
+				inventory.OnInventoryChanged += UpdateInventory;
+			}
+
+			UpdateInventory();
 		}
-		else
+
+		private void UpdateInventory()
 		{
-			SpawnSlotRow();
-			slot = slots.Where((slot) => slot.IsEmpty).FirstOrDefault();
-			slot.SetItem(item);
+			ClearAllSlots();
+
+			if (inventory != null)
+			{
+				for (int i = 0; i < inventory.Items.Count; i++)
+				{
+					AddItem(inventory.Items[i]);
+				}
+			}
 		}
-	}
 
-	private void SpawnSlot()
-	{
-		UIInventorySlot slot = slotFactory.Create();
-
-		slot.SetItem(null);
-		slot.SetOwner(this);
-		slot.transform.parent = content;
-
-		slots.Add(slot);
-	}
-
-	private void SpawnSlotRow()
-	{
-		for (int i = 0; i < 5; i++)
+		private void ClearAllSlots()
 		{
-			SpawnSlot();
+			for (int i = 0; i < slots.Count; i++)
+			{
+				slots[i].SetItem(null);
+			}
 		}
-	}
 
-	private void DespawnSlot(UIInventorySlot slot)
-	{
-		if (slots.Contains(slot))
+		private void AddItem(Item item)
 		{
-			slots.Remove(slot);
+			UIInventorySlot slot = slots.Where((slot) => slot.IsEmpty).FirstOrDefault();
+
+			if (slot != null)
+			{
+				slot.SetItem(item);
+			}
+			else
+			{
+				SpawnSlotRow();
+				slot = slots.Where((slot) => slot.IsEmpty).FirstOrDefault();
+				slot.SetItem(item);
+			}
+		}
+
+		private void SpawnSlot()
+		{
+			UIInventorySlot slot = slotFactory.Create();
+
 			slot.SetItem(null);
-			slot.SetOwner(null);
-			slot.DespawnIt();
+			slot.SetOwner(this);
+			slot.transform.parent = content;
+
+			slots.Add(slot);
 		}
-	}
 
-	private void DespawnSlotRow()
-	{
-		if (slots.Count <= 20) return;// min page
-
-		for (int i = 0; i < 5; i++)
+		private void SpawnSlotRow()
 		{
-			DespawnSlot(slots[slots.Count - 1]);
+			for (int i = 0; i < 5; i++)
+			{
+				SpawnSlot();
+			}
+		}
+
+		private void DespawnSlot(UIInventorySlot slot)
+		{
+			if (slots.Contains(slot))
+			{
+				slots.Remove(slot);
+				slot.SetItem(null);
+				slot.SetOwner(null);
+				slot.DespawnIt();
+			}
+		}
+
+		private void DespawnSlotRow()
+		{
+			if (slots.Count <= 20) return;// min page
+
+			for (int i = 0; i < 5; i++)
+			{
+				DespawnSlot(slots[slots.Count - 1]);
+			}
 		}
 	}
 }

@@ -11,6 +11,7 @@ using System.Linq;
 
 using Zenject;
 using Game.Systems.BuildingSystem;
+using Game.Systems.InventorySystem;
 
 namespace Game.Systems.RadialMenu
 {

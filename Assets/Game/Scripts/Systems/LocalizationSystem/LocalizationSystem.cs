@@ -1,5 +1,3 @@
-using Game.Systems.LocalizationSystem.Signals;
-
 using System;
 using System.Collections.Generic;
 

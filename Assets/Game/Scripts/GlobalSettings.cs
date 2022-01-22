@@ -1,5 +1,6 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
+using Game.Systems.InventorySystem.Inspector;
 
 [CreateAssetMenu(menuName = "GlobalSettings", fileName = "GlobalData")]
 public class GlobalSettings : ScriptableObject

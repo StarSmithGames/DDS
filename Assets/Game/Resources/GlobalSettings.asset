@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GlobalSettings
   m_EditorClassIdentifier: 
   projectSettings:
-    platform: 1
+    platform: 0
   input:
     keyboard:
       mouseHorizontalAxis: Mouse X

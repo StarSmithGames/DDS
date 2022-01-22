@@ -1,9 +1,8 @@
 using Game.Entities;
 using Game.Signals;
-using Game.Systems.InspectorSystem.Signals;
-using Game.Systems.InventorySystem.Signals;
-using Game.Systems.RadialMenu;
-using Game.Systems.TransactorSystem.Signals;
+using Game.Systems.InventorySystem;
+using Game.Systems.InventorySystem.Inspector;
+using Game.Systems.InventorySystem.Transactor;
 
 using UnityEngine;
 using Zenject;

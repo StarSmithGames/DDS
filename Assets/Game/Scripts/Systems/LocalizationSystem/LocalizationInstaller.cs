@@ -1,6 +1,3 @@
-using Game.Systems.LocalizationSystem.Signals;
-
-using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 

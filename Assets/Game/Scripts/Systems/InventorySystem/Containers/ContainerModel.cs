@@ -1,88 +1,91 @@
-using Game.Systems.LocalizationSystem;
+using Game.Systems.InventorySystem.Inspector;
 
 using UnityEngine;
 
 using Zenject;
 
-public class ContainerModel : MonoBehaviour, IContainer
+namespace Game.Systems.InventorySystem
 {
-	public ContainerData ContainerData => containerData;
-	[SerializeField] private ContainerData containerData;
-
-	public IInventory Inventory { get; private set; }
-	public bool IsSearched => data.isSearched;
-
-	private Data data;
-
-	private InspectorHandler inspector;
-	private BackpackHandler backpack;
-	private UIManager uiManager;
-	private LocalizationSystem localization;
-
-	[Inject]
-	private void Construct(BackpackHandler backpack, InspectorHandler inspector, UIManager uiManager, LocalizationSystem localization)
+	public class ContainerModel : MonoBehaviour, IContainer
 	{
-		this.inspector = inspector;
-		this.backpack = backpack;
-		this.uiManager = uiManager;
-		this.localization = localization;
+		public ContainerData ContainerData => containerData;
+		[SerializeField] private ContainerData containerData;
 
-		if (data == null)
+		public IInventory Inventory { get; private set; }
+		public bool IsSearched => data.isSearched;
+
+		private Data data;
+
+		private InspectorHandler inspector;
+		private BackpackHandler backpack;
+		private UIManager uiManager;
+		private LocalizationSystem.LocalizationSystem localization;
+
+		[Inject]
+		private void Construct(BackpackHandler backpack, InspectorHandler inspector, UIManager uiManager, LocalizationSystem.LocalizationSystem localization)
 		{
-			data = new Data();
-		}
+			this.inspector = inspector;
+			this.backpack = backpack;
+			this.uiManager = uiManager;
+			this.localization = localization;
 
-		Inventory = new Inventory(ContainerData.inventory);
-	}
-
-	public void Interact()
-	{
-		if (IsSearched)
-		{
-			backpack.SetContainerInventory(Inventory);
-		}
-		else
-		{
-			inspector.SetInventory(Inventory);
-		}
-
-		data.isSearched = true;
-	}
-
-	public void StartObserve()
-	{
-		var text = containerData.GetLocalization(localization.CurrentLanguage);
-
-		if (IsSearched)
-		{
-			if (Inventory.Items.Count == 0)
+			if (data == null)
 			{
-				uiManager.Targets.ShowTargetInformation(text.containerName, "Empty");
+				data = new Data();
+			}
+
+			Inventory = new Inventory(ContainerData.inventory);
+		}
+
+		public void Interact()
+		{
+			if (IsSearched)
+			{
+				backpack.SetContainerInventory(Inventory);
 			}
 			else
 			{
-				uiManager.Targets.ShowTargetInformation(text.containerName, "Searched");
+				inspector.SetInventory(Inventory);
+			}
+
+			data.isSearched = true;
+		}
+
+		public void StartObserve()
+		{
+			var text = containerData.GetLocalization(localization.CurrentLanguage);
+
+			if (IsSearched)
+			{
+				if (Inventory.Items.Count == 0)
+				{
+					uiManager.Targets.ShowTargetInformation(text.containerName, "Empty");
+				}
+				else
+				{
+					uiManager.Targets.ShowTargetInformation(text.containerName, "Searched");
+				}
+			}
+			else
+			{
+				uiManager.Targets.ShowTargetInformation(text.containerName);
 			}
 		}
-		else
+
+		public void Observe()
 		{
-			uiManager.Targets.ShowTargetInformation(text.containerName);
+
 		}
-	}
 
-	public void Observe()
-	{
-
-	}
-
-	public void EndObserve()
-	{
-		uiManager.Targets.HideTargetInformation();
-	}
+		public void EndObserve()
+		{
+			uiManager.Targets.HideTargetInformation();
+		}
 
 
-	public class Data
-	{
-		public bool isSearched = false;
+		public class Data
+		{
+			public bool isSearched = false;
+		}
 	}
 }

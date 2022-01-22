@@ -1,167 +1,166 @@
 using Game.Entities;
 using Game.Signals;
-using Game.Systems.InventorySystem;
-using Game.Systems.InventorySystem.Signals;
-using Game.Systems.TransactorSystem.Signals;
+using Game.Systems.InventorySystem.Transactor;
 
 using System;
-using System.ComponentModel;
-using System.Transactions;
 
 using Zenject;
 
-public class BackpackHandler : IInitializable, IDisposable
+namespace Game.Systems.InventorySystem
 {
-	private UIPlayerInventoryWindow playerInventoryWindow;
-	private InventoryType inventoryType;
-
-	private bool isInventoryWindowOpened = false;
-
-	private SignalBus signalBus;
-	private UIManager uiManager;
-	private Player player;
-	private TransactorHandler transactor;
-
-	public BackpackHandler
-		(SignalBus signalBus,
-		UIManager uiManager,
-		Player player,
-		TransactorHandler transactor)
+	public class BackpackHandler : IInitializable, IDisposable
 	{
-		this.signalBus = signalBus;
-		this.uiManager = uiManager;
-		this.player = player;
-		this.transactor = transactor;
-	}
+		private UIPlayerInventoryWindow playerInventoryWindow;
+		private InventoryType inventoryType;
 
-	public void Initialize()
-	{
-		playerInventoryWindow = uiManager.WindowsManager.GetAs<UIPlayerInventoryWindow>();
-		playerInventoryWindow.Inventory.SetInventory(player.Status.Inventory);
-		playerInventoryWindow.ItemViewer.SetItem(null);
+		private bool isInventoryWindowOpened = false;
 
-		signalBus?.Subscribe<SignalUIInventorySlotClick>(OnSlotClicked);
-		signalBus?.Subscribe<SignalUIInventoryDrop>(OnItemDroped);
-		signalBus?.Subscribe<SignalUIWindowsBack>(OnWindowsBack);
+		private SignalBus signalBus;
+		private UIManager uiManager;
+		private Player player;
+		private TransactorHandler transactor;
 
-		signalBus?.Subscribe<SignalInputUnPressed>(OnInputClicked);
-	}
-
-	public void Dispose()
-	{
-		signalBus?.Unsubscribe<SignalUIInventorySlotClick>(OnSlotClicked);
-		signalBus?.Unsubscribe<SignalUIInventoryDrop>(OnItemDroped);
-		signalBus?.Unsubscribe<SignalUIWindowsBack>(OnWindowsBack);
-
-		signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputClicked);
-	}
-
-	public void OpenWindow()
-	{
-		player.Freeze();
-		player.DisableVision();
-		uiManager.Controls.DisableButtons();
-
-		playerInventoryWindow.ItemViewer.SetItem(null);
-		ReOrganizeSpace(InventoryType.InventoryWithViewer);
-		uiManager.WindowsManager.Show<UIPlayerInventoryWindow>();
-		isInventoryWindowOpened = true;
-	}
-
-	public void CloseWindow()
-	{
-		playerInventoryWindow.ItemViewer.SetItem(null);
-		playerInventoryWindow.Container.SetInventory(null);
-		player.UnFreeze();
-		player.EnableVision();
-		uiManager.Controls.EnableButtons();
-		uiManager.WindowsManager.Hide<UIPlayerInventoryWindow>();
-		isInventoryWindowOpened = false;
-	}
-
-	public void SetContainerInventory(IInventory inventory)
-	{
-		player.Freeze();
-		player.DisableVision();
-
-		playerInventoryWindow.Container.SetInventory(inventory);
-		ReOrganizeSpace(InventoryType.InventoryWithContainer);
-		uiManager.WindowsManager.Show<UIPlayerInventoryWindow>();
-		isInventoryWindowOpened = true;
-	}
-
-	public void ReOrganizeSpace(InventoryType type)
-	{
-		if (type == InventoryType.InventoryWithViewer)
+		public BackpackHandler
+			(SignalBus signalBus,
+			UIManager uiManager,
+			Player player,
+			TransactorHandler transactor)
 		{
-			playerInventoryWindow.Container.gameObject.SetActive(false);
-			playerInventoryWindow.ItemViewer.gameObject.SetActive(true);
-
-		}
-		else if (type == InventoryType.InventoryWithContainer)
-		{
-			playerInventoryWindow.Container.gameObject.SetActive(true);
-			playerInventoryWindow.ItemViewer.gameObject.SetActive(false);
+			this.signalBus = signalBus;
+			this.uiManager = uiManager;
+			this.player = player;
+			this.transactor = transactor;
 		}
 
-		inventoryType = type;
-	}
-
-
-	private void OnSlotClicked(SignalUIInventorySlotClick signal)
-	{
-		if(inventoryType == InventoryType.InventoryWithViewer)
+		public void Initialize()
 		{
-			playerInventoryWindow.ItemViewer.SetItem(signal.slot.Item);
+			playerInventoryWindow = uiManager.WindowsManager.GetAs<UIPlayerInventoryWindow>();
+			playerInventoryWindow.Inventory.SetInventory(player.Status.Inventory);
+			playerInventoryWindow.ItemViewer.SetItem(null);
+
+			signalBus?.Subscribe<SignalUIInventorySlotClick>(OnSlotClicked);
+			signalBus?.Subscribe<SignalUIInventoryDrop>(OnItemDroped);
+			signalBus?.Subscribe<SignalUIWindowsBack>(OnWindowsBack);
+
+			signalBus?.Subscribe<SignalInputUnPressed>(OnInputClicked);
 		}
-		else if (inventoryType == InventoryType.InventoryWithContainer)
+
+		public void Dispose()
 		{
-			if (!signal.slot.IsEmpty)
+			signalBus?.Unsubscribe<SignalUIInventorySlotClick>(OnSlotClicked);
+			signalBus?.Unsubscribe<SignalUIInventoryDrop>(OnItemDroped);
+			signalBus?.Unsubscribe<SignalUIWindowsBack>(OnWindowsBack);
+
+			signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputClicked);
+		}
+
+		public void OpenWindow()
+		{
+			player.Freeze();
+			player.DisableVision();
+			uiManager.Controls.DisableButtons();
+
+			playerInventoryWindow.ItemViewer.SetItem(null);
+			ReOrganizeSpace(InventoryType.InventoryWithViewer);
+			uiManager.WindowsManager.Show<UIPlayerInventoryWindow>();
+			isInventoryWindowOpened = true;
+		}
+
+		public void CloseWindow()
+		{
+			playerInventoryWindow.ItemViewer.SetItem(null);
+			playerInventoryWindow.Container.SetInventory(null);
+			player.UnFreeze();
+			player.EnableVision();
+			uiManager.Controls.EnableButtons();
+			uiManager.WindowsManager.Hide<UIPlayerInventoryWindow>();
+			isInventoryWindowOpened = false;
+		}
+
+		public void SetContainerInventory(IInventory inventory)
+		{
+			player.Freeze();
+			player.DisableVision();
+
+			playerInventoryWindow.Container.SetInventory(inventory);
+			ReOrganizeSpace(InventoryType.InventoryWithContainer);
+			uiManager.WindowsManager.Show<UIPlayerInventoryWindow>();
+			isInventoryWindowOpened = true;
+		}
+
+		public void ReOrganizeSpace(InventoryType type)
+		{
+			if (type == InventoryType.InventoryWithViewer)
 			{
-				if (signal.inventory == playerInventoryWindow.Inventory)
+				playerInventoryWindow.Container.gameObject.SetActive(false);
+				playerInventoryWindow.ItemViewer.gameObject.SetActive(true);
+
+			}
+			else if (type == InventoryType.InventoryWithContainer)
+			{
+				playerInventoryWindow.Container.gameObject.SetActive(true);
+				playerInventoryWindow.ItemViewer.gameObject.SetActive(false);
+			}
+
+			inventoryType = type;
+		}
+
+
+		private void OnSlotClicked(SignalUIInventorySlotClick signal)
+		{
+			if (inventoryType == InventoryType.InventoryWithViewer)
+			{
+				playerInventoryWindow.ItemViewer.SetItem(signal.slot.Item);
+			}
+			else if (inventoryType == InventoryType.InventoryWithContainer)
+			{
+				if (!signal.slot.IsEmpty)
 				{
-					transactor.Transact(signal.slot.Item, signal.inventory.Inventory, playerInventoryWindow.Container.Inventory);
-				}
-				else if (signal.inventory == playerInventoryWindow.Container)
-				{
-					transactor.Transact(signal.slot.Item, signal.inventory.Inventory, playerInventoryWindow.Inventory.Inventory);
+					if (signal.inventory == playerInventoryWindow.Inventory)
+					{
+						transactor.Transact(signal.slot.Item, signal.inventory.Inventory, playerInventoryWindow.Container.Inventory);
+					}
+					else if (signal.inventory == playerInventoryWindow.Container)
+					{
+						transactor.Transact(signal.slot.Item, signal.inventory.Inventory, playerInventoryWindow.Inventory.Inventory);
+					}
 				}
 			}
 		}
-	}
 
-	private void OnItemDroped(SignalUIInventoryDrop signal)
-	{
-		transactor.Transact(signal.item, player.Status.Inventory, null);
-	}
+		private void OnItemDroped(SignalUIInventoryDrop signal)
+		{
+			transactor.Transact(signal.item, player.Status.Inventory, null);
+		}
 
-	private void OnWindowsBack(SignalUIWindowsBack signal)
-	{
-		CloseWindow();
-	}
-
-	private void OnInputClicked(SignalInputUnPressed signal)
-	{
-		if(signal.input == InputType.Escape && isInventoryWindowOpened)
+		private void OnWindowsBack(SignalUIWindowsBack signal)
 		{
 			CloseWindow();
 		}
-		else if (signal.input == InputType.Inventory)
+
+		private void OnInputClicked(SignalInputUnPressed signal)
 		{
-			if (isInventoryWindowOpened)
+			if (signal.input == InputType.Escape && isInventoryWindowOpened)
 			{
 				CloseWindow();
 			}
-			else
+			else if (signal.input == InputType.Inventory)
 			{
-				OpenWindow();
+				if (isInventoryWindowOpened)
+				{
+					CloseWindow();
+				}
+				else
+				{
+					OpenWindow();
+				}
 			}
 		}
-	}
 
-	public enum InventoryType
-	{
-		InventoryWithViewer,
-		InventoryWithContainer,
+		public enum InventoryType
+		{
+			InventoryWithViewer,
+			InventoryWithContainer,
+		}
 	}
 }

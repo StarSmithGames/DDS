@@ -1,4 +1,7 @@
-public class Chest : ContainerModel
+namespace Game.Systems.InventorySystem
 {
+	public class Chest : ContainerModel
+	{
 
+	}
 }

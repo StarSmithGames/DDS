@@ -1,4 +1,4 @@
-namespace Game.Systems.InspectorSystem.Signals
+namespace Game.Systems.InventorySystem.Inspector
 {
 	public struct SignalUIInspectorTake
 	{

@@ -1,4 +1,4 @@
-namespace Game.Systems.TransactorSystem.Signals
+namespace Game.Systems.InventorySystem.Transactor
 {
 	public struct SignalUITransactorGive
 	{

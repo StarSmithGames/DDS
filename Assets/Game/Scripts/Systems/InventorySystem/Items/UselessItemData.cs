@@ -1,4 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Game/Inventory/Items/Useless", fileName = "Item")]
-public class UselessItemData : ItemData { }
+namespace Game.Systems.InventorySystem
+{
+	[CreateAssetMenu(menuName = "Game/Inventory/Items/Useless", fileName = "Item")]
+	public class UselessItemData : ItemData { }
+}

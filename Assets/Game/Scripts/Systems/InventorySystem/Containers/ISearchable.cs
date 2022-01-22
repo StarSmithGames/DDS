@@ -1,4 +1,7 @@
-public interface ISearchable
+namespace Game.Systems.InventorySystem
 {
-	bool IsSearched { get; }
+	public interface ISearchable
+	{
+		bool IsSearched { get; }
+	}
 }
