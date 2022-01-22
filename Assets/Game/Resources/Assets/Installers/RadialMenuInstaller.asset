@@ -15,8 +15,10 @@ MonoBehaviour:
   radialMenuSettings:
     maxRadius: 205
     isSnap: 1
-    useTilt: 1
+    useTilt: 0
     tiltAmount: 25
+    animationIn: 0.25
+    animationOut: 0.25
     optionPrefab: {fileID: 8626290709856688841, guid: 82fbc853011f83f47a690a44630fc9d4, type: 3}
     primaryOptions:
     - optionType: 8

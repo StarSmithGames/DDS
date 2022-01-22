@@ -16,6 +16,7 @@ namespace Game.Systems.RadialMenu
 
 		public override void InstallBindings()
 		{
+			Container.DeclareSignal<SignalRadialMenuButton>();
 			Container.DeclareSignal<SignalRadialMenuOptionChanged>();
 
 			Container.BindFactory<UIRadialMenuOption, UIRadialMenuOption.Factory>()

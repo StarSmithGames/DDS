@@ -10,11 +10,13 @@ public class UIManager : MonoBehaviour
 {
     public UIRadialMenu RadialMenu => radialMenu;
     [SerializeField] private UIRadialMenu radialMenu;
+    public UIRadialMenuButton RadialMenuButton => radialMenuButton;
+    [SerializeField] private UIRadialMenuButton radialMenuButton;
+
     [Space]
     [SerializeField] private Button menuButton;
     public Button MenuButton => menuButton;
-    public Button RadialMenuButton => buildingButton;
-    [SerializeField] private Button buildingButton;
+    
     public Button BackpackButton => backpackButton;
     [SerializeField] private Button backpackButton;
     [Space]
@@ -45,7 +47,7 @@ public class UIManager : MonoBehaviour
         if(globalSettings.projectSettings.platform == PlatformType.Desktop)
 		{
             menuButton.gameObject.SetActive(false);
-            buildingButton.gameObject.SetActive(false);
+            radialMenuButton.gameObject.SetActive(false);
             backpackButton.gameObject.SetActive(false);
             Controls.PlayerLook.gameObject.SetActive(false);
             Controls.PlayerMove.gameObject.SetActive(false);

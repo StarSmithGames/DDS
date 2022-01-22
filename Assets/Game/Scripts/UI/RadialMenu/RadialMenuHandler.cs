@@ -20,6 +20,7 @@ namespace Game.Systems.RadialMenu
 		private bool isOpened = false;
 
 		private bool isBlocked = false;
+		private bool isOutOfZone = false;
 
 		private UIRadialMenu menu;
 		private List<UIRadialMenuOption> options = new List<UIRadialMenuOption>();
@@ -27,6 +28,7 @@ namespace Game.Systems.RadialMenu
 
 		private SignalBus signalBus;
 		private RadialMenuSettings settings;
+		private InputManager inputManager;
 		private UIManager uiManager;
 		private UIRadialMenuOption.Factory optionFactory;
 		private Player player;
@@ -34,6 +36,7 @@ namespace Game.Systems.RadialMenu
 
 		public RadialMenuHandler(SignalBus signalBus,
 			RadialMenuSettings settings,
+			InputManager inputManager,
 			UIManager uiManager,
 			UIRadialMenuOption.Factory optionFactory,
 			Player player,
@@ -41,6 +44,7 @@ namespace Game.Systems.RadialMenu
 		{
 			this.signalBus = signalBus;
 			this.settings = settings;
+			this.inputManager = inputManager;
 			this.uiManager = uiManager;
 			this.optionFactory = optionFactory;
 			this.player = player;
@@ -53,14 +57,18 @@ namespace Game.Systems.RadialMenu
 		{
 			uiManager.RadialMenu.SetActive(false);
 
-			signalBus?.Subscribe<SignalInputUnPressed>(OnInputClicked);
-			signalBus?.Subscribe<SignalInputKeyUp>(OnInputKeyUp);
+			signalBus?.Subscribe<SignalRadialMenuButton>(OnRadialMenuButtonClicked);
+			signalBus?.Subscribe<SignalInputUnPressed>(OnInputUnPressed);
+
+			signalBus?.Subscribe<SignalInputUp>(OnInputUp);
 		}
 
 		public void Dispose()
 		{
-			signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputClicked);
-			signalBus?.Unsubscribe<SignalInputKeyUp>(OnInputKeyUp);
+			signalBus?.Unsubscribe<SignalRadialMenuButton>(OnRadialMenuButtonClicked);
+			signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputUnPressed);
+
+			signalBus?.Unsubscribe<SignalInputUp>(OnInputUp);
 		}
 
 		public void Tick()
@@ -68,30 +76,35 @@ namespace Game.Systems.RadialMenu
 			if (!isOpened) return;
 
 			Vector3 screenBounds = new Vector3((float)Screen.width / 2f, (float)Screen.height / 2f, 0f);
-			Vector3 direction = Input.mousePosition - screenBounds;
+			Vector3 direction = inputManager.InputPosition - screenBounds;
 
-			bool isInner = direction.magnitude <= 150f;
+			bool isInner = direction.magnitude <= 130f;
+			bool isOutter = direction.magnitude >= 600f;
+			isOutOfZone = isInner || isOutter;
 
 			float mouseRotation = Mathf.Atan2(direction.x, direction.y) * 57.29578f;
 			if (mouseRotation < 0f) mouseRotation += 360f;
 
 			//Нахождение ближайшей опции
-			float difference = 9999;
-			for (int i = 0; i < options.Count; i++)
+			if(!(isOutOfZone))
 			{
-				if (options[i].IsEmpty) continue;
-
-				float rotation = options[i].Rotation;
-
-				if (Mathf.Abs(rotation - mouseRotation) < difference)
+				float difference = 9999;
+				for (int i = 0; i < options.Count; i++)
 				{
-					nearestOption = options[i];
-					difference = Mathf.Abs(rotation - mouseRotation);
+					if (options[i].IsEmpty) continue;
+
+					float rotation = options[i].Rotation;
+
+					if (Mathf.Abs(rotation - mouseRotation) < difference)
+					{
+						nearestOption = options[i];
+						difference = Mathf.Abs(rotation - mouseRotation);
+					}
 				}
 			}
 
 			//Поворот курсора и снап
-			menu.Cursor.FillAmount = isInner ? 0 : 1f / (float)options.Count;
+			menu.Cursor.FillAmount = isOutOfZone ? 0 : 1f / (float)options.Count;
 			float cursorRotation = -(mouseRotation - menu.Cursor.FillAmount * 180f);
 			if(nearestOption != null)
 			{
@@ -103,7 +116,7 @@ namespace Game.Systems.RadialMenu
 			//Наклон меню
 			if (settings.useTilt)
 			{
-				if (isInner)
+				if (isOutOfZone)
 				{
 					menu.transform.localRotation = Quaternion.identity;
 				}
@@ -116,7 +129,7 @@ namespace Game.Systems.RadialMenu
 			}
 
 			//Выбор опции - перекраска
-			if (isInner)
+			if (isOutOfZone)
 			{
 				for (int i = 0; i < options.Count; i++)
 				{
@@ -143,6 +156,8 @@ namespace Game.Systems.RadialMenu
 		{
 			if (isOpened) return;
 
+			uiManager.RadialMenuButton.SetIcon(false);
+
 			Sequence sequence = DOTween.Sequence();
 
 			sequence
@@ -162,6 +177,8 @@ namespace Game.Systems.RadialMenu
 		public void CloseMenu()
 		{
 			if (!isOpened) return;
+
+			uiManager.RadialMenuButton.SetIcon(true);
 
 			Sequence sequence = DOTween.Sequence();
 
@@ -348,8 +365,18 @@ namespace Game.Systems.RadialMenu
 			}
 		}
 
-
-		private void OnInputClicked(SignalInputUnPressed signal)
+		private void OnRadialMenuButtonClicked()
+		{
+			if (IsOpened)
+			{
+				CloseMenu();
+			}
+			else
+			{
+				OpenMenu();
+			}
+		}
+		private void OnInputUnPressed(SignalInputUnPressed signal)
 		{
 			if (signal.input == InputType.Escape && isOpened)
 			{
@@ -367,14 +394,16 @@ namespace Game.Systems.RadialMenu
 				}
 			}
 		}
-		private void OnInputKeyUp(SignalInputKeyUp signal)
+		private void OnInputUp()
 		{
-			if (isOpened && !isBlocked)
+			if (isOutOfZone)
 			{
-				if (signal.key == KeyCode.Mouse0)
-				{
-					TryInvokeOption();
-				}
+				CloseMenu();
+			}
+
+			if (isOpened && !isBlocked && !isOutOfZone)
+			{
+				TryInvokeOption();
 			}
 		}
 	}

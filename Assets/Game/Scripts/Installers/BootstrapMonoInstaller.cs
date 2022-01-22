@@ -45,6 +45,9 @@ public class BootstrapMonoInstaller : MonoInstaller
 		Container.DeclareSignal<SignalInputKeyUp>();
 		Container.DeclareSignal<SignalInputKeyDown>();
 
+		Container.DeclareSignal<SignalInputUp>();
+		Container.DeclareSignal<SignalInputDown>();
+
 		Container.BindInterfacesAndSelfTo<InputManager>().AsSingle();
 	}
 }

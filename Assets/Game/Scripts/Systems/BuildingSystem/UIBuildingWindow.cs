@@ -12,6 +12,7 @@ namespace Game.Systems.BuildingSystem
 
 		private SignalBus signalBus;
 
+		[Inject]
 		private void Construct(SignalBus signalBus)
 		{
 			this.signalBus = signalBus;
