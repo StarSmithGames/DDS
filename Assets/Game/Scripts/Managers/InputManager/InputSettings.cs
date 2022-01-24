@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using Sirenix.OdinInspector;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class InputSettings
@@ -8,6 +10,8 @@ public class InputSettings
 }
 public enum InputType
 {
+    None,
+
     Escape,
 
     Interaction,
@@ -18,6 +22,8 @@ public enum InputType
 
     BuildingAccept,
     BuildingReject,
+
+    IgnitionStartFire,
 }
 
 [System.Serializable]
@@ -38,15 +44,17 @@ public class KeyboardSettings
     public bool useJump = true;
     public KeyCode jumpKey = KeyCode.Space;
     [Space]
-    public KeyCode interactionKey = KeyCode.E;
-    public KeyCode inventoryKey = KeyCode.I;
-    public KeyCode radialMenuKey = KeyCode.Tab;
-    [Space]
-    public KeyCode buildingAcceptKey = KeyCode.Mouse0;
-    public KeyCode buildingRejectKey = KeyCode.Mouse1;
+    [TableList]
+    public List<KeyCodeBind> keyCodeBinds = new List<KeyCodeBind>();
 
     //If this is enabled, Unity's internal input smoothing is bypassed;
     public bool useRawInput = true;
+}
+[System.Serializable]
+public class KeyCodeBind
+{
+    public KeyCode keyCode;
+    public List<InputType> inputType = new List<InputType>();
 }
 
 [System.Serializable]

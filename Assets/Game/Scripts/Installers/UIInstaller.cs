@@ -1,5 +1,6 @@
 using Game.Entities;
 using Game.Signals;
+using Game.Systems.IgnitionSystem;
 using Game.Systems.InventorySystem;
 using Game.Systems.InventorySystem.Inspector;
 using Game.Systems.InventorySystem.Transactor;
@@ -24,6 +25,7 @@ namespace Game.Installers
 			BindInspector();
 			BindTransactor();
 			BindBackpack();
+			BindIgnition();
 
 			Container.BindFactory<UIInventorySlot, UIInventorySlot.Factory>()
 					.FromMonoPoolableMemoryPool((x) => x.WithInitialSize(initialSlotFactorySize)
@@ -60,6 +62,15 @@ namespace Game.Installers
 			Container.Bind<int>().FromInstance(initialSlotFactorySize).WhenInjectedInto<UIInventory>();
 
 			Container.BindInterfacesAndSelfTo<BackpackHandler>().AsSingle();
+		}
+
+		private void BindIgnition()
+		{
+			Container.DeclareSignal<SignalUIIgnitionBack>();
+			Container.DeclareSignal<SignalUIIgnitionStartFire>();
+
+
+			Container.BindInterfacesAndSelfTo<IgnitionHandler>().AsSingle();
 		}
 	}
 }

@@ -25,11 +25,19 @@ MonoBehaviour:
       verticalInputAxis: Vertical
       useJump: 1
       jumpKey: 32
-      interactionKey: 101
-      inventoryKey: 105
-      radialMenuKey: 9
-      buildingAcceptKey: 323
-      buildingRejectKey: 324
+      keyCodeBinds:
+      - keyCode: 27
+        inputType: 01000000
+      - keyCode: 101
+        inputType: 02000000
+      - keyCode: 105
+        inputType: 03000000
+      - keyCode: 9
+        inputType: 04000000
+      - keyCode: 323
+        inputType: 0500000007000000
+      - keyCode: 324
+        inputType: 06000000
       useRawInput: 1
     mobile:
       invertHorizontalInput: 0
@@ -37,7 +45,7 @@ MonoBehaviour:
       inputMultiplier: 0.016
   basicInteraction:
     interactionType: 4
-    holdDuration: 0.5
+    holdDuration: 0.4
   cameraSettings:
     upperVerticalLimit: 80
     lowerVerticalLimit: 80

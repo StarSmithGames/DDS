@@ -5,16 +5,10 @@ namespace Game.Systems.InventorySystem
     [CreateAssetMenu(menuName = "Game/Inventory/Items/Fire/Starter", fileName = "Starter")]
     public class FireStarterData : FireItemData
     {
-        public bool isMathces = false;
+        [Tooltip("Время отведённое на розжиг.")]
+        public TimeSystem.Time ignitionTime = new TimeSystem.Time() { Seconds = 300 };
 
-        [Tooltip("Сколько секунд розжигать.")]
-        [Min(1f)]
-        public float holdTime;
-
-        //[Tooltip("Время на розжиг")]
-        //public Times kindleTime;
-
-        //[Tooltip("К времени горения.")]
-        //public Times addFireTime;
-    }
+        [Tooltip("Дополнительное временя к горению.")]
+		public TimeSystem.Time addFireTime;
+	}
 }

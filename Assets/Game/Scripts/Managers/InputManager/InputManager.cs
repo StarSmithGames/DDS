@@ -81,16 +81,10 @@ public class InputManager : IInitializable, ITickable, IDisposable
 		//Проверка ввода KeyCode -> InputType
 		if (globalSettings.projectSettings.platform == PlatformType.Desktop)
 		{
-			InputKey(KeyCode.Escape, InputType.Escape);
-
-			InputKey(inputSettings.keyboard.interactionKey, InputType.Interaction);
-			
-			InputKey(inputSettings.keyboard.inventoryKey, InputType.Inventory);
-
-			InputKey(inputSettings.keyboard.radialMenuKey, InputType.RadialMenu);
-
-			InputKey(inputSettings.keyboard.buildingAcceptKey, InputType.BuildingAccept);
-			InputKey(inputSettings.keyboard.buildingRejectKey, InputType.BuildingReject);
+			for (int i = 0; i < inputSettings.keyboard.keyCodeBinds.Count; i++)
+			{
+				InputKey(inputSettings.keyboard.keyCodeBinds[i]);
+			}
 		}
 	}
 
@@ -131,17 +125,23 @@ public class InputManager : IInitializable, ITickable, IDisposable
 		return false;
 	}
 
-	private void InputKey(KeyCode key, InputType input)
+	private void InputKey(KeyCodeBind bind)
 	{
-		if (Input.GetKeyDown(key))
+		if (Input.GetKeyDown(bind.keyCode))
 		{
-			Down(key);
-			Press(input);
+			Down(bind.keyCode);
+			for (int i = 0; i < bind.inputType.Count; i++)
+			{
+				Press(bind.inputType[i]);
+			}
 		}
-		if (Input.GetKeyUp(key))
+		if (Input.GetKeyUp(bind.keyCode))
 		{
-			Up(key);
-			UnPress(input);
+			Up(bind.keyCode);
+			for (int i = 0; i < bind.inputType.Count; i++)
+			{
+				UnPress(bind.inputType[i]);
+			}
 		}
 	}
 

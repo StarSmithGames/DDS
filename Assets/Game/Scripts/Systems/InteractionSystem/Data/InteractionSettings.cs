@@ -7,6 +7,7 @@ public class InteractionSettings
 {
     public InteractionType interactionType;
     [ShowIf("interactionType", InteractionType.Hold)]
+    [Min(0.1f)]
     public float holdDuration;
 }
 public enum InteractionType

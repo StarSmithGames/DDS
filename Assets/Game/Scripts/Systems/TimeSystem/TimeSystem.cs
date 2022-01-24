@@ -181,10 +181,10 @@ namespace Game.Systems.TimeSystem
         [SerializeField] private int days;
         public int Hours
 		{
-            get => days;
+            get => hours;
 			set
 			{
-                days = value;
+                hours = value;
                 ConvertSeconds();
             }
 		}

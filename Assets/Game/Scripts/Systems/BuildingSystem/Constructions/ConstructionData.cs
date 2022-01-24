@@ -2,7 +2,12 @@ using Sirenix.OdinInspector;
 
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+
+using UnityEditor;
+
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Game.Systems.BuildingSystem
 {
@@ -19,6 +24,8 @@ namespace Game.Systems.BuildingSystem
 
         public Localization GetLocalization(SystemLanguage language)
         {
+            Assert.AreNotEqual(localizations.Count, 0, $"{Path.GetFullPath(AssetDatabase.GetAssetPath(GetInstanceID()))} localizations size equal zero.");
+
             return localizations.Find((x) => x.language == language) ?? localizations[0];
         }
 

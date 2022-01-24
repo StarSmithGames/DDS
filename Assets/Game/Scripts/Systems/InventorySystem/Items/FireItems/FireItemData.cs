@@ -6,7 +6,7 @@ namespace Game.Systems.InventorySystem
 {
     public abstract class FireItemData : ItemData
     {
-        [Title("Benefit")]
+        [Title("Fire Benefit")]
         [SuffixLabel("%", true)]
         [Range(-100f, 100f)]
         [Tooltip("К шансу розжига.")]

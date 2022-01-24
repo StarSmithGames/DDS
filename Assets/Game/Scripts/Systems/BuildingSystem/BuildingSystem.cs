@@ -7,17 +7,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using Zenject;
+using DG.Tweening;
 
 namespace Game.Systems.BuildingSystem
 {
 	public class BuildingSystem : IInitializable, IDisposable
 	{
+		public bool IsOpened => isOpened;
+		private bool isOpened = false;
+
 		private IConstruction currentConstruction;
+		private ConstructionBlueprint currentBlueprint;
 
 		public bool IsBuildingProcess => buildCoroutine != null;
 		private Coroutine buildCoroutine = null;
-
-		private bool isReady = false;
 
 		private RaycastHit lastHit;
 		private Vector3 lastPosition;
@@ -56,7 +59,7 @@ namespace Game.Systems.BuildingSystem
 			signalBus?.Subscribe<SignalBuildingCancel>(OnBuildingCanceled);
 			signalBus?.Subscribe<SignalBuildingBuild>(OnBuildingBuilded);
 
-			signalBus?.Subscribe<SignalInputUnPressed>(OnInputClicked);
+			signalBus?.Subscribe<SignalInputUnPressed>(OnInputUnPressed);
 		}
 
 		public void Dispose()
@@ -64,27 +67,31 @@ namespace Game.Systems.BuildingSystem
 			signalBus?.Unsubscribe<SignalBuildingCancel>(OnBuildingCanceled);
 			signalBus?.Unsubscribe<SignalBuildingBuild>(OnBuildingBuilded);
 
-			signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputClicked);
+			signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputUnPressed);
 		}
 
 		public void SetBlueprint(ConstructionBlueprint blueprint)
 		{
 			if (currentConstruction == null)
 			{
+				this.currentBlueprint = blueprint;
 				SetConstruction(constructionFactory.Create(blueprint));
 			}
 		}
 
 		public void SetConstruction(IConstruction construction)
 		{
-			isReady = false;
-
 			currentConstruction = construction;
 			currentConstruction.IsPlaced = false;
 
 			player.DisableVision();
 			uiManager.WindowsManager.Show<UIBuildingWindow>();
 			StartBuild();
+
+			Sequence sequence = DOTween.Sequence();//open animation
+			sequence
+				.AppendInterval(0.5f)
+				.AppendCallback(() => isOpened = true);
 		}
 
 		private void StartBuild()
@@ -96,9 +103,6 @@ namespace Game.Systems.BuildingSystem
 		}
 		private IEnumerator Building()
 		{
-			yield return null;//костыль
-			isReady = true;
-
 			while (true)
 			{
 				RaycastHit hit;
@@ -130,6 +134,8 @@ namespace Game.Systems.BuildingSystem
 			{
 				asyncManager.StopCoroutine(buildCoroutine);
 				buildCoroutine = null;
+
+				isOpened = false;
 			}
 		}
 
@@ -174,13 +180,20 @@ namespace Game.Systems.BuildingSystem
 
 		private void Accept()
 		{
-			uiManager.WindowsManager.Hide<UIBuildingWindow>();
 			StopBuild();
+			player.EnableVision();
+			uiManager.WindowsManager.Hide<UIBuildingWindow>();
 			currentConstruction.ResetMaterial();
 			currentConstruction.IsPlaced = true;
-			currentConstruction = null;
+			
+			if (currentBlueprint.isInteractAfterBuilding)
+			{
+				currentConstruction.Interact();
+			}
 
-			player.EnableVision();
+			currentConstruction = null;
+			currentBlueprint = null;
+
 		}
 		private void Reject()
 		{
@@ -188,27 +201,28 @@ namespace Game.Systems.BuildingSystem
 			StopBuild();
 			GameObject.Destroy(currentConstruction.Transform.gameObject);
 			currentConstruction = null;
+			currentBlueprint = null;
 
 			player.EnableVision();
 		}
 
 		private void OnBuildingCanceled(SignalBuildingCancel signal)
 		{
-			if (IsBuildingProcess && isReady)
+			if (isOpened && IsBuildingProcess)
 			{
 				Reject();
 			}
 		}
 		private void OnBuildingBuilded(SignalBuildingBuild signal)
 		{
-			if (IsBuildingProcess && isReady)
+			if (isOpened && IsBuildingProcess)
 			{
 				Accept();
 			}	
 		}
-		private void OnInputClicked(SignalInputUnPressed signal)
+		private void OnInputUnPressed(SignalInputUnPressed signal)
 		{
-			if (IsBuildingProcess && isReady)
+			if (isOpened && IsBuildingProcess)
 			{
 				if(signal.input == InputType.Escape)
 				{

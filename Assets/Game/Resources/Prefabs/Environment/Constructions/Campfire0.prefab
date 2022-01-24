@@ -5012,8 +5012,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2509c85b9a1c4024e89c17d6c812cc5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  constructionData: {fileID: 11400000, guid: 93b6bd92505420b448b1e82973041e95, type: 2}
+  constructionData: {fileID: 11400000, guid: 26845f154314f9d4e9114df132c9a9f1, type: 2}
+  isPlaced: 1
   coll: {fileID: 6476888655505527461}
   renderers:
   - {fileID: 4819550455808242545}
   - {fileID: 473821923492173592}
+  isEnableOnAwake: 0
+  particles: {fileID: 3723124393099487982}

@@ -9,14 +9,14 @@ namespace Game.Systems.BuildingSystem
 {
 	public class ConstructionModel : MonoBehaviour, IConstruction
 	{
-		[SerializeField] private ConstructionData constructionData;
+		[SerializeField] protected ConstructionData constructionData;
 		public ConstructionData ConstructionData => constructionData;
 
 		public Transform Transform => transform;
 
 		public List<Collider> Intersections { get; private set; }
 		public bool IsIntersectsColliders { get => Intersections.Count > 0; }
-		[SerializeField] private bool isPlaced = true;
+		[SerializeField] protected bool isPlaced = true;
 		public bool IsPlaced
 		{
 			get => isPlaced;
@@ -31,14 +31,14 @@ namespace Game.Systems.BuildingSystem
 			}
 		}
 
-		[SerializeField] private Collider coll;
+		[SerializeField] protected Collider coll;
 		[SerializeField] private List<Renderer> renderers = new List<Renderer>();
 
 		private List<Material> materials = new List<Material>();
 
-		private UIManager uiManager;
-		private LocalizationSystem.LocalizationSystem localization;
-		private LayerMask ignoringLayers;
+		protected UIManager uiManager;
+		protected LocalizationSystem.LocalizationSystem localization;
+		protected LayerMask ignoringLayers;
 
 		[Inject]
 		private void Construct(UIManager uiManager, LocalizationSystem.LocalizationSystem localization, BuildingSystemSettings buildingSettings)
@@ -55,7 +55,7 @@ namespace Game.Systems.BuildingSystem
 			Intersections = new List<Collider>();
 		}
 
-		public void Interact()
+		public virtual void Interact()
 		{
 			Debug.LogError("Interact");
 		}
