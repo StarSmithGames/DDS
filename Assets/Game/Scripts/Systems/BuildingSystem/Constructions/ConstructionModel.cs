@@ -1,5 +1,3 @@
-using Game.Systems.BuildingSystem;
-using Game.Systems.LocalizationSystem;
 
 using System.Collections.Generic;
 
@@ -7,114 +5,117 @@ using UnityEngine;
 
 using Zenject;
 
-public class ConstructionModel : MonoBehaviour, IConstruction
+namespace Game.Systems.BuildingSystem
 {
-	[SerializeField] private ConstructionData constructionData;
-	public ConstructionData ConstructionData => constructionData;
-
-	public Transform Transform => transform;
-
-	public List<Collider> Intersections { get; private set; }
-	public bool IsIntersectsColliders { get => Intersections.Count > 0; }
-	[SerializeField] private bool isPlaced = true;
-	public bool IsPlaced
+	public class ConstructionModel : MonoBehaviour, IConstruction
 	{
-		get => isPlaced;
-		set
-		{
-			isPlaced = value;
+		[SerializeField] private ConstructionData constructionData;
+		public ConstructionData ConstructionData => constructionData;
 
-			if(isPlaced == true)
+		public Transform Transform => transform;
+
+		public List<Collider> Intersections { get; private set; }
+		public bool IsIntersectsColliders { get => Intersections.Count > 0; }
+		[SerializeField] private bool isPlaced = true;
+		public bool IsPlaced
+		{
+			get => isPlaced;
+			set
 			{
-				Intersections.Clear();
+				isPlaced = value;
+
+				if (isPlaced == true)
+				{
+					Intersections.Clear();
+				}
 			}
 		}
-	}
 
-	[SerializeField] private Collider coll;
-	[SerializeField] private List<Renderer> renderers = new List<Renderer>();
+		[SerializeField] private Collider coll;
+		[SerializeField] private List<Renderer> renderers = new List<Renderer>();
 
-	private List<Material> materials = new List<Material>();
+		private List<Material> materials = new List<Material>();
 
-	private UIManager uiManager;
-	private LocalizationSystem localization;
-	private LayerMask ignoringLayers;
+		private UIManager uiManager;
+		private LocalizationSystem.LocalizationSystem localization;
+		private LayerMask ignoringLayers;
 
-	[Inject]
-	private void Construct(UIManager uiManager, LocalizationSystem localization, BuildingSystemSettings buildingSettings)
-	{
-		this.uiManager = uiManager;
-		this.localization = localization;
-		this.ignoringLayers = buildingSettings.groundLayers;
-
-		for (int i = 0; i < renderers.Count; i++)
+		[Inject]
+		private void Construct(UIManager uiManager, LocalizationSystem.LocalizationSystem localization, BuildingSystemSettings buildingSettings)
 		{
-			materials.Add(renderers[i].material);
+			this.uiManager = uiManager;
+			this.localization = localization;
+			this.ignoringLayers = buildingSettings.groundLayers;
+
+			for (int i = 0; i < renderers.Count; i++)
+			{
+				materials.Add(renderers[i].material);
+			}
+
+			Intersections = new List<Collider>();
 		}
 
-		Intersections = new List<Collider>();
-	}
-
-	public void Interact()
-	{
-		Debug.LogError("Interact");
-	}
-
-	public void StartObserve()
-	{
-		if (IsPlaced)
+		public void Interact()
 		{
-			var text = constructionData.GetLocalization(localization.CurrentLanguage);
-			uiManager.Targets.ShowTargetInformation(text.constructionName);
+			Debug.LogError("Interact");
 		}
-	}
 
-	public virtual void Observe() { }
-
-	public void EndObserve()
-	{
-		if (IsPlaced)
+		public void StartObserve()
 		{
-			uiManager.Targets.HideTargetInformation();
+			if (IsPlaced)
+			{
+				var text = constructionData.GetLocalization(localization.CurrentLanguage);
+				uiManager.Targets.ShowTargetInformation(text.constructionName);
+			}
 		}
-	}
 
-	public void SetMaterial(Material material)
-	{
-		for (int i = 0; i < renderers.Count; i++)
+		public virtual void Observe() { }
+
+		public void EndObserve()
 		{
-			renderers[i].material = material;
+			if (IsPlaced)
+			{
+				uiManager.Targets.HideTargetInformation();
+			}
 		}
-	}
 
-	public void ResetMaterial()
-	{
-		for (int i = 0; i < renderers.Count; i++)
+		public void SetMaterial(Material material)
 		{
-			renderers[i].material = materials[i];
+			for (int i = 0; i < renderers.Count; i++)
+			{
+				renderers[i].material = material;
+			}
 		}
-	}
 
-	private void OnTriggerEnter(Collider other)
-	{
-		if (IsPlaced) return;
-
-		if (((1 << other.gameObject.layer) & ignoringLayers) != 0) return;
-
-		if (!Intersections.Contains(other))
+		public void ResetMaterial()
 		{
-			Intersections.Add(other);
+			for (int i = 0; i < renderers.Count; i++)
+			{
+				renderers[i].material = materials[i];
+			}
 		}
-	}
-	private void OnTriggerExit(Collider other)
-	{
-		if (IsPlaced) return;
 
-		if (Intersections.Contains(other))
+		private void OnTriggerEnter(Collider other)
 		{
-			Intersections.Remove(other);
-		}
-	}
+			if (IsPlaced) return;
 
-	public class Factory : PlaceholderFactory<ConstructionBlueprint, IConstruction> { }
+			if (((1 << other.gameObject.layer) & ignoringLayers) != 0) return;
+
+			if (!Intersections.Contains(other))
+			{
+				Intersections.Add(other);
+			}
+		}
+		private void OnTriggerExit(Collider other)
+		{
+			if (IsPlaced) return;
+
+			if (Intersections.Contains(other))
+			{
+				Intersections.Remove(other);
+			}
+		}
+
+		public class Factory : PlaceholderFactory<ConstructionBlueprint, IConstruction> { }
+	}
 }

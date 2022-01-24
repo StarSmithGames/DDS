@@ -1,6 +1,7 @@
+using Game.Systems.BuildingSystem;
+
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 using Zenject;
@@ -32,14 +33,12 @@ public class InteractionHandler : IInitializable, IDisposable
 
 	public void Initialize()
 	{
-		signalBus?.Subscribe<SignalInputClicked>(OnInputClicked);
 		signalBus?.Subscribe<SignalInputPressed>(OnInputPressed);
 		signalBus?.Subscribe<SignalInputUnPressed>(OnInputUnPressed);
 	}
 
 	public void Dispose()
 	{
-		signalBus?.Unsubscribe<SignalInputClicked>(OnInputClicked);
 		signalBus?.Unsubscribe<SignalInputPressed>(OnInputPressed);
 		signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputUnPressed);
 	}
@@ -138,23 +137,6 @@ public class InteractionHandler : IInitializable, IDisposable
 		return null;
 	}
 
-	private void OnInputClicked(SignalInputClicked signal)
-	{
-		if(signal.input == InputType.Interaction)
-		{
-			if (interactable != null)
-			{
-				if (interactable is ItemModel item)
-				{
-					var interactData = item.Item.ItemData.interact;
-					if (interactData.interactionType == InteractionType.Click)
-					{
-						interactable.Interact();
-					}
-				}
-			}
-		}
-	}
 	private void OnInputPressed(SignalInputPressed signal)
 	{
 		if (signal.input == InputType.Interaction)
@@ -183,6 +165,18 @@ public class InteractionHandler : IInitializable, IDisposable
 		if (signal.input == InputType.Interaction)
 		{
 			isPressed = false;
+
+			if (interactable != null)
+			{
+				if (interactable is ItemModel item)
+				{
+					var interactData = item.Item.ItemData.interact;
+					if (interactData.interactionType == InteractionType.Click)
+					{
+						interactable.Interact();
+					}
+				}
+			}
 		}
 	}
 }

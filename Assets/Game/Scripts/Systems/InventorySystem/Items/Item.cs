@@ -127,7 +127,9 @@ public class Item
 	public int MaxMagaizneCapacity => 15;
 	public int MinimumMagaizneCapacity => 0;
 
-	public bool IsConsumable => data is ConsumableItemData;
+	public bool IsConsumable => data == null ? false : data is ConsumableItemData;
+	public bool IsConsumableDrink => IsConsumable ? data is DrinkItemData : false;
+
 	public bool IsWeapon => false;
 
 	public Item() { }

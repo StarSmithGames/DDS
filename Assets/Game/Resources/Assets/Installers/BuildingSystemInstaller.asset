@@ -20,5 +20,3 @@ MonoBehaviour:
       m_Bits: 8
     accept: {fileID: 2100000, guid: 6c2eb83f509345e41b0252727931c2ea, type: 2}
     reject: {fileID: 2100000, guid: b1ecf52d5d857bf43b419d7d0bf40328, type: 2}
-    blueprints:
-    - model: {fileID: 5652316711907895074, guid: 64e3889b2095df84cb5eda9013c99508, type: 3}

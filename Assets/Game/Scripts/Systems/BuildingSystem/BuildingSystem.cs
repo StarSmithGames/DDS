@@ -10,16 +10,16 @@ using Zenject;
 
 namespace Game.Systems.BuildingSystem
 {
-	public class BuildingSystem : IInitializable, ITickable, IDisposable
+	public class BuildingSystem : IInitializable, IDisposable
 	{
 		private IConstruction currentConstruction;
 
 		public bool IsBuildingProcess => buildCoroutine != null;
 		private Coroutine buildCoroutine = null;
-		private WaitForSeconds buildingSeconds;
+
+		private bool isReady = false;
 
 		private RaycastHit lastHit;
-
 		private Vector3 lastPosition;
 		private Quaternion lastRotation;
 		private float lastAngle;
@@ -53,12 +53,10 @@ namespace Game.Systems.BuildingSystem
 
 		public void Initialize()
 		{
-			buildingSeconds = new WaitForSeconds(0.05f);
-
 			signalBus?.Subscribe<SignalBuildingCancel>(OnBuildingCanceled);
 			signalBus?.Subscribe<SignalBuildingBuild>(OnBuildingBuilded);
 
-			signalBus?.Subscribe<SignalInputClicked>(OnInputClicked);
+			signalBus?.Subscribe<SignalInputUnPressed>(OnInputClicked);
 		}
 
 		public void Dispose()
@@ -66,15 +64,25 @@ namespace Game.Systems.BuildingSystem
 			signalBus?.Unsubscribe<SignalBuildingCancel>(OnBuildingCanceled);
 			signalBus?.Unsubscribe<SignalBuildingBuild>(OnBuildingBuilded);
 
-			signalBus?.Unsubscribe<SignalInputClicked>(OnInputClicked);
+			signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputClicked);
+		}
+
+		public void SetBlueprint(ConstructionBlueprint blueprint)
+		{
+			if (currentConstruction == null)
+			{
+				SetConstruction(constructionFactory.Create(blueprint));
+			}
 		}
 
 		public void SetConstruction(IConstruction construction)
 		{
+			isReady = false;
+
 			currentConstruction = construction;
+			currentConstruction.IsPlaced = false;
 
 			player.DisableVision();
-			currentConstruction.IsPlaced = false;
 			uiManager.WindowsManager.Show<UIBuildingWindow>();
 			StartBuild();
 		}
@@ -88,6 +96,9 @@ namespace Game.Systems.BuildingSystem
 		}
 		private IEnumerator Building()
 		{
+			yield return null;//костыль
+			isReady = true;
+
 			while (true)
 			{
 				RaycastHit hit;
@@ -161,17 +172,6 @@ namespace Game.Systems.BuildingSystem
 			return camera.transform.position + (camera.transform.forward * settings.rayDistance);
 		}
 
-		public void Tick()
-		{
-			if (Input.GetKeyDown(KeyCode.F))
-			{
-				if(currentConstruction == null)
-				{
-					SetConstruction(constructionFactory.Create(settings.blueprints[0]));
-				}
-			}
-		}
-
 		private void Accept()
 		{
 			uiManager.WindowsManager.Hide<UIBuildingWindow>();
@@ -194,23 +194,27 @@ namespace Game.Systems.BuildingSystem
 
 		private void OnBuildingCanceled(SignalBuildingCancel signal)
 		{
-			if (IsBuildingProcess)
+			if (IsBuildingProcess && isReady)
 			{
 				Reject();
 			}
 		}
 		private void OnBuildingBuilded(SignalBuildingBuild signal)
 		{
-			if (IsBuildingProcess)
+			if (IsBuildingProcess && isReady)
 			{
 				Accept();
 			}	
 		}
-		private void OnInputClicked(SignalInputClicked signal)
+		private void OnInputClicked(SignalInputUnPressed signal)
 		{
-			if (IsBuildingProcess)
+			if (IsBuildingProcess && isReady)
 			{
-				if(signal.input == InputType.BuildingAccept)
+				if(signal.input == InputType.Escape)
+				{
+					Reject();
+				}
+				else if (signal.input == InputType.BuildingAccept)
 				{
 					Accept();
 				}
@@ -224,36 +228,15 @@ namespace Game.Systems.BuildingSystem
 		public class Factory : IFactory<ConstructionBlueprint, IConstruction>
 		{
 			private DiContainer container;
-			private List<ConstructionBlueprint> blueprints;
 
-			public Factory(DiContainer container, BuildingSystemSettings settings)
+			public Factory(DiContainer container)
 			{
 				this.container = container;
-				blueprints = settings.blueprints;
 			}
 
 			public IConstruction Create(ConstructionBlueprint param)
 			{
-				IConstruction construction = null;
-
-				if (blueprints.Any((x) => x == param))
-				{
-					construction = container.InstantiatePrefab(param.model).GetComponent<IConstruction>();
-				}
-
-				return construction;
-			}
-
-			public IConstruction Create<T>() where T : IConstruction
-			{
-				for (int i = 0; i < blueprints.Count; i++)
-				{
-					if(blueprints[i].model is T)
-					{
-						return container.InstantiatePrefab(blueprints[i].model).GetComponent<IConstruction>();
-					}
-				}
-				return null;
+				return container.InstantiatePrefab(param.model).GetComponent<IConstruction>();
 			}
 		}
 	}
@@ -266,14 +249,5 @@ namespace Game.Systems.BuildingSystem
 		[Space]
 		public Material accept;
 		public Material reject;
-
-		[Space]
-		public List<ConstructionBlueprint> blueprints = new List<ConstructionBlueprint>();
-		
-	}
-	[System.Serializable]
-	public class ConstructionBlueprint
-	{
-		public ConstructionModel model;
 	}
 }

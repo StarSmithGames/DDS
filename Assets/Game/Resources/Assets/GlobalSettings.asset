@@ -27,6 +27,9 @@ MonoBehaviour:
       jumpKey: 32
       interactionKey: 101
       inventoryKey: 105
+      radialMenuKey: 9
+      buildingAcceptKey: 323
+      buildingRejectKey: 324
       useRawInput: 1
     mobile:
       invertHorizontalInput: 0

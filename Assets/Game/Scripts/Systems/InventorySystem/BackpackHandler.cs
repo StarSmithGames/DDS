@@ -15,6 +15,8 @@ public class BackpackHandler : IInitializable, IDisposable
 	private UIPlayerInventoryWindow playerInventoryWindow;
 	private InventoryType inventoryType;
 
+	private bool isInventoryWindowOpened = false;
+
 	private SignalBus signalBus;
 	private UIManager uiManager;
 	private Player player;
@@ -42,7 +44,7 @@ public class BackpackHandler : IInitializable, IDisposable
 		signalBus?.Subscribe<SignalUIInventoryDrop>(OnItemDroped);
 		signalBus?.Subscribe<SignalUIWindowsBack>(OnWindowsBack);
 
-		signalBus?.Subscribe<SignalInputClicked>(OnInputClicked);
+		signalBus?.Subscribe<SignalInputUnPressed>(OnInputClicked);
 	}
 
 	public void Dispose()
@@ -51,7 +53,30 @@ public class BackpackHandler : IInitializable, IDisposable
 		signalBus?.Unsubscribe<SignalUIInventoryDrop>(OnItemDroped);
 		signalBus?.Unsubscribe<SignalUIWindowsBack>(OnWindowsBack);
 
-		signalBus?.Unsubscribe<SignalInputClicked>(OnInputClicked);
+		signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputClicked);
+	}
+
+	public void OpenWindow()
+	{
+		player.Freeze();
+		player.DisableVision();
+		uiManager.Controls.DisableButtons();
+
+		playerInventoryWindow.ItemViewer.SetItem(null);
+		ReOrganizeSpace(InventoryType.InventoryWithViewer);
+		uiManager.WindowsManager.Show<UIPlayerInventoryWindow>();
+		isInventoryWindowOpened = true;
+	}
+
+	public void CloseWindow()
+	{
+		playerInventoryWindow.ItemViewer.SetItem(null);
+		playerInventoryWindow.Container.SetInventory(null);
+		player.UnFreeze();
+		player.EnableVision();
+		uiManager.Controls.EnableButtons();
+		uiManager.WindowsManager.Hide<UIPlayerInventoryWindow>();
+		isInventoryWindowOpened = false;
 	}
 
 	public void SetContainerInventory(IInventory inventory)
@@ -62,6 +87,7 @@ public class BackpackHandler : IInitializable, IDisposable
 		playerInventoryWindow.Container.SetInventory(inventory);
 		ReOrganizeSpace(InventoryType.InventoryWithContainer);
 		uiManager.WindowsManager.Show<UIPlayerInventoryWindow>();
+		isInventoryWindowOpened = true;
 	}
 
 	public void ReOrganizeSpace(InventoryType type)
@@ -111,24 +137,25 @@ public class BackpackHandler : IInitializable, IDisposable
 
 	private void OnWindowsBack(SignalUIWindowsBack signal)
 	{
-		playerInventoryWindow.ItemViewer.SetItem(null);
-		playerInventoryWindow.Container.SetInventory(null);
-		player.UnFreeze();
-		player.EnableVision();
-		uiManager.Controls.EnableButtons();
+		CloseWindow();
 	}
 
-	private void OnInputClicked(SignalInputClicked signal)
+	private void OnInputClicked(SignalInputUnPressed signal)
 	{
-		if(signal.input == InputType.Inventory)
+		if(signal.input == InputType.Escape && isInventoryWindowOpened)
 		{
-			player.Freeze();
-			player.DisableVision();
-			uiManager.Controls.DisableButtons();
-
-			playerInventoryWindow.ItemViewer.SetItem(null);
-			ReOrganizeSpace(InventoryType.InventoryWithViewer);
-			uiManager.WindowsManager.Show<UIPlayerInventoryWindow>();
+			CloseWindow();
+		}
+		else if (signal.input == InputType.Inventory)
+		{
+			if (isInventoryWindowOpened)
+			{
+				CloseWindow();
+			}
+			else
+			{
+				OpenWindow();
+			}
 		}
 	}
 

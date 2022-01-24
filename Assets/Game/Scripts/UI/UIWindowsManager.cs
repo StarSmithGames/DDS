@@ -35,7 +35,13 @@ public class UIWindowsManager : MonoBehaviour
     }
     public void Hide<T>() where T : IWindow
     {
-        Check<T>().Hide<T>();
+        var w = Check<T>();
+        w.Hide<T>();
+
+		if (w.IsAllHided())
+		{
+            w.gameObject.SetActive(false);
+        }
     }
 
     public T GetAs<T>() where T : class, IWindow

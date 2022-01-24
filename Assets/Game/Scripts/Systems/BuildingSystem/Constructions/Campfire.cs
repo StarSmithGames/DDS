@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class Campfire : ConstructionModel
+namespace Game.Systems.BuildingSystem
 {
-    
+    public class Campfire : ConstructionModel
+    {
+
+    }
 }

@@ -69,6 +69,16 @@ public class UIWindows : MonoBehaviour
         return Get<T>() as T;
     }
 
+    public bool IsAllHided()
+	{
+		for (int i = 0; i < windows.Count; i++)
+		{
+            if (windows[i].gameObject.activeSelf) return false;
+		}
+        return true;
+	}
+
+
 
     private void OnBack()
     {
