@@ -19,13 +19,13 @@ namespace Game.Systems.IgnitionSystem
 		public bool IsOpened => isOpened;
 		private bool isOpened = false;
 
-		private bool isReady = false;
-
 		public bool IsIgnitionProcess => ignitionCoroutine != null;
 		private Coroutine ignitionCoroutine = null;
 
 		private UIIgnitionWindow window;
 		private FireConstruction fireConstruction;
+
+		private float successChance = 0;
 
 		private SignalBus signalBus;
 		private UIManager uiManager;
@@ -50,6 +50,8 @@ namespace Game.Systems.IgnitionSystem
 			window.StartButton.onClick.AddListener(OnStartButtonClicked);
 			window.BackButton.onClick.AddListener(OnBackButtonClicked);
 
+			signalBus?.Subscribe<SignalUIIgnitionSlotItemChanged>(OnSlotChanged);
+
 			signalBus?.Subscribe<SignalInputUnPressed>(OnInputUnPressed);
 		}
 
@@ -57,6 +59,8 @@ namespace Game.Systems.IgnitionSystem
 		{
 			window.StartButton.onClick.RemoveAllListeners();
 			window.BackButton.onClick.RemoveAllListeners();
+
+			signalBus?.Unsubscribe<SignalUIIgnitionSlotItemChanged>(OnSlotChanged);
 
 			signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputUnPressed);
 		}
@@ -159,14 +163,23 @@ namespace Game.Systems.IgnitionSystem
 		private void ExchangeOnStart()
 		{
 			var starter = window.Starter.CurrentItem;
-			if (starter.CurrentStackSize - 1 == 0)
+
+			if (starter.ItemData.isStackable)
 			{
-				player.Status.Inventory.Remove(starter);
+				if (starter.CurrentStackSize - 1 == 0)
+				{
+					player.Status.Inventory.Remove(starter);
+				}
+				else
+				{
+					starter.CurrentStackSize -= 1;
+				}
 			}
 			else
 			{
-				starter.CurrentStackSize -= 1;
+				player.Status.Inventory.Remove(starter);
 			}
+
 
 			if (!window.Accelerant.IsEmpty)
 			{
@@ -176,9 +189,55 @@ namespace Game.Systems.IgnitionSystem
 
 		private void ExchangeOnComplete()
 		{
+			var fuel = window.Fuel.CurrentItem;
+			var tinder = window.Tinder.CurrentItem;
+			var accelerant = window.Accelerant.CurrentItem;
+
+			if (fuel.CurrentStackSize - 1 == 0)
+			{
+				player.Status.Inventory.Remove(fuel);
+			}
+			else
+			{
+				fuel.CurrentStackSize -= 1;
+			}
+
+			if (tinder.CurrentStackSize - 1 == 0)
+			{
+				player.Status.Inventory.Remove(tinder);
+			}
+			else
+			{
+				tinder.CurrentStackSize -= 1;
+			}
+		}
+
+		private void ExchangeItem()
+		{
 
 		}
 
+		private void OnSlotChanged(SignalUIIgnitionSlotItemChanged signal)
+		{
+			float playerBaseChance = 40;
+			successChance = playerBaseChance;
+
+			for (int i = 0; i < window.IgnitionSlots.Count; i++)
+			{
+				if (!window.IgnitionSlots[i].IsEmpty)
+				{
+					FireItemData fireData = window.IgnitionSlots[i].CurrentItem.ItemData as FireItemData;
+
+					successChance += fireData.chance;
+				}
+			}
+
+			successChance = successChance > 100 ? 100 : successChance;
+
+			window.BaseChance.text = playerBaseChance + "%";
+			window.SuccessChance.text = successChance + "%";
+			window.Duration.text = "10D";
+		}
 
 		private void OnBackButtonClicked()
 		{

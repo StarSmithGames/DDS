@@ -11,11 +11,12 @@ namespace Game.Systems.IgnitionSystem
 {
     public class UIIgnitionSlot : MonoBehaviour
     {
-        public bool IsEmpty => items?.Count == 0;
+        public bool IsEmpty => CurrentItem == null;
         public Item CurrentItem => currentItem;
 
         [SerializeField] private Image empty;
         [SerializeField] private Image icon;
+        [SerializeField] private TMPro.TextMeshProUGUI itemType;
         [SerializeField] private TMPro.TextMeshProUGUI itemName;
         [SerializeField] private TMPro.TextMeshProUGUI itemStackSize;
         [SerializeField] private Button buttonLeft;
@@ -50,47 +51,48 @@ namespace Game.Systems.IgnitionSystem
             currentIndex = 0;
             currentItem = null;
 
-            UpdateIcon();
-            UpdateInfo();
+            UpdateItemInfo();
             UpdateButtons();
         }
 
-        private void UpdateIcon()
+        private void UpdateItemInfo()
 		{
+            currentItem = items.Count > 0 ? items[currentIndex] : null;
+
             empty.enabled = IsEmpty;
             icon.enabled = !IsEmpty;
-        }
-        private void UpdateInfo()
-		{
+
+            itemName.enabled = itemStackSize.enabled = itemType.enabled = !IsEmpty;
+
             if (!IsEmpty)
             {
-                currentItem = items[currentIndex];
-
                 var texts = currentItem.ItemData.GetLocalization(localization.CurrentLanguage);
 
                 icon.sprite = currentItem.ItemData.itemSprite;
                 itemName.text = texts.itemName;
-                itemStackSize.text = currentItem.CurrentStackSize + " of " + currentItem.MaximumStackSize;
+                itemStackSize.text = currentItem.ItemData.isStackable && itemStackSize.enabled ? currentItem.CurrentStackSize + " of " + currentItem.MaximumStackSize : "";
+
+                signalBus?.Fire(new SignalUIIgnitionSlotItemChanged());
             }
         }
 
         private void UpdateButtons()
 		{
             buttonLeft.gameObject.SetActive(!IsEmpty && currentIndex > 0);
-            buttonRight.gameObject.SetActive(!IsEmpty && currentIndex < items.Count);
+            buttonRight.gameObject.SetActive(!IsEmpty && currentIndex < items.Count - 1);
         }
 
         private void OnButtonLeftClicked()
 		{
             currentIndex--;
             UpdateButtons();
-            UpdateInfo();
+            UpdateItemInfo();
         }
         private void OnButtonRightClicked()
 		{
             currentIndex++;
             UpdateButtons();
-            UpdateInfo();
+            UpdateItemInfo();
         }
     }
 }

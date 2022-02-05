@@ -17,17 +17,27 @@ namespace Game.Systems.IgnitionSystem
         }
 
         public UIIgnitionSlot Starter => starter;
-        [SerializeField] private UIIgnitionSlot starter;
         public UIIgnitionSlot Tinder => tinder;
-        [SerializeField] private UIIgnitionSlot tinder;
         public UIIgnitionSlot Fuel => fuel;
-        [SerializeField] private UIIgnitionSlot fuel;
         public UIIgnitionSlot Accelerant => accelerant;
-        [SerializeField] private UIIgnitionSlot accelerant;
+
+        public TMPro.TextMeshProUGUI BaseChance => baseChance;
+        public TMPro.TextMeshProUGUI SuccessChance => successChance;
+        public TMPro.TextMeshProUGUI Duration => duration;
 
         public Button StartButton => startButton;
-        [SerializeField] private Button startButton;
         public Button BackButton => backButton;
+
+        [SerializeField] private UIIgnitionSlot starter;
+        [SerializeField] private UIIgnitionSlot tinder;
+        [SerializeField] private UIIgnitionSlot fuel;
+        [SerializeField] private UIIgnitionSlot accelerant;
+        [Space]
+        [SerializeField] private TMPro.TextMeshProUGUI baseChance;
+        [SerializeField] private TMPro.TextMeshProUGUI successChance;
+        [SerializeField] private TMPro.TextMeshProUGUI duration;
+        [Space]
+        [SerializeField] private Button startButton;
         [SerializeField] private Button backButton;
-    }
+	}
 }

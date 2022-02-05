@@ -15203,6 +15203,9 @@ MonoBehaviour:
   tinder: {fileID: 8510618294680375221}
   fuel: {fileID: 877857220506254932}
   accelerant: {fileID: 1171400506238406313}
+  baseChance: {fileID: 2073333618628322411}
+  successChance: {fileID: 5941430496383148701}
+  duration: {fileID: 3393770650643874082}
   startButton: {fileID: 4141605310903212601}
   backButton: {fileID: 7472876552877230049}
 --- !u!1 &8535847695983004228

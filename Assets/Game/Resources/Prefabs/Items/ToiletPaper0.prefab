@@ -11,8 +11,10 @@ GameObject:
   - component: {fileID: 2652970866307426233}
   - component: {fileID: 5740129260027838867}
   - component: {fileID: 7880311873230662053}
+  - component: {fileID: -8289814973324478054}
+  - component: {fileID: 4330463029466329488}
   m_Layer: 0
-  m_Name: Toilet paper
+  m_Name: ToiletPaper0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -81,3 +83,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!135 &-8289814973324478054
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887309033913717999}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.07
+  m_Center: {x: -0.002, y: 0.05, z: 0}
+--- !u!114 &4330463029466329488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 887309033913717999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90716de729df4c54f90620943d89aa3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  item:
+    useRandom: 0
+    data: {fileID: 11400000, guid: 6ce80efb4973f0840b46f89864fa91fd, type: 2}
+    currentStackSize: 1
+    currentWeight: 0.01
+    currentDurability: 100
+    currentCalories: 0
+    currentMagazineCapacity: 15
+  coll: {fileID: -8289814973324478054}

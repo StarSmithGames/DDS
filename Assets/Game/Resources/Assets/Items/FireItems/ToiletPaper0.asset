@@ -9,19 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b049b0d50feb44241a1159e13bc9c376, type: 3}
-  m_Name: Book1
+  m_Script: {fileID: 11500000, guid: 8dc25c53c821d0648909cba860663cf1, type: 3}
+  m_Name: ToiletPaper0
   m_EditorClassIdentifier: 
-  itemSprite: {fileID: 21300000, guid: 6085c84b4053ff54f873e9c2da8f9e75, type: 3}
+  itemSprite: {fileID: 21300000, guid: b57e7b19f0c93a74b838a1ca8b65d908, type: 3}
   localizations:
   - language: 10
-    itemName: Book
-    itemDescription: Eventually, a source of knowledge. For now, something to burn
-      when you are freezing.
+    itemName: Toiliet paper
+    itemDescription: Yes it is. You can use it like tinder.
   interact:
     interactionType: 2
     holdDuration: 0
-  prefab: {fileID: 5784095928651246102, guid: 5faa6d6a4ab3a71478dc48b14d29f243, type: 3}
+  prefab: {fileID: 4330463029466329488, guid: 254fb96242d963d4bbb7fb3150e98c75, type: 3}
   prefabPossitionOffsetView: {x: 0, y: 0, z: 0}
   prefabRotationOffsetView: {x: 0, y: 0, z: 0, w: 0}
   isStackable: 0
@@ -30,11 +29,10 @@ MonoBehaviour:
   isInfinityWeight: 0
   isFloatingWeight: 0
   baseWeight: 0.25
-  weight: 0.25
+  weight: 0.1
   isBreakable: 0
   decay:
     decayOverTime: 0
     decayInside: 0
     decayOutsie: 0
-  chance: 35
-  addTemperature: 0
+  chance: 5

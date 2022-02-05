@@ -68,6 +68,7 @@ namespace Game.Installers
 		{
 			Container.DeclareSignal<SignalUIIgnitionBack>();
 			Container.DeclareSignal<SignalUIIgnitionStartFire>();
+			Container.DeclareSignal<SignalUIIgnitionSlotItemChanged>();
 
 
 			Container.BindInterfacesAndSelfTo<IgnitionHandler>().AsSingle();
