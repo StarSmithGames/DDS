@@ -82,7 +82,6 @@ namespace Game.Systems.BuildingSystem
 		public void SetConstruction(IConstruction construction)
 		{
 			currentConstruction = construction;
-			currentConstruction.IsPlaced = false;
 
 			player.DisableVision();
 			uiManager.WindowsManager.Show<UIBuildingWindow>();
@@ -250,7 +249,9 @@ namespace Game.Systems.BuildingSystem
 
 			public IConstruction Create(ConstructionBlueprint param)
 			{
-				return container.InstantiatePrefab(param.model).GetComponent<IConstruction>();
+				IConstruction construction = container.InstantiatePrefab(param.model).GetComponent<IConstruction>();
+				construction.IsCreated = true;
+				return construction;
 			}
 		}
 	}

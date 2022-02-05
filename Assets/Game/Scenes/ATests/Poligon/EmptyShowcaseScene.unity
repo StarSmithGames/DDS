@@ -27492,6 +27492,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5652316711907895074, guid: 64e3889b2095df84cb5eda9013c99508, type: 3}
+      propertyPath: isFireEnableOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5956387940662396958, guid: 64e3889b2095df84cb5eda9013c99508, type: 3}
       propertyPath: m_RootOrder
       value: 2

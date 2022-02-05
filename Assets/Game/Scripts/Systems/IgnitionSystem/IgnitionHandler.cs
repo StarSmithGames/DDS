@@ -11,6 +11,7 @@ using System.Linq;
 using Game.Systems.InventorySystem;
 using System.Collections.Generic;
 using UnityEditor.PackageManager.UI;
+using UnityEngine.Events;
 
 namespace Game.Systems.IgnitionSystem
 {
@@ -143,6 +144,7 @@ namespace Game.Systems.IgnitionSystem
 			}
 
 			ExchangeOnComplete();
+			fireConstruction.IsCompleted = true;
 
 			uiManager.Targets.Filler.HideFiller();
 
@@ -244,6 +246,12 @@ namespace Game.Systems.IgnitionSystem
 			if (isOpened && !IsIgnitionProcess)
 			{
 				CloseIgnition();
+
+				if (!fireConstruction.IsCompleted)
+				{
+					GameObject.Destroy(fireConstruction.gameObject);
+					fireConstruction = null;
+				}
 			}
 		}
 

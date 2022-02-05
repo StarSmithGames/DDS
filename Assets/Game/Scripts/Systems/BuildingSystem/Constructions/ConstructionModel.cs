@@ -1,4 +1,6 @@
 
+using Sirenix.OdinInspector;
+
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -9,15 +11,12 @@ namespace Game.Systems.BuildingSystem
 {
 	public class ConstructionModel : MonoBehaviour, IConstruction
 	{
-		[SerializeField] protected ConstructionData constructionData;
-		public ConstructionData ConstructionData => constructionData;
+		public virtual bool IsCreated { get => isCreated; set => isCreated = value; }
+		protected bool isCreated = false;
 
-		public Transform Transform => transform;
-
-		public List<Collider> Intersections { get; private set; }
-		public bool IsIntersectsColliders { get => Intersections.Count > 0; }
-		[SerializeField] protected bool isPlaced = true;
-		public bool IsPlaced
+		[InfoBox("Всегда true если объект стоит в мире.", InfoMessageType.Warning)]
+		[SerializeField] [ReadOnly] protected bool isPlaced = true;
+		public virtual bool IsPlaced
 		{
 			get => isPlaced;
 			set
@@ -30,6 +29,15 @@ namespace Game.Systems.BuildingSystem
 				}
 			}
 		}
+
+		[SerializeField] protected ConstructionData constructionData;
+		public ConstructionData ConstructionData => constructionData;
+
+		public Transform Transform => transform;
+
+		public List<Collider> Intersections { get; private set; }
+		public bool IsIntersectsColliders { get => Intersections.Count > 0; }
+
 
 		[SerializeField] protected Collider coll;
 		[SerializeField] private List<Renderer> renderers = new List<Renderer>();

@@ -5018,5 +5018,5 @@ MonoBehaviour:
   renderers:
   - {fileID: 4819550455808242545}
   - {fileID: 473821923492173592}
-  isEnableOnAwake: 0
+  isFireEnableOnAwake: 0
   particles: {fileID: 3723124393099487982}

@@ -7,7 +7,6 @@ public interface IIntersectable
 	List<Collider> Intersections { get; }
 
 	Transform Transform { get; }
-	bool IsPlaced { get; set; }
 	bool IsIntersectsColliders { get; }
 
 
