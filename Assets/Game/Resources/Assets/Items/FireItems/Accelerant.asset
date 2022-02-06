@@ -33,4 +33,11 @@ MonoBehaviour:
     decayInside: 0
     decayOutsie: 0
   chance: 0
-  holdTime: 0
+  ignitionTime:
+    days: 0
+    hours: 0
+    minutes: 0
+    seconds: 300
+    currentState: 4
+    totalSeconds: 300
+  holdTime: 3

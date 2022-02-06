@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 189c2418b51ae1640978cf30f1c2c0d9, type: 3}
+  m_Name: WeatherSystemInstaller
+  m_EditorClassIdentifier: 
+  settings:
+    forecast:
+      daysCount: 32
+      daysForecasts:
+      - morning:
+          weather:
+            air:
+              airTemperature: 0
+            wind:
+              windchill: 0
+              windSpeed: 0
+              windDirection: {x: 0, y: 0, z: 0}
+              windAngle: 0
+              windSpeedType: 0
+              windDirectionType: 0
+            precipitation: 0
+            humidity: 0
+        afternoon:
+          weather:
+            air:
+              airTemperature: 0
+            wind:
+              windchill: 0
+              windSpeed: 0
+              windDirection: {x: 0, y: 0, z: 0}
+              windAngle: 0
+              windSpeedType: 0
+              windDirectionType: 0
+            precipitation: 0
+            humidity: 0
+        evening:
+          weather:
+            air:
+              airTemperature: 0
+            wind:
+              windchill: 0
+              windSpeed: 0
+              windDirection: {x: 0, y: 0, z: 0}
+              windAngle: 0
+              windSpeedType: 0
+              windDirectionType: 0
+            precipitation: 0
+            humidity: 0
+        night:
+          weather:
+            air:
+              airTemperature: 0
+            wind:
+              windchill: 0
+              windSpeed: 0
+              windDirection: {x: 0, y: 0, z: 0}
+              windAngle: 0
+              windSpeedType: 0
+              windDirectionType: 0
+            precipitation: 0
+            humidity: 0
+      expectedTemperature: {x: 0, y: 0}
+      deviation: {x: 0, y: 0}
+      expectedTemperatureCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      expectedWindCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      temperatureDayCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      temperatureNightCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+    pressetClear: {fileID: 0}
+    pressetSnowFall: {fileID: 0}
+    pressetFog: {fileID: 0}
+    pressetBlizzard: {fileID: 0}
+  fogController:
+    fog: 0
+    fogGlobal: {fileID: 2100000, guid: ab899d455520a7e4db002571c8685049, type: 2}
+    data: {fileID: 11400000, guid: b124199f034d2b446b5191f5f55e04e1, type: 2}
+    currentRange: 0.186
+    currentColor: {r: 1, g: 1, b: 1, a: 1}

@@ -10,6 +10,7 @@ namespace Game.Systems.InventorySystem
 	{
 		public UnityAction OnItemChanged;
 
+		[ShowIf("IsCanBeRandom")]
 		public bool useRandom = false;
 		public ItemData ItemData => data;
 		[Required]
@@ -179,6 +180,8 @@ namespace Game.Systems.InventorySystem
 		private bool IsInfinityWeight => data?.isInfinityWeight ?? false;
 		private bool IsFloatingWeight => data?.isFloatingWeight ?? false;
 		private bool IsBreakable => data?.isBreakable ?? false;
+
+		private bool IsCanBeRandom => IsStackable || IsBreakable || IsConsumable || IsWeapon;
 
 		private void OnDataChanged()
 		{
