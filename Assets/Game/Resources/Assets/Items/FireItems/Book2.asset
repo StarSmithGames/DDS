@@ -38,3 +38,10 @@ MonoBehaviour:
     decayOutsie: 0
   chance: 35
   addTemperature: 0
+  addFireTime:
+    days: 0
+    hours: 0
+    minutes: 18
+    seconds: 0
+    currentState: 4
+    totalSeconds: 1080

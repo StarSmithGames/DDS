@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 public class UITargets : MonoBehaviour
 {
+
+    public UITargetInformation TargetInformation => targetInformation;
+
     [SerializeField] private Image target;
     public UITargetFiller Filler => filler;
     [SerializeField] private UITargetFiller filler;

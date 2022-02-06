@@ -16,6 +16,8 @@ namespace Game.Systems.BuildingSystem
 		public bool IsOpened => isOpened;
 		private bool isOpened = false;
 
+		private bool isAllowed = false;
+
 		private IConstruction currentConstruction;
 		private ConstructionBlueprint currentBlueprint;
 
@@ -82,6 +84,7 @@ namespace Game.Systems.BuildingSystem
 		public void SetConstruction(IConstruction construction)
 		{
 			currentConstruction = construction;
+			currentConstruction.IsPlaced = false;
 
 			player.DisableVision();
 			uiManager.WindowsManager.Show<UIBuildingWindow>();
@@ -150,14 +153,9 @@ namespace Game.Systems.BuildingSystem
 				currentConstruction.Transform.position = lastPosition;
 				currentConstruction.Transform.rotation = lastRotation;
 
-				if (CheckPlacementAngle(lastAngle) && !currentConstruction.IsIntersectsColliders)
-				{
-					currentConstruction.SetMaterial(settings.accept);
-				}
-				else
-				{
-					currentConstruction.SetMaterial(settings.reject);
-				}
+				isAllowed = CheckPlacementAngle(lastAngle) && !currentConstruction.IsIntersectsColliders;
+
+				currentConstruction.SetMaterial(isAllowed ? settings.accept : settings.reject);
 
 				return true;
 			}
@@ -179,6 +177,8 @@ namespace Game.Systems.BuildingSystem
 
 		private void Accept()
 		{
+			if (!isAllowed) return;
+
 			StopBuild();
 			player.EnableVision();
 			uiManager.WindowsManager.Hide<UIBuildingWindow>();

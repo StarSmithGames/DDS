@@ -55,6 +55,18 @@ namespace Game.Systems.IgnitionSystem
             UpdateButtons();
         }
 
+        public void Block()
+		{
+            buttonLeft.enabled = false;
+            buttonRight.enabled = false;
+        }
+
+        public void UnBlock()
+		{
+            buttonLeft.enabled = true;
+            buttonRight.enabled = true;
+        }
+
         private void UpdateItemInfo()
 		{
             currentItem = items.Count > 0 ? items[currentIndex] : null;

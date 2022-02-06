@@ -19,12 +19,8 @@ MonoBehaviour:
   interact:
     interactionType: 0
     holdDuration: 0
-  minIgnition:
-    interactionType: 4
-    holdDuration: 1
-  maxIgnition:
-    interactionType: 4
-    holdDuration: 5
+  minIgnitionTime: 1
+  maxIgnitionTime: 5
   maxTemperature: 80
   maxFireTime:
     days: 0

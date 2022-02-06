@@ -68,7 +68,7 @@ namespace Game.Systems.BuildingSystem
 			Debug.LogError("Interact");
 		}
 
-		public void StartObserve()
+		public virtual void StartObserve()
 		{
 			if (IsPlaced)
 			{
@@ -79,7 +79,7 @@ namespace Game.Systems.BuildingSystem
 
 		public virtual void Observe() { }
 
-		public void EndObserve()
+		public virtual void EndObserve()
 		{
 			if (IsPlaced)
 			{

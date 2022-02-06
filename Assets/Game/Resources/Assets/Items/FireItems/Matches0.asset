@@ -44,6 +44,7 @@ MonoBehaviour:
     seconds: 0
     currentState: 4
     totalSeconds: 300
+  holdTime: 5
   addFireTime:
     days: 0
     hours: 0

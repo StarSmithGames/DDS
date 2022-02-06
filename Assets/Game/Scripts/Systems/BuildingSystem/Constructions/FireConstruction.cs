@@ -2,6 +2,8 @@ using Game.Systems.IgnitionSystem;
 
 using Newtonsoft.Json.Linq;
 
+using System.Collections;
+
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -31,13 +33,28 @@ namespace Game.Systems.BuildingSystem
 		public bool IsCompleted { get => isCompleted; set => isCompleted = value; }
 		private bool isCompleted = false;
 
-		public bool IsFireEnabled => isFireEnabled;
+		public bool IsFireEnabled 
+		{
+			get => isFireEnabled;
+			set
+			{
+				isFireEnabled = value;
+				particles.SetActive(isFireEnabled);
+			}
+		}
 		private bool isFireEnabled = false;
 
         [SerializeField] private bool isFireEnableOnAwake = false;
         [SerializeField] private GameObject particles;
 
-        private SignalBus signalBus;
+		public bool IsFireProcess => isFireProcess;
+		private bool isFireProcess = false;
+
+		private TimeSystem.TimeEvent timeEvent;
+		private TimeSystem.Time fireDuration;
+		private TimeSystem.Time oneSecond = new TimeSystem.Time() { TotalSeconds = 1 };
+
+		private SignalBus signalBus;
         private TimeSystem.TimeSystem timeSystem;
 		private IgnitionHandler ignitionHandler;
 
@@ -50,15 +67,17 @@ namespace Game.Systems.BuildingSystem
 
 			if (IsPlaced)
 			{
-				isFireEnabled = isFireEnableOnAwake;
+				IsFireEnabled = isFireEnableOnAwake;
 				isCompleted = true;
-
-				particles.SetActive(isFireEnabled);
 			}
 			else
 			{
 				particles.SetActive(false);
 			}
+
+			TimeSystem.TimeEvent timeEvent = new TimeSystem.TimeEvent() { isInfinity = true, triggerTime = new TimeSystem.Time() { TotalSeconds = 1 }, onTrigger = FireTick };
+
+			timeSystem.AddEvent(timeEvent);
 		}
 
 		private void OnDestroy()
@@ -70,13 +89,69 @@ namespace Game.Systems.BuildingSystem
 		{
 			if (isFireEnabled)
 			{
-				Debug.LogError("Window fire cooking");
 			}
 			else
 			{
-				Debug.LogError("Window firing");
 				ignitionHandler.SetIgnition(this);
 			}
+		}
+
+		public override void StartObserve()
+		{
+			if (IsPlaced)
+			{
+				var text = constructionData.GetLocalization(localization.CurrentLanguage);
+
+				if (isFireProcess)
+				{
+					uiManager.Targets.ShowTargetInformation(text.constructionName, fireDuration.ToStringSimplification(showSecs: true));
+				}
+				else
+				{
+					uiManager.Targets.ShowTargetInformation(text.constructionName);
+				}
+			}
+		}
+
+		public override void Observe()
+		{
+			base.Observe();
+
+			if (IsPlaced)
+			{
+				if (isFireProcess)
+				{
+					StartObserve();//update target information
+				}
+			}
+		}
+
+		public void StartFire(TimeSystem.Time fireDuration)
+		{
+			this.fireDuration = fireDuration;
+			IsFireEnabled = true;
+			isFireProcess = true;
+		}
+
+		private void FireTick()
+		{
+			if (isFireProcess)
+			{
+				fireDuration -= oneSecond;
+
+				if(fireDuration.TotalSeconds == 0)
+				{
+					StopFire();
+				}
+			}
+		}
+
+		public void StopFire()
+		{
+			IsFireEnabled = false;
+			isFireProcess = false;
+
+			StartObserve();
 		}
 	}
 }

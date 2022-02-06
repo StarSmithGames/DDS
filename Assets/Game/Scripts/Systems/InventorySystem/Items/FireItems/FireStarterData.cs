@@ -7,8 +7,11 @@ namespace Game.Systems.InventorySystem
     {
         [Tooltip("Время отведённое на розжиг.")]
         public TimeSystem.Time ignitionTime = new TimeSystem.Time() { Seconds = 300 };
-
-        [Tooltip("Дополнительное временя к горению.")]
+        [Min(1f)]
+        [Tooltip("Сколько секунд розжигать.")]
+        public float holdTime;
+        [Space]
+        [Tooltip("Добавочное время к горению огня.")]
 		public TimeSystem.Time addFireTime;
 	}
 }

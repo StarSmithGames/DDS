@@ -8,7 +8,7 @@ namespace Game.Systems.InventorySystem
         [Range(0, 21f)]
         public float addTemperature = 0;
 
-        //[Tooltip("К времени горения.")]
-        //public Times addFireTime;
-    }
+		[Tooltip("Добавочное время к горению огня.")]
+		public TimeSystem.Time addFireTime;
+	}
 }

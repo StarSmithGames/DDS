@@ -1,4 +1,5 @@
 using Game.Systems.RadialMenu;
+using Game.Systems.TimeSystem;
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -32,11 +33,13 @@ public class UIManager : MonoBehaviour
     [SerializeField] private UIWindowsManager windowsManager;
 
     private SignalBus signalBus;
+    private TimeSystem timeSystem;
 
     [Inject]
-    private void Construct(SignalBus signalBus, GlobalSettings globalSettings)
+    private void Construct(SignalBus signalBus, TimeSystem timeSystem, GlobalSettings globalSettings)
 	{
         this.signalBus = signalBus;
+        this.timeSystem = timeSystem;
 
         Controls.ButtonA.Hide();
 
@@ -53,4 +56,12 @@ public class UIManager : MonoBehaviour
             Controls.PlayerMove.gameObject.SetActive(false);
         }
     }
+
+	private void OnGUI()
+	{
+		if(timeSystem != null)
+		{
+            GUI.Box(new Rect(Screen.width/2, 50, 100, 30), timeSystem.GlobalTime.ConvertTime().ToString());
+        }
+	}
 }

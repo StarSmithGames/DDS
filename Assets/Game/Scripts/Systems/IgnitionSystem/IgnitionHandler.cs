@@ -26,21 +26,28 @@ namespace Game.Systems.IgnitionSystem
 		private UIIgnitionWindow window;
 		private FireConstruction fireConstruction;
 
+		private float playerBaseChance = 40f;
 		private float successChance = 0;
+		private float holdTime = 0;
+		private TimeSystem.Time ignitionDuration;
+		private TimeSystem.Time fireDuration;
 
 		private SignalBus signalBus;
 		private UIManager uiManager;
 		private AsyncManager asyncManager;
+		private TimeSystem.TimeSystem timeSystem;
 		private Player player;
 
 		public IgnitionHandler(SignalBus signalBus,
 			UIManager uiManager,
 			AsyncManager asyncManager,
+			TimeSystem.TimeSystem timeSystem,
 			Player player)
 		{
 			this.signalBus = signalBus;
 			this.uiManager = uiManager;
 			this.asyncManager = asyncManager;
+			this.timeSystem = timeSystem;
 			this.player = player;
 		}
 
@@ -99,6 +106,7 @@ namespace Game.Systems.IgnitionSystem
 		private void CloseIgnition()
 		{
 			uiManager.WindowsManager.Hide<UIIgnitionWindow>();
+			window.UnBlock();
 
 			player.EnableVision();
 			player.UnFreeze();
@@ -111,54 +119,37 @@ namespace Game.Systems.IgnitionSystem
 		{
 			if (!window.Starter.IsEmpty && !window.Tinder.IsEmpty && !window.Fuel.IsEmpty)
 			{
-				ExchangeOnStart();
+				//FireStartingConstructionData data = null;
+				//if (fireConstruction.ConstructionData is FireStartingConstructionData fireStarting)
+				//{
+				//	data = fireStarting;
+				//}
+				//Assert.IsNotNull(data, $"{fireConstruction.gameObject.name} FireStartingConstructionData is NULL");
 
-				if (!IsIgnitionProcess)
+				timeSystem.StartRewind(timeSystem.GlobalTime, timeSystem.GlobalTime + ignitionDuration, holdTime,
+				onStart: () =>
 				{
-					ignitionCoroutine = asyncManager.StartCoroutine(Ignition());
+					window.Block();
+
+					ExchangeOnStart();
+
+					uiManager.Targets.Filler.ShowFiller();
+				},
+				onProgress: (progress) =>
+				{
+					uiManager.Targets.Filler.SetFiller(progress);
+				},
+				onEnd: () =>
+				{
+					ExchangeOnComplete();
+					fireConstruction.IsCompleted = true;
+					fireConstruction.StartFire(fireDuration);
+
+					uiManager.Targets.Filler.HideFiller();
+
+					CloseIgnition();
 				}
-			}
-		}
-
-		private IEnumerator Ignition()
-		{
-			uiManager.Targets.Filler.ShowFiller();
-
-			FireStartingConstructionData data = null;
-			if (fireConstruction.ConstructionData is FireStartingConstructionData fireStarting)
-			{
-				data = fireStarting;
-			}
-			Assert.IsNotNull(data, $"{fireConstruction.gameObject.name} FireStartingConstructionData is NULL");
-
-			float t = 0;
-
-			while(t < data.maxIgnitionTime)
-			{
-				float value = t / data.maxIgnitionTime;
-
-				uiManager.Targets.Filler.SetFiller(value);
-
-				t += Time.deltaTime;
-				yield return null;
-			}
-
-			ExchangeOnComplete();
-			fireConstruction.IsCompleted = true;
-
-			uiManager.Targets.Filler.HideFiller();
-
-			CloseIgnition();
-
-			StopIgnition();
-		}
-
-		private void StopIgnition()
-		{
-			if (IsIgnitionProcess)
-			{
-				asyncManager.StopCoroutine(ignitionCoroutine);
-				ignitionCoroutine = null;
+				);
 			}
 		}
 
@@ -214,15 +205,10 @@ namespace Game.Systems.IgnitionSystem
 			}
 		}
 
-		private void ExchangeItem()
-		{
-
-		}
-
 		private void OnSlotChanged(SignalUIIgnitionSlotItemChanged signal)
 		{
-			float playerBaseChance = 40;
 			successChance = playerBaseChance;
+			fireDuration = new TimeSystem.Time();
 
 			for (int i = 0; i < window.IgnitionSlots.Count; i++)
 			{
@@ -231,6 +217,17 @@ namespace Game.Systems.IgnitionSystem
 					FireItemData fireData = window.IgnitionSlots[i].CurrentItem.ItemData as FireItemData;
 
 					successChance += fireData.chance;
+
+					if(fireData is FireStarterData starterData)
+					{
+						holdTime = starterData.holdTime;
+						ignitionDuration = starterData.ignitionTime;
+						fireDuration += starterData.addFireTime;
+					}
+					else if(fireData is FireFuelData fuelData)
+					{
+						fireDuration += fuelData.addFireTime;
+					}
 				}
 			}
 
@@ -238,7 +235,7 @@ namespace Game.Systems.IgnitionSystem
 
 			window.BaseChance.text = playerBaseChance + "%";
 			window.SuccessChance.text = successChance + "%";
-			window.Duration.text = "10D";
+			window.Duration.text = fireDuration.ToStringSimplification();
 		}
 
 		private void OnBackButtonClicked()

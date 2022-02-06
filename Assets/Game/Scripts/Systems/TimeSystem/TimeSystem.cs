@@ -22,8 +22,9 @@ namespace Game.Systems.TimeSystem
 
         public bool IsTimeProcess => timeCoroutine != null;
         private Coroutine timeCoroutine = null;
-        public bool IsPaused => isPaused;
-        private bool isPaused = false;
+        public bool IsPaused { get; private set; }
+        public bool IsRewindProcess => timeRewindCoroutine != null;
+        private Coroutine timeRewindCoroutine = null;
 
         public TimeSettings Settings => settings;
 
@@ -58,8 +59,8 @@ namespace Game.Systems.TimeSystem
             StopCycle();
         }
 
-		#region TimeCycle
-		public void StartCycle()
+        #region TimeCycle
+        private void StartCycle()
 		{
 			if (!IsTimeProcess)
 			{
@@ -68,10 +69,10 @@ namespace Game.Systems.TimeSystem
 		}
         private IEnumerator TimeCycle()
 		{
-			while (true)
-			{
-				while (isPaused)
-				{
+            while (true)
+            {
+                while (IsPaused)
+                {
                     yield return null;
                 }
 
@@ -83,15 +84,6 @@ namespace Game.Systems.TimeSystem
 
             StopCycle();
         }
-        public void PauseCycle()
-		{
-            isPaused = true;
-
-        }
-        public void UnPauseCycle()
-		{
-            isPaused = false;
-        }
         private void StopCycle()
 		{
             if (IsTimeProcess)
@@ -102,7 +94,75 @@ namespace Game.Systems.TimeSystem
         }
 		#endregion
 
-        public void AddEvent(TimeEvent timeEvent)
+        public void Pause()
+		{
+            IsPaused = true;
+        }
+
+        public void UnPause()
+		{
+            IsPaused = false;
+        }
+
+        #region Rewind
+        UnityAction onStart = null;
+        UnityAction<float> onProgress = null;
+        UnityAction onEnd = null;
+        UnityAction onBreak = null;
+		public void StartRewind(Time from, Time to, float waitRealTime, UnityAction onStart = null, UnityAction<float> onProgress = null, UnityAction onEnd = null, UnityAction onBreak = null)
+		{
+			if (!IsRewindProcess)
+			{
+                this.onStart = onStart;
+                this.onProgress = onProgress;
+                this.onEnd = onEnd;
+                this.onBreak = onBreak;
+
+                timeRewindCoroutine = asyncManager.StartCoroutine(Rewind((int)from.TotalSeconds, (int)to.TotalSeconds, waitRealTime));
+            }
+        }
+        private IEnumerator Rewind(int from, int to, float wait)
+		{
+            onStart?.Invoke();
+
+            float t = UnityEngine.Time.deltaTime;
+
+            Pause();
+
+            while (t < wait)
+			{
+                float progress = t / wait;
+
+                globalTime.TotalSeconds = Mathf.Lerp(from, to, progress);
+
+                t += UnityEngine.Time.deltaTime;
+
+                TryInvokeEvents();
+
+                onProgress?.Invoke(progress);
+
+                yield return null;
+            }
+
+            globalTime.TotalSeconds = to;
+            TryInvokeEvents();
+
+            UnPause();
+
+            onEnd?.Invoke();
+            StopRewind();
+        }
+        private void StopRewind()
+		{
+            if (!IsRewindProcess)
+            {
+                asyncManager.StopCoroutine(timeRewindCoroutine);
+                timeRewindCoroutine = null;
+            }
+        }
+		#endregion
+
+		public void AddEvent(TimeEvent timeEvent)
 		{
             timeEvents.Add(timeEvent);
         }
@@ -126,11 +186,6 @@ namespace Game.Systems.TimeSystem
                 }
 			}
 		}
-
-        private void OnGUI()
-        {
-            GUI.Box(new Rect(150, 150, 100, 30), globalTime.ConvertTime().ToString());
-        }
     }
 
     [System.Serializable]
@@ -243,13 +298,15 @@ namespace Game.Systems.TimeSystem
         }
 
         [ReadOnly] [SerializeField] private float totalSeconds;//max 2147483647 ~ 24855 дней
-        /// <summary>
-        /// Пепед тем как использовать надо убедится что выполнен ConvertSeconds()
-        /// </summary>
         public float TotalSeconds
         {
             get => totalSeconds;
-            set => totalSeconds = value;
+            set
+            {
+                totalSeconds = value;
+
+                ConvertTime();
+            }
         }
 
         public int TotalMinutes => (int)totalSeconds / 60;
@@ -261,16 +318,17 @@ namespace Game.Systems.TimeSystem
 
         public static Time operator +(Time currTime, Time addTime)
         {
-            currTime.totalSeconds += addTime.totalSeconds;
+            currTime.TotalSeconds += addTime.TotalSeconds;
 
             return currTime;
         }
         public static Time operator -(Time currTime, Time addTime)
         {
-            float result = currTime.totalSeconds;
+            float result = currTime.TotalSeconds;
             result -= addTime.totalSeconds;
             result = Mathf.Abs(result);
-            currTime.totalSeconds = result;
+            currTime.TotalSeconds = result;
+
             return currTime;
         }
 

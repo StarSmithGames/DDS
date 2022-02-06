@@ -39,5 +39,26 @@ namespace Game.Systems.IgnitionSystem
         [Space]
         [SerializeField] private Button startButton;
         [SerializeField] private Button backButton;
+
+        public void Block()
+		{
+            starter.Block();
+            tinder.Block();
+            fuel.Block();
+            accelerant.Block();
+
+            startButton.enabled = false;
+            backButton.enabled = false;
+        }
+        public void UnBlock()
+		{
+            starter.UnBlock();
+            tinder.UnBlock();
+            fuel.UnBlock();
+            accelerant.UnBlock();
+
+            startButton.enabled = true;
+            backButton.enabled = true;
+        }
 	}
 }
