@@ -152,7 +152,7 @@ namespace Funly.SkyStudio
             }
 
             // Fog.
-            if (skyProfile.IsFeatureEnabled(ProfileFeatureKeys.FogFeature))
+            /*if (skyProfile.IsFeatureEnabled(ProfileFeatureKeys.FogFeature))
             {
                 Color fogColor = skyProfile.GetColorPropertyValue(ProfilePropertyKeys.FogColorKey, normalDayTime);
                 m_SkyMaterialController.FogColor = fogColor;
@@ -164,7 +164,7 @@ namespace Funly.SkyStudio
                 {
                     RenderSettings.fogColor = fogColor;
                 }
-            }
+            }*/
 
             // Sun.
             if (skyProfile.IsFeatureEnabled(ProfileFeatureKeys.SunFeature) && sunOrbit)

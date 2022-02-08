@@ -1,8 +1,11 @@
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 using UnityEngine;
 using Zenject;
 
@@ -12,14 +15,17 @@ namespace Game.Systems.WeatherSystem
     public class WeatherSystem : IInitializable, ITickable, IDisposable
     {
         private WeatherSettings settings;
+        private FogController fogController;
 
-        public WeatherSystem(WeatherSettings settings)
+        public WeatherSystem(WeatherSettings settings, FogController fogController)
         {
             this.settings = settings;
+            this.fogController = fogController;
         }
 
         public void Initialize()
         {
+            SetWeather(settings.pressetClear);
         }
 
         public void Dispose()
@@ -28,6 +34,16 @@ namespace Game.Systems.WeatherSystem
 
         public void Tick()
         {
+        }
+
+        public void SetWeather(WeatherPresset weather)
+		{
+            fogController.SetFog(weather.fog);
+        }
+
+        public void StartTransition(WeatherPresset weather)
+		{
+            fogController.StartTransition(weather.fog, 1f);
         }
     }
 
@@ -47,23 +63,12 @@ namespace Game.Systems.WeatherSystem
 	{
         [SerializeField] private int daysCount = 32;
         [ListDrawerSettings(NumberOfItemsPerPage = 5)]
-        [SerializeField] private List<WeatherDayForecast> daysForecasts = new List<WeatherDayForecast>();
-        public WeatherDayForecast this[int index] => daysForecasts[index % daysCount];
+        [SerializeField] private List<ForecastDay> daysForecasts = new List<ForecastDay>();
+        public ForecastDay this[int index] => daysForecasts[index % daysCount];
 
-        [Title("Temperature")]
-        [SerializeField] private Vector2 expectedTemperature = Vector2.zero;
-        [Min(0)]
-        [SerializeField] private Vector2 deviation;
-
-        [SerializeField] private AnimationCurve expectedTemperatureCurve;
-
-        [Title("Wind")]
-        [SerializeField] private AnimationCurve expectedWindCurve;
-
-        [Space]
-        [SerializeField] private AnimationCurve temperatureDayCurve;
-        [SerializeField] private AnimationCurve temperatureNightCurve;
-
+        [Title("Temperature & Wind")]
+        [SerializeField] private ForecastTemperature temperature;
+        [SerializeField] private ForecastWind wind;
 
         public Weather GetWeatherByTime(float percent)
         {
@@ -91,45 +96,20 @@ namespace Game.Systems.WeatherSystem
         {
             ClearAll();
 
-            float minTemp = expectedTemperature.x;
-            float maxTemp = expectedTemperature.y;
-            float curveTimeStepNormalized = (float)1f / daysCount;
+            temperature.Generate(daysCount);
+            wind.Generate(daysCount, temperature.temperatureMinMax.x);
 
-            Keyframe[] framesDay = new Keyframe[daysCount];
-            Keyframe[] framesNight = new Keyframe[daysCount];
-            for (int i = 0; i < daysCount; i++)
-            {
-                float stepCurve = curveTimeStepNormalized * i;
+			for (int i = 0; i < daysCount; i++)
+			{
+                ForecastDay day = new ForecastDay();
 
-                WeatherDayForecast dayForecast = new WeatherDayForecast();
+				day.morning = new Weather().GetRandomWeather(temperature.mornings[i], wind.mornings[i]);
+				day.afternoon = new Weather().GetRandomWeather(temperature.afternoons[i], wind.afternoons[i]);
+				day.evening = new Weather().GetRandomWeather(temperature.evenings[i], wind.evenings[i]);
+				day.night = new Weather().GetRandomWeather(temperature.nights[i], wind.nights[i]);
 
-                float curveTemperature = Mathf.Lerp(minTemp, maxTemp, expectedTemperatureCurve.Evaluate(stepCurve));
-
-                float curveWind = expectedWindCurve.Evaluate(stepCurve) * 120f;//km/h
-
-                //temperatures
-                float minTemperature = Mathf.Clamp(curveTemperature - UnityEngine.Random.Range(deviation.x, deviation.y), minTemp, maxTemp);
-                float maxTemperature = Mathf.Clamp(curveTemperature + UnityEngine.Random.Range(deviation.x, deviation.y), minTemp, maxTemp);
-
-                dayForecast.morning.SetTemperature(maxTemperature, WeatherWind.GetRandomWind(maxTemperature, curveWind));
-                dayForecast.afternoon.SetTemperature(UnityEngine.Random.Range(minTemperature, maxTemperature), WeatherWind.GetRandomWind(maxTemperature, curveWind));
-                dayForecast.evening.SetTemperature(UnityEngine.Random.Range(minTemperature, maxTemperature), WeatherWind.GetRandomWind(maxTemperature, curveWind));
-                dayForecast.night.SetTemperature(minTemperature, WeatherWind.GetRandomWind(maxTemperature, curveWind));
-
-                //curves
-                framesDay[i] = new Keyframe(i, maxTemperature);
-                framesNight[i] = new Keyframe(i, minTemperature);
-
-                daysForecasts.Add(dayForecast);
-            }
-            //curves
-            temperatureDayCurve = new AnimationCurve(framesDay);
-            temperatureDayCurve.preWrapMode = WrapMode.Clamp;
-            temperatureDayCurve.postWrapMode = WrapMode.Clamp;
-
-            temperatureNightCurve = new AnimationCurve(framesNight);
-            temperatureNightCurve.preWrapMode = WrapMode.Clamp;
-            temperatureNightCurve.postWrapMode = WrapMode.Clamp;
+				daysForecasts.Add(day);
+			}
         }
 
         [Button]
@@ -137,31 +117,180 @@ namespace Game.Systems.WeatherSystem
         {
             daysForecasts.Clear();
         }
+
+        /// <summary>
+        ///  Three-sigma rule
+        ///  https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule
+        ///  https://answers.unity.com/questions/421968/normal-distribution-random.html
+        /// </summary>
+        public static float GetNormalDistribution(float min, float max, bool randomSign = false)
+        {
+            float mean = (min + max) / 2;
+            float sigma = (max - mean) / 3;
+
+            float result = UnityEngine.Random.Range(mean, sigma);
+
+            return randomSign ? (UnityEngine.Random.Range(0, 100) >= 50 ? -1 * result : result) : result;
+		}
+	}
+    [InlineProperty]
+    [System.Serializable]
+	public struct ForecastAnimationCurve
+    {
+        [HideLabel]
+        public AnimationCurve curve;
+
+        public void ReCreate(List<float> values)
+		{
+            List<Keyframe> frames = new List<Keyframe>();
+
+			for (int i = 0; i < values.Count; i++)
+			{
+                frames.Add(new Keyframe(i, values[i]));
+            }
+
+            ReCreate(frames);
+        }
+
+        public void ReCreate(List<Keyframe> frames)
+		{
+            curve = new AnimationCurve(frames.ToArray());
+            curve.preWrapMode = WrapMode.Clamp;
+            curve.postWrapMode = WrapMode.Clamp;
+        }
+    }
+
+
+	[System.Serializable]
+    public class ForecastTemperature
+    {
+        [HideInInspector] public List<WeatherAir> airsOnDay = new List<WeatherAir>();
+
+        [HideInInspector] public List<WeatherAir> mornings = new List<WeatherAir>();
+        [HideInInspector] public List<WeatherAir> afternoons = new List<WeatherAir>();
+        [HideInInspector] public List<WeatherAir> evenings = new List<WeatherAir>();
+        [HideInInspector] public List<WeatherAir> nights = new List<WeatherAir>();
+
+        public Vector2 temperatureMinMax;
+        public Vector2 deviationMinMax;
+
+        [SerializeField] private AnimationCurve expectedTemperatureCurve;
+        [Space]
+        [SerializeField] private ForecastAnimationCurve temperatureDayCurve;
+        [SerializeField] private ForecastAnimationCurve temperatureMorningCurve;
+        [SerializeField] private ForecastAnimationCurve temperatureNightCurve;
+
+        public void Generate(int daysCount)
+		{
+            ClearAll();
+
+            float minTemp = temperatureMinMax.x;
+            float maxTemp = temperatureMinMax.y;
+            float curveTimeStepNormalized = (float)1f / daysCount;
+
+            for (int i = 0; i < daysCount; i++)
+            {
+                float stepCurve = curveTimeStepNormalized * i;
+                float curveTemperature = Mathf.Lerp(minTemp, maxTemp, expectedTemperatureCurve.Evaluate(stepCurve));
+
+                //temperatures
+                float minTemperature = Mathf.Clamp(curveTemperature + WeatherForecast.GetNormalDistribution(deviationMinMax.x, deviationMinMax.y, true), minTemp, maxTemp);
+                float maxTemperature = Mathf.Clamp(curveTemperature + WeatherForecast.GetNormalDistribution(deviationMinMax.x, deviationMinMax.y, true), minTemp, maxTemp);
+
+                mornings.Add(new WeatherAir() { airTemperature = maxTemperature });
+                afternoons.Add(new WeatherAir() { airTemperature = WeatherForecast.GetNormalDistribution(minTemperature, maxTemperature) });
+                evenings.Add(new WeatherAir() { airTemperature = WeatherForecast.GetNormalDistribution(minTemperature, maxTemperature) });
+                nights.Add(new WeatherAir() { airTemperature = minTemperature });
+
+                airsOnDay.Add(mornings[mornings.Count - 1]);
+                airsOnDay.Add(afternoons[afternoons.Count - 1]);
+                airsOnDay.Add(evenings[evenings.Count - 1]);
+                airsOnDay.Add(nights[nights.Count - 1]);
+            }
+
+            temperatureDayCurve.ReCreate(airsOnDay.Select((x) => x.airTemperature).ToList());
+            temperatureMorningCurve.ReCreate(mornings.Select((x) => x.airTemperature).ToList());
+            temperatureNightCurve.ReCreate(nights.Select((x) => x.airTemperature).ToList());
+        }
+
+        private void ClearAll()
+        {
+            airsOnDay.Clear();
+            mornings.Clear();
+            afternoons.Clear();
+            evenings.Clear();
+            nights.Clear();
+        }
     }
 
     [System.Serializable]
-    public class WeatherDayForecast
+    public class ForecastWind
 	{
-        public Forecast morning;
-        public Forecast afternoon;
-        public Forecast evening;
-        public Forecast night;
+        [HideInInspector] public List<WeatherWind> winds = new List<WeatherWind>();
 
-        public WeatherDayForecast()
-		{
-            morning = new Forecast();
-            afternoon = new Forecast();
-            evening = new Forecast();
-            night = new Forecast();
+        [HideInInspector] public List<WeatherWind> mornings = new List<WeatherWind>();
+        [HideInInspector] public List<WeatherWind> afternoons = new List<WeatherWind>();
+        [HideInInspector] public List<WeatherWind> evenings = new List<WeatherWind>();
+        [HideInInspector] public List<WeatherWind> nights = new List<WeatherWind>();
+
+        [SerializeField] private AnimationCurve expectedWindCurve;
+        [Space]
+        [SerializeField] private ForecastAnimationCurve temperatureWindDayCurve;
+        [SerializeField] private ForecastAnimationCurve temperatureWindMorningCurve;
+        [SerializeField] private ForecastAnimationCurve temperatureWindNightCurve;
+
+        public void Generate(int daysCount, float maxTemperature)
+        {
+            ClearAll();
+
+            float curveTimeStepNormalized = (float)1f / daysCount;
+
+            for (int i = 0; i < daysCount; i++)
+            {
+                float stepCurve = curveTimeStepNormalized * i;
+                float curveWind = expectedWindCurve.Evaluate(stepCurve) * 120f;//km/h
+
+                mornings.Add(new WeatherWind().GetRandomWind(maxTemperature, curveWind));
+                afternoons.Add(new WeatherWind().GetRandomWind(maxTemperature, curveWind));
+                evenings.Add(new WeatherWind().GetRandomWind(maxTemperature, curveWind));
+                nights.Add(new WeatherWind().GetRandomWind(maxTemperature, curveWind));
+
+                winds.Add(mornings[mornings.Count - 1]);
+                winds.Add(afternoons[afternoons.Count - 1]);
+                winds.Add(evenings[evenings.Count - 1]);
+                winds.Add(nights[nights.Count - 1]);
+            }
+
+            temperatureWindDayCurve.ReCreate(winds.Select((x) => x.windchill).ToList());
+            temperatureWindMorningCurve.ReCreate(mornings.Select((x) => x.windchill).ToList());
+            temperatureWindNightCurve.ReCreate(nights.Select((x) => x.windchill).ToList());
         }
 
-        /// <summary>
-        /// https://answers.unity.com/questions/1252260/lerp-color-between-4-corners.html
-        /// </summary>
-        public Weather GetWeatherByTime(float dayPercent)
+        private void ClearAll()
         {
-            Weather weatherTop = Weather.Lerp(morning.weather, afternoon.weather, dayPercent);
-            Weather weatherBottom = Weather.Lerp(evening.weather, night.weather, dayPercent);
+            winds.Clear();
+            mornings.Clear();
+            afternoons.Clear();
+            evenings.Clear();
+            nights.Clear();
+        }
+    }
+
+    [System.Serializable]
+    public class ForecastDay
+	{
+        public Weather morning;
+        public Weather afternoon;
+        public Weather evening;
+        public Weather night;
+
+		/// <summary>
+		/// https://answers.unity.com/questions/1252260/lerp-color-between-4-corners.html
+		/// </summary>
+		public Weather GetWeatherByTime(float dayPercent)
+        {
+            Weather weatherTop = Weather.Lerp(morning, afternoon, dayPercent);
+            Weather weatherBottom = Weather.Lerp(evening, night, dayPercent);
 
             return Weather.Lerp(weatherBottom, weatherTop, dayPercent);
         }
@@ -170,44 +299,14 @@ namespace Game.Systems.WeatherSystem
         {
             List<Weather> weathers = new List<Weather>();
 
-            weathers.Add(morning.weather);
-            weathers.Add(afternoon.weather);
-            weathers.Add(evening.weather);
-            weathers.Add(night.weather);
+            weathers.Add(morning);
+            weathers.Add(afternoon);
+            weathers.Add(evening);
+            weathers.Add(night);
 
             return weathers;
         }
     }
-
-    [System.Serializable]
-    public class Forecast
-    {
-        [HideLabel]
-        public Weather weather;
-
-        public Forecast()
-        {
-            weather = new Weather();
-            weather.air = new WeatherAir();
-            weather.wind = new WeatherWind();
-        }
-
-        public void SetTemperature(WeatherAir air, WeatherWind wind)
-        {
-            weather.air = air;
-            weather.wind = wind;
-        }
-        public void SetTemperature(float air, WeatherWind wind)
-        {
-            weather.air.airTemperature = air;
-            weather.wind = wind;
-
-            weather.humidity = UnityEngine.Random.Range(0f, 100f);
-            weather.precipitation = UnityEngine.Random.Range(0f, 100f);
-        }
-    }
-
-
 
 
     [System.Serializable]
@@ -237,8 +336,18 @@ namespace Game.Systems.WeatherSystem
 
             return weather;
         }
-    }
 
+        public Weather GetRandomWeather(WeatherAir air, WeatherWind wind)
+		{
+            this.air = air;
+            this.wind = wind;
+
+            humidity = UnityEngine.Random.Range(0f, 100f);
+            precipitation = UnityEngine.Random.Range(0f, 100f);
+
+            return this;
+        }
+    }
 
 	[InlineProperty]
     [System.Serializable]
@@ -310,19 +419,18 @@ namespace Game.Systems.WeatherSystem
             return this;
         }
 
-        public static WeatherWind GetRandomWind(float temperature, float maxWindStrength)
+        public WeatherWind GetRandomWind(float maxTemperature, float maxWindStrength)
         {
-            WeatherWind wind = new WeatherWind();
-            wind.WindDirection = UnityEngine.Random.insideUnitSphere.normalized;
-            wind.WindSpeed = UnityEngine.Random.Range(0, maxWindStrength);
+            WindDirection = UnityEngine.Random.insideUnitSphere.normalized;
+            WindSpeed = UnityEngine.Random.Range(0, maxWindStrength);
 
             //formule
             //https://tehtab.ru/Guide/GuideTricks/WindChillingEffect/
-            float constanta = Mathf.Pow(wind.WindSpeed, 0.16f);
-            float teff = 13.12f + (0.6215f * temperature) - (11.37f * constanta) + (0.3965f * temperature * constanta);
-            wind.windchill = Mathf.Min(0, teff - temperature);
+            float constanta = Mathf.Pow(WindSpeed, 0.16f);
+            float teff = 13.12f + (0.6215f * maxTemperature) - (11.37f * constanta) + (0.3965f * maxTemperature * constanta);
+            windchill = Mathf.Min(0, teff - maxTemperature);
 
-            return wind;
+            return this;
         }
 
         private void CheckWindDirection()

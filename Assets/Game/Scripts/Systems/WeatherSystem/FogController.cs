@@ -1,79 +1,138 @@
 using Game.Systems.WeatherSystem;
 
-using Sirenix.OdinInspector;
-
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class FogController
+using Zenject;
+
+namespace Game.Systems.WeatherSystem
 {
-    public Material fogGlobal;
-    private NormalFog normal;
 
-    [InlineEditor]
-    [OnValueChanged("UpdateFog", true)]
-    public FogPresset data;
-
-    private float currentFogRange = 0f;
-    public float CurrentFogRange
+    public class FogController
     {
-        get => currentFogRange;
-        set
+        public bool IsTransitionProcess => transitionCoroutine != null;
+        private Coroutine transitionCoroutine = null;
+
+        public float CurrentFogRange
         {
-            currentFogRange = value;
-            RenderSettings.fogDensity = Mathf.Lerp(min, max, currentFogRange);
+            get => currentFogRange;
+            set
+            {
+                currentFogRange = value;
+                RenderSettings.fogDensity = Mathf.Lerp(fogDensityLimits.x, fogDensityLimits.y, currentFogRange);
 
-            RenderSettings.fog = currentFogRange != 0;
-        }
-    }
-
-    private float currentNormalRange = 0f;
-    public float CurrentNormalRange
-    {
-        get => currentNormalRange;
-        set
-        {
-            currentNormalRange = value;
-
-#if UNITY_EDITOR
-            GameObject.FindObjectOfType<NormalFog>(true)?.gameObject.SetActive(currentNormalRange != 0);
-#else
-            normal.gameObject?.SetActive(currentNormalRange != 0);
-#endif
-        }
-    }
-
-    private Color currentColor;
-    private Color CurrentColor
-    {
-        get => currentColor;
-        set
-        {
-            currentColor = value;
-
-            RenderSettings.fogColor = currentColor;
-
-            Color color = currentColor;
-            color.a = CurrentNormalRange;
-
-            if(fogGlobal != null)
-			{
-                fogGlobal.color = color;
+                RenderSettings.fog = currentFogRange != 0;
             }
         }
-    }
+        private float currentFogRange = 0f;
 
-    private float min = 0;
-    private float max = 0.2f;
+        public float CurrentNormalRange
+        {
+            get => currentNormalRange;
+            set
+            {
+                currentNormalRange = value;
 
-    private float minBias = 0.7f;
+                normal.gameObject.SetActive(currentNormalRange != 0);
+            }
+        }
+        private float currentNormalRange = 0f;
 
-    private void UpdateFog()
-    {
-        CurrentFogRange = data?.fogRange ?? 0;
-        CurrentNormalRange = data?.normalRange ?? 0;
-        CurrentColor = data?.fogColor ?? Color.white;
+        public Color CurrentColor
+        {
+            get => currentColor;
+            set
+            {
+                currentColor = value;
+
+                RenderSettings.fogColor = currentColor;
+
+                if (normal.Material != null)
+                {
+                    Color color = currentColor;
+                    color.a = CurrentNormalRange;
+
+                    normal.Material.color = color;
+                }
+            }
+        }
+        private Color currentColor;
+
+        private float minBias = 0.7f;
+        private Vector2 fogDensityLimits = new Vector2(0, 0.2f);
+
+        private FogPresset currentFog;
+        private NormalFog normal;
+        private AsyncManager asyncManager;
+
+        public FogController(NormalFog normal, AsyncManager asyncManager)
+        {
+            this.normal = normal;
+            this.asyncManager = asyncManager;
+        }
+
+        public void SetFog(FogPresset fogPresset)
+        {
+            currentFog = fogPresset;
+            UpdateFog();
+        }
+
+        public void StartTransition(FogPresset fogPresset, float time)
+        {
+            if (currentFog != fogPresset && fogPresset != null)
+            {
+                currentFog = fogPresset;
+
+                StopTransition();
+                asyncManager.StartCoroutine(Transition(currentFog, time));
+            }
+        }
+
+        private IEnumerator Transition(FogPresset to, float time)
+        {
+            float oldFogRange = CurrentFogRange;
+            float oldNormalRange = CurrentNormalRange;
+            Color oldColor = CurrentColor;
+
+            float t = Time.deltaTime;
+            while (t < time)
+            {
+                t += Time.deltaTime;
+
+                float progress = t / time;
+
+                CurrentFogRange = Mathf.Lerp(oldFogRange, to.fogRange, progress);
+                CurrentNormalRange = Mathf.Lerp(oldNormalRange, to.normalRange, progress);
+                CurrentColor = Color.Lerp(oldColor, to.fogColor, progress);
+
+                yield return null;
+            }
+            UpdateFog();
+            StopTransition();
+        }
+
+        private void StopTransition()
+        {
+            if (IsTransitionProcess)
+            {
+                asyncManager.StopCoroutine(transitionCoroutine);
+                transitionCoroutine = null;
+            }
+        }
+
+        public void UpdateFog()
+        {
+            if (currentFog != null)
+            {
+                CurrentFogRange = currentFog.fogRange;
+                CurrentNormalRange = currentFog.normalRange;
+                CurrentColor = currentFog.fogColor;
+            }
+            else
+            {
+                CurrentFogRange = 0;
+                CurrentNormalRange = 0;
+            }
+        }
     }
 }
