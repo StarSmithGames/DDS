@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Game.Systems.WeatherSystem
+namespace Game.Systems.EnvironmentSystem
 {
-	public class NormalFog : MonoBehaviour
+	public class FogNormal : MonoBehaviour
 	{
 		private Material material = null;
 		public Material Material

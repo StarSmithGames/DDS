@@ -44,8 +44,6 @@ namespace Game.Systems.TimeSystem
             this.settings = settings;
 
             globalTime = settings.useRandom? settings.random.GetRandomStart() : settings.startTime;
-            settings.freaquanceTime.ConvertSeconds();
-
             seconds = new WaitForSeconds(1f / settings.timeScale);
         }
 
@@ -57,6 +55,8 @@ namespace Game.Systems.TimeSystem
         public void Dispose()
 		{
             StopCycle();
+
+            timeEvents = null;
         }
 
         #region TimeCycle
@@ -187,37 +187,7 @@ namespace Game.Systems.TimeSystem
 			}
 		}
     }
-
-    [System.Serializable]
-    public class TimeSettings
-	{
-        [Tooltip("Time Scale = 1f / timeScale - Течение времени относительно реального.")]
-        [Min(0.0f)]
-        public float timeScale = 12f;
-
-        public bool useRandom = false;
-
-        [ShowIf("useRandom")]
-        public RandomTimeSettings random;
-
-        [HideIf("useRandom")]
-        public Time startTime;
-        [Tooltip("Насколько будет менятся время за один тик.")]
-        public Time freaquanceTime;
-    }
-    [System.Serializable]
-    public class RandomTimeSettings
-	{
-        public Time GetRandomStart()
-		{
-            Time time = new Time();
-            time.Seconds = UnityEngine.Random.Range(0, 60);
-            time.Minutes = UnityEngine.Random.Range(0, 60);
-            time.Hours = UnityEngine.Random.Range(0, 23);
-            return time;
-		}
-	}
-
+    
     [System.Serializable]
     public struct Time
     {
@@ -313,7 +283,7 @@ namespace Game.Systems.TimeSystem
         public int TotalHours => TotalMinutes / 60;
         public int TotalDays => TotalHours / 24;
 
-        public float CurrentDayPercent => (hours * 3600) / 86400f;
+        public float CurrentDayPercent => (totalSeconds % 86400f) / 86400f;
         public float DaysPercent => totalSeconds / 86400f;
 
         public static Time operator +(Time currTime, Time addTime)

@@ -1,13 +1,10 @@
-using Game.Systems.WeatherSystem;
-
 using System.Collections;
 using UnityEngine;
 
 using Zenject;
 
-namespace Game.Systems.WeatherSystem
+namespace Game.Systems.EnvironmentSystem
 {
-
     public class FogController
     {
         public bool IsTransitionProcess => transitionCoroutine != null;
@@ -62,10 +59,10 @@ namespace Game.Systems.WeatherSystem
         private Vector2 fogDensityLimits = new Vector2(0, 0.2f);
 
         private FogPresset currentFog;
-        private NormalFog normal;
+        private FogNormal normal;
         private AsyncManager asyncManager;
 
-        public FogController(NormalFog normal, AsyncManager asyncManager)
+        public FogController(FogNormal normal, AsyncManager asyncManager)
         {
             this.normal = normal;
             this.asyncManager = asyncManager;

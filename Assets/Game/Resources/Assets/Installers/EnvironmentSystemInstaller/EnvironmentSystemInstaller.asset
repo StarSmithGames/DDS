@@ -1,0 +1,108 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0ed8c9090da50c4284f1d80cdd9bb5d, type: 3}
+  m_Name: EnvironmentSystemInstaller
+  m_EditorClassIdentifier: 
+  skySettings:
+    freaquanceSkyTime:
+      days: 0
+      hours: 0
+      minutes: 0
+      seconds: 1
+      currentState: 0
+      totalSeconds: 1
+  weatherSettings:
+    forecast:
+      daysCount: 32
+      daysForecasts: []
+      temperature:
+        airsOnDay: []
+        mornings: []
+        afternoons: []
+        evenings: []
+        nights: []
+        temperatureMinMax: {x: 0, y: 0}
+        deviationMinMax: {x: 0, y: 0}
+        expectedTemperatureCurve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        temperatureDayCurve:
+          curve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+        temperatureMorningCurve:
+          curve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+        temperatureNightCurve:
+          curve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+      wind:
+        winds: []
+        mornings: []
+        afternoons: []
+        evenings: []
+        nights: []
+        expectedWindCurve:
+          serializedVersion: 2
+          m_Curve: []
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        temperatureWindDayCurve:
+          curve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+        temperatureWindMorningCurve:
+          curve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+        temperatureWindNightCurve:
+          curve:
+            serializedVersion: 2
+            m_Curve: []
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+    pressetClear: {fileID: 11400000, guid: 66a7d6c9506f7b14482cd389dc2e2e61, type: 2}
+    pressetSnowFall: {fileID: 0}
+    pressetFog: {fileID: 11400000, guid: d00b52865b1a6b24ebbe5e0a303796d5, type: 2}
+    pressetMilk: {fileID: 11400000, guid: 11aa15fa8b9cd554889b905062edd1f3, type: 2}
+    pressetAurora: {fileID: 0}
+    pressetCloudy: {fileID: 0}
+    pressetBlizzard: {fileID: 0}
+    freaquanceWeatherTime:
+      days: 0
+      hours: 0
+      minutes: 0
+      seconds: 1
+      currentState: 0
+      totalSeconds: 1
