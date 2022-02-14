@@ -1,40 +1,62 @@
-using System.Collections;
-using System.Collections.Generic;
+using Sirenix.OdinInspector;
+
 using UnityEngine;
 using Zenject;
-using Sirenix.OdinInspector;
 
 namespace Game.Systems.WeatherSystem
 {
 	[CreateAssetMenu(menuName = "Installers/WeatherSystemInstaller", fileName = "WeatherSystemInstaller")]
 	public class WeatherSystemInstaller : ScriptableObjectInstaller<WeatherSystemInstaller>
 	{
-		public WeatherSettings settings;
+        public WeatherSettings settings;
 
 		public override void InstallBindings()
 		{
-			Container.BindInstance(FindObjectOfType<NormalFog>(true)).WhenInjectedInto<FogController>();
+            Container.BindInstance(FindObjectOfType<NormalFog>(true)).WhenInjectedInto<FogController>();
 			Container.BindInterfacesAndSelfTo<FogController>().AsSingle();
 
 			Container.BindInstance(settings).WhenInjectedInto<WeatherSystem>();
 			Container.BindInterfacesAndSelfTo<WeatherSystem>().AsSingle();
 		}
 
-        [Button]
-        private void Clear()
+        public void SetWeather(WeatherPresset presset)
         {
             if (Application.isPlaying)
             {
-                Container.Resolve<WeatherSystem>().StartTransition(settings.pressetClear);
+                if (presset != null)
+                {
+                    Container.Resolve<WeatherSystem>().StartTransition(presset);
+                }
             }
         }
-        [Button]
-        private void Fog()
+    }
+
+    [System.Serializable]
+    public class WeatherSettings
+    {
+        public WeatherForecast forecast;
+
+        [InlineButton("Test")]
+        public WeatherPresset pressetClear;
+        [InlineButton("Test")]
+        public WeatherPresset pressetSnowFall;
+        [InlineButton("Test")]
+        public WeatherPresset pressetFog;
+        [InlineButton("Test")]
+        public WeatherPresset pressetMilk;
+        [InlineButton("Test")]
+        public WeatherPresset pressetAurora;
+        [InlineButton("Test")]
+        public WeatherPresset pressetCloudy;
+        [InlineButton("Test")]
+        public WeatherPresset pressetBlizzard;
+
+        private void Test(WeatherPresset presset)
         {
-            if (Application.isPlaying)
-            {
-                Container.Resolve<WeatherSystem>().StartTransition(settings.pressetFog);
-            }
+#if UNITY_EDITOR
+            var asset = AssetDatabaseExtensions.GetAsset<WeatherSystemInstaller>("Installers/WeatherSystemInstaller/WeatherSystemInstaller.asset");
+            asset.SetWeather(presset);
+#endif
         }
     }
 }

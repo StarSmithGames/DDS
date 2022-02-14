@@ -4,6 +4,7 @@ using Sirenix.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 using UnityEngine;
@@ -47,16 +48,6 @@ namespace Game.Systems.WeatherSystem
         }
     }
 
-    [System.Serializable]
-    public class WeatherSettings
-    {
-        public WeatherForecast forecast;
-
-        public WeatherPresset pressetClear;
-        public WeatherPresset pressetSnowFall;
-        public WeatherPresset pressetFog;
-        public WeatherPresset pressetBlizzard;
-    }
 
     [System.Serializable]
     public class WeatherForecast
@@ -405,10 +396,10 @@ namespace Game.Systems.WeatherSystem
 		}
 
         [Space]
-        [ReadOnly] [SerializeField] private float windAngle;
+        [Sirenix.OdinInspector.ReadOnly] [SerializeField] private float windAngle;
         [Space]
-        [ReadOnly] [SerializeField] private WindSpeedType windSpeedType;
-        [ReadOnly] [SerializeField] private WindDirectionType windDirectionType;
+        [Sirenix.OdinInspector.ReadOnly] [SerializeField] private WindSpeedType windSpeedType;
+        [Sirenix.OdinInspector.ReadOnly] [SerializeField] private WindDirectionType windDirectionType;
 
         public WeatherWind Lerp(WeatherWind from, WeatherWind to, float progress)
         {
