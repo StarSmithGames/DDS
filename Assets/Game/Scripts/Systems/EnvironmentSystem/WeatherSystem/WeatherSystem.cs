@@ -11,7 +11,6 @@ using UnityEngine.Assertions;
 
 using Zenject;
 
-
 namespace Game.Systems.EnvironmentSystem
 {
 	public class WeatherSystem : IInitializable, IDisposable
@@ -52,9 +51,11 @@ namespace Game.Systems.EnvironmentSystem
 
         private void Tick()
 		{
-            currentWeather = settings.forecast.GetWeatherByTime(timeSystem.GlobalTime.CurrentDayPercent);
+            currentWeather = settings.forecast.GetWeather(timeSystem.GlobalTime.DaysPercent);
 
-            //fogController.
+            float fog = currentWeather.humidity.humidity / 100f;
+            fogController.CurrentFogRange = fog;
+            fogController.CurrentNormalRange = fog;
             windController.SetWindDirection(currentWeather.wind.WindDirection);
 
             signalBus?.Fire(new SignalWeatherChanged() { weather = currentWeather });
@@ -90,10 +91,10 @@ namespace Game.Systems.EnvironmentSystem
         {
             Weather weather = new Weather();
 
-            weather.air = weather.air.Lerp(from.air, to.air, progress);
-            weather.wind = weather.wind.Lerp(from.wind, to.wind, progress);
-            weather.humidity = weather.humidity.Lerp(from.humidity, to.humidity, progress);
-            weather.precipitation = weather.precipitation.Lerp(from.precipitation, to.precipitation, progress);
+            weather.air = WeatherAir.Lerp(from.air, to.air, progress);
+            weather.wind = WeatherWind.Lerp(from.wind, to.wind, progress);
+            weather.humidity = WeatherHumidity.Lerp(from.humidity, to.humidity, progress);
+            weather.precipitation = WeatherPrecipitation.Lerp(from.precipitation, to.precipitation, progress);
 
             return weather;
         }
@@ -109,11 +110,13 @@ namespace Game.Systems.EnvironmentSystem
         [Tooltip("Температура воздуха")]
         public float airTemperature;
 
-        public WeatherAir Lerp(WeatherAir from, WeatherAir to, float progress)
+        public static WeatherAir Lerp(WeatherAir from, WeatherAir to, float progress)
         {
-            airTemperature = Mathf.Lerp(from.airTemperature, to.airTemperature, progress);
+            WeatherAir weatherAir = new WeatherAir();
 
-            return this;
+            weatherAir.airTemperature = Mathf.Lerp(from.airTemperature, to.airTemperature, progress);
+
+            return weatherAir;
         }
     }
 
@@ -160,27 +163,15 @@ namespace Game.Systems.EnvironmentSystem
         [Sirenix.OdinInspector.ReadOnly] [SerializeField] private WindSpeedType windSpeedType;
         [Sirenix.OdinInspector.ReadOnly] [SerializeField] private WindDirectionType windDirectionType;
 
-        public WeatherWind Lerp(WeatherWind from, WeatherWind to, float progress)
+        public static WeatherWind Lerp(WeatherWind from, WeatherWind to, float progress)
         {
-            windchill = Mathf.Lerp(from.windchill, to.windchill, progress);
-            WindSpeed = Mathf.Lerp(from.windSpeed, to.windSpeed, progress);
-            WindDirection = Vector3.Lerp(from.windDirection, to.windDirection, progress);
+            WeatherWind weatherWind = new WeatherWind();
 
-            return this;
-        }
+            weatherWind.windchill = Mathf.Lerp(from.windchill, to.windchill, progress);
+            weatherWind.WindSpeed = Mathf.Lerp(from.windSpeed, to.windSpeed, progress);
+            weatherWind.WindDirection = Vector3.Lerp(from.windDirection, to.windDirection, progress);
 
-        public WeatherWind GetRandomWind(float maxTemperature, float maxWindStrength)
-        {
-            WindDirection = UnityEngine.Random.insideUnitSphere.normalized;
-            WindSpeed = UnityEngine.Random.Range(0, maxWindStrength);
-
-            //formule
-            //https://tehtab.ru/Guide/GuideTricks/WindChillingEffect/
-            float constanta = Mathf.Pow(WindSpeed, 0.16f);
-            float teff = 13.12f + (0.6215f * maxTemperature) - (11.37f * constanta) + (0.3965f * maxTemperature * constanta);
-            windchill = Mathf.Min(0, teff - maxTemperature);
-
-            return this;
+            return weatherWind;
         }
 
         private void CheckWindDirection()
@@ -317,23 +308,16 @@ namespace Game.Systems.EnvironmentSystem
     [System.Serializable]
     public struct WeatherHumidity
 	{
-        [Range(0, 100f)]
+        [Range(0f, 100f)]
         [Tooltip("Влажность")]
         public float humidity;
 
-        public WeatherHumidity Lerp(WeatherHumidity from, WeatherHumidity to, float progress)
+        public static WeatherHumidity Lerp(WeatherHumidity from, WeatherHumidity to, float progress)
         {
-            humidity = Mathf.Lerp(from.humidity, to.humidity, progress);
-
-            return this;
+            WeatherHumidity weatherHumidity = new WeatherHumidity();
+            weatherHumidity.humidity = Mathf.Lerp(from.humidity, to.humidity, progress);
+            return weatherHumidity;
         }
-
-        public WeatherHumidity GetRandomHumidity()
-		{
-            humidity = UnityEngine.Random.Range(0f, 100f);
-
-            return this;
-		}
     }
 
     [InlineProperty]
@@ -344,11 +328,12 @@ namespace Game.Systems.EnvironmentSystem
         [Tooltip("Осадки")]
         public float precipitation;
 
-        public WeatherPrecipitation Lerp(WeatherPrecipitation from, WeatherPrecipitation to, float progress)
+        public static WeatherPrecipitation Lerp(WeatherPrecipitation from, WeatherPrecipitation to, float progress)
         {
-            precipitation = Mathf.Lerp(from.precipitation, to.precipitation, progress);
+            WeatherPrecipitation weatherPrecipitation = new WeatherPrecipitation();
+            weatherPrecipitation.precipitation = Mathf.Lerp(from.precipitation, to.precipitation, progress);
 
-            return this;
+            return weatherPrecipitation;
         }
 
         public WeatherPrecipitation GetRandomPrecipitation()

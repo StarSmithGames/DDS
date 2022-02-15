@@ -1,5 +1,8 @@
-﻿using Sirenix.OdinInspector;
+﻿using Game.Systems.TimeSystem;
 
+using Sirenix.OdinInspector;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,38 +16,52 @@ namespace Game.Systems.EnvironmentSystem
 	{
         [SerializeField] private int daysCount = 32;
         [ListDrawerSettings(NumberOfItemsPerPage = 5)]
-        public List<ForecastDay> daysForecasts = new List<ForecastDay>();
-        public ForecastDay this[int index] => daysForecasts[index % daysCount];
+        public List<ForecastDayWeather> daysForecasts = new List<ForecastDayWeather>();
+        public ForecastDayWeather this[int index] => daysForecasts[index % daysCount];
 
+        [HideInInspector] public List<Weather> weathers = new List<Weather>();
+
+        [InlineProperty]
         [TabGroup("Temperature", AnimateVisibility = false)]
         [SerializeField] private ForecastTemperature temperature;
+        [InlineProperty]
         [TabGroup("Wind", AnimateVisibility = false)]
         [SerializeField] private ForecastWind wind;
+        [InlineProperty]
         [TabGroup("Humidity", AnimateVisibility = false)]
         [SerializeField] private ForecastHumidity humidity;
+        [InlineProperty]
         [TabGroup("Precipitation", AnimateVisibility = false)]
         [SerializeField] private ForecastPrecipitation precipitation;
 
-        public Weather GetWeatherByTime(float percent)
+        public Weather GetWeather(float dayProgress)
         {
-            int dayIndex = (int)percent;
-            float dayPercent = percent - dayIndex;
+            int dayIndex = (int)dayProgress;
+            float dayPercent = dayProgress - (float)dayIndex;
 
-            return this[dayIndex].GetWeatherByTime(dayPercent);
-        }
+            ForecastDayWeather current = this[dayIndex];
 
-        public List<Weather> GetAllWeathers()
-        {
-            List<Weather> weathers = new List<Weather>();
+            float progress = dayPercent * 24f;
 
-            for (int i = 0; i < daysForecasts.Count; i++)
+            if (progress >= 0 && progress <= 6)
             {
-                weathers.AddRange(daysForecasts[i].GetAllWeathers());
+                ForecastDayWeather prev = this[dayIndex - 1 < 0 ? 0 : dayIndex - 1];
+
+                return Weather.Lerp(prev.night, current.morning, progress / 6f);
             }
-
-            return weathers;
+            else if (progress > 6 && progress <= 12)
+            {
+                return Weather.Lerp(current.morning, current.afternoon, (progress - 6f) / 6f);
+            }
+            else if (progress > 12 && progress <= 18)
+            {
+                return Weather.Lerp(current.afternoon, current.evening, (progress - 12f) / 6f);
+			}
+			else
+			{
+                return Weather.Lerp(current.evening, current.night, (progress - 18f) / 6f);
+            }
         }
-
 
         [Button]
         public void Generate()
@@ -60,16 +77,31 @@ namespace Game.Systems.EnvironmentSystem
 			{
 				daysForecasts.Add(CreateForecastDay(i));
 			}
+
+            for (int i = 0; i < daysForecasts.Count; i++)
+            {
+                weathers.AddRange(daysForecasts[i].GetAllWeathers());
+            }
         }
 
-        private ForecastDay CreateForecastDay(int index)
+        private ForecastDayWeather CreateForecastDay(int index)
 		{
-            ForecastDay day = new ForecastDay();
+            ForecastDayWeather day = new ForecastDayWeather();
 
             day.morning = CreateWeather(temperature.mornings[index], wind.mornings[index], humidity.mornings[index], precipitation.mornings[index]);
             day.afternoon = CreateWeather(temperature.afternoons[index], wind.afternoons[index], humidity.afternoons[index], precipitation.afternoons[index]);
             day.evening = CreateWeather(temperature.evenings[index], wind.evenings[index], humidity.evenings[index], precipitation.evenings[index]);
             day.night = CreateWeather(temperature.nights[index], wind.nights[index], humidity.nights[index], precipitation.nights[index]);
+
+            day.dayCurve.ReCreate(
+                new List<Keyframe>()
+                {
+                    new Keyframe() { time = 0 },
+                    new Keyframe() { time = 6 },
+                    new Keyframe() { time = 12 },
+                    new Keyframe() { time = 18 },
+                    new Keyframe() { time = 24 },
+                });
 
             return day;
         }
@@ -89,6 +121,7 @@ namespace Game.Systems.EnvironmentSystem
         private void ClearAll()
         {
             daysForecasts.Clear();
+            weathers.Clear();
 
             temperature.ClearAll();
             wind.ClearAll();
@@ -120,10 +153,6 @@ namespace Game.Systems.EnvironmentSystem
         [HideInInspector] public List<T> nights = new List<T>();
 
         public AnimationCurve expectedCurve;
-        [Space]
-        public ForecastAnimationCurve dayCurve;
-        public ForecastAnimationCurve morningCurve;
-        public ForecastAnimationCurve nightCurve;
 
         public virtual void ClearAll()
         {
@@ -131,10 +160,15 @@ namespace Game.Systems.EnvironmentSystem
             afternoons.Clear();
             evenings.Clear();
             nights.Clear();
+        }
 
-            dayCurve.Clear();
-            morningCurve.Clear();
-            nightCurve.Clear();
+        [Button]
+        private void ShowCurves()
+		{
+#if UNITY_EDITOR
+            EnvironmentForecastWindow.SetForecast(this);
+            EnvironmentForecastWindow.OpenWindow();
+#endif
         }
     }
 
@@ -173,10 +207,6 @@ namespace Game.Systems.EnvironmentSystem
                 airsOnDay.Add(evenings[evenings.Count - 1]);
                 airsOnDay.Add(nights[nights.Count - 1]);
             }
-
-            dayCurve.ReCreate(airsOnDay.Select((x) => x.airTemperature).ToList());
-            morningCurve.ReCreate(mornings.Select((x) => x.airTemperature).ToList());
-            nightCurve.ReCreate(nights.Select((x) => x.airTemperature).ToList());
         }
 
         public override void ClearAll()
@@ -202,20 +232,32 @@ namespace Game.Systems.EnvironmentSystem
                 float stepCurve = curveTimeStepNormalized * i;
                 float curveWind = expectedCurve.Evaluate(stepCurve) * 120f;//km/h
 
-                mornings.Add(new WeatherWind().GetRandomWind(maxTemperature, curveWind));
-                afternoons.Add(new WeatherWind().GetRandomWind(maxTemperature, curveWind));
-                evenings.Add(new WeatherWind().GetRandomWind(maxTemperature, curveWind));
-                nights.Add(new WeatherWind().GetRandomWind(maxTemperature, curveWind));
+                mornings.Add(GetRandomWind(maxTemperature, curveWind));
+                afternoons.Add(GetRandomWind(maxTemperature, curveWind));
+                evenings.Add(GetRandomWind(maxTemperature, curveWind));
+                nights.Add(GetRandomWind(maxTemperature, curveWind));
 
                 winds.Add(mornings[mornings.Count - 1]);
                 winds.Add(afternoons[afternoons.Count - 1]);
                 winds.Add(evenings[evenings.Count - 1]);
                 winds.Add(nights[nights.Count - 1]);
             }
+        }
 
-            dayCurve.ReCreate(winds.Select((x) => x.windchill).ToList());
-            morningCurve.ReCreate(mornings.Select((x) => x.windchill).ToList());
-            nightCurve.ReCreate(nights.Select((x) => x.windchill).ToList());
+        public WeatherWind GetRandomWind(float maxTemperature, float maxWindStrength)
+        {
+            WeatherWind wind = new WeatherWind();
+
+            wind.WindDirection = UnityEngine.Random.insideUnitSphere.normalized;
+            wind.WindSpeed = UnityEngine.Random.Range(0, maxWindStrength);
+
+            //formule
+            //https://tehtab.ru/Guide/GuideTricks/WindChillingEffect/
+            float constanta = Mathf.Pow(wind.WindSpeed, 0.16f);
+            float teff = 13.12f + (0.6215f * maxTemperature) - (11.37f * constanta) + (0.3965f * maxTemperature * constanta);
+            wind.windchill = Mathf.Min(0, teff - maxTemperature);
+
+            return wind;
         }
 
         public override void ClearAll()
@@ -239,22 +281,18 @@ namespace Game.Systems.EnvironmentSystem
             for (int i = 0; i < daysCount; i++)
             {
                 float stepCurve = curveTimeStepNormalized * i;
-                float curveWind = expectedCurve.Evaluate(stepCurve) * 120f;//km/h
+                //float curveWind = expectedCurve.Evaluate(stepCurve) * 100f;//%
 
-				mornings.Add(new WeatherHumidity().GetRandomHumidity());
-				afternoons.Add(new WeatherHumidity().GetRandomHumidity());
-				evenings.Add(new WeatherHumidity().GetRandomHumidity());
-				nights.Add(new WeatherHumidity().GetRandomHumidity());
+				mornings.Add(new WeatherHumidity() { humidity = UnityEngine.Random.Range(0f, 100f) });
+				afternoons.Add(new WeatherHumidity() { humidity = UnityEngine.Random.Range(0f, 0f) });
+				evenings.Add(new WeatherHumidity() { humidity = UnityEngine.Random.Range(0f, 10f) });
+				nights.Add(new WeatherHumidity() { humidity = UnityEngine.Random.Range(0f, 30f) });
 
 				humidities.Add(mornings[mornings.Count - 1]);
 				humidities.Add(afternoons[afternoons.Count - 1]);
 				humidities.Add(evenings[evenings.Count - 1]);
 				humidities.Add(nights[nights.Count - 1]);
 			}
-
-			dayCurve.ReCreate(humidities.Select((x) => x.humidity).ToList());
-			morningCurve.ReCreate(mornings.Select((x) => x.humidity).ToList());
-			nightCurve.ReCreate(nights.Select((x) => x.humidity).ToList());
 		}
 
         public override void ClearAll()
@@ -290,10 +328,6 @@ namespace Game.Systems.EnvironmentSystem
                 precipitations.Add(evenings[evenings.Count - 1]);
                 precipitations.Add(nights[nights.Count - 1]);
             }
-
-			dayCurve.ReCreate(precipitations.Select((x) => x.precipitation).ToList());
-			morningCurve.ReCreate(mornings.Select((x) => x.precipitation).ToList());
-			nightCurve.ReCreate(nights.Select((x) => x.precipitation).ToList());
 		}
 
         public override void ClearAll()
@@ -304,23 +338,25 @@ namespace Game.Systems.EnvironmentSystem
 	}
 
     [System.Serializable]
-    public class ForecastDay
+    public class ForecastDayWeather
     {
         public Weather morning;
         public Weather afternoon;
         public Weather evening;
         public Weather night;
 
+        public ForecastAnimationCurve dayCurve;
+
         /// <summary>
         /// https://answers.unity.com/questions/1252260/lerp-color-between-4-corners.html
         /// </summary>
-        public Weather GetWeatherByTime(float dayPercent)
-        {
-            Weather weatherTop = Weather.Lerp(morning, afternoon, dayPercent);
-            Weather weatherBottom = Weather.Lerp(evening, night, dayPercent);
+        //public Weather GetWeatherByTime(float dayPercent)
+        //{
+        //    Weather weatherTop = Weather.Lerp(morning, afternoon, dayPercent);
+        //    Weather weatherBottom = Weather.Lerp(evening, night, dayPercent);
 
-            return Weather.Lerp(weatherBottom, weatherTop, dayPercent);
-        }
+        //    return Weather.Lerp(weatherBottom, weatherTop, dayPercent);
+        //}
 
         public List<Weather> GetAllWeathers()
         {
@@ -332,39 +368,6 @@ namespace Game.Systems.EnvironmentSystem
             weathers.Add(night);
 
             return weathers;
-        }
-    }
-
-
-    [InlineProperty]
-    [System.Serializable]
-    public struct ForecastAnimationCurve
-    {
-        [HideLabel]
-        public AnimationCurve curve;
-
-        public void ReCreate(List<float> values)
-        {
-            List<Keyframe> frames = new List<Keyframe>();
-
-            for (int i = 0; i < values.Count; i++)
-            {
-                frames.Add(new Keyframe(i, values[i]));
-            }
-
-            ReCreate(frames);
-        }
-
-        public void ReCreate(List<Keyframe> frames)
-        {
-            curve = new AnimationCurve(frames.ToArray());
-            curve.preWrapMode = WrapMode.Clamp;
-            curve.postWrapMode = WrapMode.Clamp;
-        }
-
-        public void Clear()
-        {
-            curve = new AnimationCurve();
         }
     }
 }

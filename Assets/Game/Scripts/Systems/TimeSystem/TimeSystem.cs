@@ -250,7 +250,7 @@ namespace Game.Systems.TimeSystem
         {
             get
             {
-                if (hours >= 6 && hours <= 12)
+                if (hours >= 5 && hours <= 12)
                 {
                     return TimeState.Morning;
                 }
@@ -258,7 +258,7 @@ namespace Game.Systems.TimeSystem
                 {
                     return TimeState.Afternoon;
                 }
-                else if (hours > 17 && hours <= 20)
+                else if (hours > 17 && hours <= 22)
                 {
                     return TimeState.Evening;
                 }
@@ -266,6 +266,7 @@ namespace Game.Systems.TimeSystem
                 return TimeState.Night;
             }
         }
+
 
         [ReadOnly] [SerializeField] private float totalSeconds;//max 2147483647 ~ 24855 дней
         public float TotalSeconds
@@ -392,7 +393,6 @@ namespace Game.Systems.TimeSystem
     public enum TimeState
     {
         Morning,
-        Noon,
         Afternoon,
         Evening,
         Night,

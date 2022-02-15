@@ -30,6 +30,14 @@ namespace Game.Systems.EnvironmentSystem
             {
                 currentNormalRange = value;
 
+                if (normal.Material != null)
+                {
+                    Color color = currentColor;
+                    color.a = currentNormalRange;
+
+                    normal.Material.color = color;
+                }
+
                 normal.gameObject.SetActive(currentNormalRange != 0);
             }
         }

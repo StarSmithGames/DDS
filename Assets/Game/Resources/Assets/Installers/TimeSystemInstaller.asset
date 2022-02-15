@@ -26,6 +26,6 @@ MonoBehaviour:
       days: 0
       hours: 0
       minutes: 0
-      seconds: 1
+      seconds: 59
       currentState: 4
-      totalSeconds: 1
+      totalSeconds: 59
