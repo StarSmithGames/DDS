@@ -308,6 +308,7 @@ namespace Game.Systems.EnvironmentSystem
     [System.Serializable]
     public struct WeatherHumidity
 	{
+        [SuffixLabel("%")]
         [Range(0f, 100f)]
         [Tooltip("Влажность")]
         public float humidity;
@@ -324,6 +325,7 @@ namespace Game.Systems.EnvironmentSystem
     [System.Serializable]
     public struct WeatherPrecipitation
 	{
+        [SuffixLabel("%")]
         [Range(0, 100f)]
         [Tooltip("Осадки")]
         public float precipitation;

@@ -61,7 +61,7 @@ public class UIManager : MonoBehaviour
 	{
 		if(timeSystem != null)
 		{
-            GUI.Box(new Rect(Screen.width/2, 50, 100, 30), timeSystem.GlobalTime.ConvertTime().ToString());
+            GUI.Box(new Rect(Screen.width/2 - 50, 150, 100, 30), timeSystem.GlobalTime.ConvertTime().ToString());
         }
 	}
 }

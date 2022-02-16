@@ -28,15 +28,19 @@ namespace Game.Installers
 		private void BindPlayerStatus()
 		{
 			Container.DeclareSignal<SignalPlayerStateChanged>();
+
 			Container.Bind<PlayerStates>().WhenInjectedInto<PlayerStatus>();
 
-			Container.Bind<InventorySettings>().FromInstance(settings.inventory).WhenInjectedInto<Inventory>();
-			Container.Bind<IInventory>().To<Inventory>().WhenInjectedInto<PlayerStatus>();
+			Container.BindInstance(settings.inventory).WhenInjectedInto<Inventory>();
+			Container.BindInterfacesTo<Inventory>().WhenInjectedInto<PlayerStatus>();
 
-			Container.Bind<StatsSettings>().FromInstance(settings.stats).WhenInjectedInto<Stats>();
-			Container.Bind<IStats>().To<Stats>().WhenInjectedInto<PlayerStatus>();
+			Container.BindInstance(settings.stats).WhenInjectedInto<Stats>();
+			Container.BindInterfacesTo<Stats>().WhenInjectedInto<PlayerStatus>();
 
-			Container.Bind<IStatus>().To<PlayerStatus>().WhenInjectedInto<Player>();
+			Container.BindInstance(settings.resistances).WhenInjectedInto<Resistances>();
+			Container.BindInterfacesTo<Resistances>().AsSingle();
+
+			Container.BindInterfacesTo<PlayerStatus>().WhenInjectedInto<Player>();
 		}
 	}
 }

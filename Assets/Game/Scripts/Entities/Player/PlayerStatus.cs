@@ -1,6 +1,8 @@
 using Game.Systems.InventorySystem;
 using Game.Systems.TimeSystem;
 
+using UnityEngine;
+
 using Zenject;
 
 using static PlayerStates;
@@ -12,6 +14,7 @@ public class PlayerStatus : IStatus
 
 	public IInventory Inventory { get; private set; }
 	public IStats Stats { get; private set; }
+	public IResistances Resistances { get; private set; }
 	public PlayerStates States { get; private set; }
 
 	private UIManager uiManager;
@@ -22,6 +25,7 @@ public class PlayerStatus : IStatus
 		TimeSystem timeSystem,
 		IInventory inventory,
 		IStats stats,
+		IResistances resistances,
 		PlayerStates states)
 	{
 		this.uiManager = uiManager;
@@ -29,8 +33,9 @@ public class PlayerStatus : IStatus
 
 		Inventory = inventory;
 		Stats = stats;
+		Resistances = resistances;
 		States = states;
-
+		Debug.LogError(resistances != null);
 		var uistats = uiManager.Status.Stats;
 
 		uistats.Condition.SetAttribute(Stats.Condition);
@@ -44,7 +49,7 @@ public class PlayerStatus : IStatus
 		{
 			isInfinity = true,
 			onTrigger = TimeTick,
-			triggerTime = new Time() { TotalSeconds = 1}
+			triggerTime = new Game.Systems.TimeSystem.Time() { TotalSeconds = 1}
 		});
 	}
 

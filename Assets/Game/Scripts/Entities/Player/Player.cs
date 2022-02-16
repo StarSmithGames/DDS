@@ -59,6 +59,7 @@ namespace Game.Entities
 	public class PlayerSettings
 	{
 		public StatsSettings stats;
+		public ResistancesSettings resistances;
 		public InventorySettings inventory;
 	}
 }
