@@ -1,6 +1,10 @@
 using Game.Entities;
 using Game.Systems.InventorySystem;
 
+using System;
+using System.ComponentModel;
+using System.Linq;
+
 using UnityEngine;
 
 using Zenject;
@@ -29,16 +33,16 @@ namespace Game.Installers
 		{
 			Container.DeclareSignal<SignalPlayerStateChanged>();
 
-			Container.Bind<PlayerStates>().WhenInjectedInto<PlayerStatus>();
+			Container.BindInterfacesAndSelfTo<PlayerStates>().AsSingle();
 
 			Container.BindInstance(settings.inventory).WhenInjectedInto<Inventory>();
-			Container.BindInterfacesTo<Inventory>().WhenInjectedInto<PlayerStatus>();
+			Container.BindInterfacesTo<Inventory>().AsSingle();
 
 			Container.BindInstance(settings.stats).WhenInjectedInto<Stats>();
-			Container.BindInterfacesTo<Stats>().WhenInjectedInto<PlayerStatus>();
+			Container.BindInterfacesTo<Stats>().AsSingle();
 
 			Container.BindInstance(settings.resistances).WhenInjectedInto<Resistances>();
-			Container.BindInterfacesTo<Resistances>().AsSingle();
+			Container.BindInterfacesAndSelfTo<Resistances>().AsSingle();
 
 			Container.BindInterfacesTo<PlayerStatus>().WhenInjectedInto<Player>();
 		}

@@ -6,5 +6,5 @@ public interface IStatus
 
 	IInventory Inventory { get; }
 	IStats Stats { get; }
-	IResistances Resistances { get; }
+	Resistances Resistances { get; }
 }

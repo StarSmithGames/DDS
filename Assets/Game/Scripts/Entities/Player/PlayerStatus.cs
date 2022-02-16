@@ -1,6 +1,8 @@
 using Game.Systems.InventorySystem;
 using Game.Systems.TimeSystem;
 
+using System;
+
 using UnityEngine;
 
 using Zenject;
@@ -14,8 +16,10 @@ public class PlayerStatus : IStatus
 
 	public IInventory Inventory { get; private set; }
 	public IStats Stats { get; private set; }
-	public IResistances Resistances { get; private set; }
+	public Resistances Resistances { get; private set; }
 	public PlayerStates States { get; private set; }
+
+	private float multiplier;
 
 	private UIManager uiManager;
 	private TimeSystem timeSystem;
@@ -25,7 +29,7 @@ public class PlayerStatus : IStatus
 		TimeSystem timeSystem,
 		IInventory inventory,
 		IStats stats,
-		IResistances resistances,
+		Resistances resistances,
 		PlayerStates states)
 	{
 		this.uiManager = uiManager;
@@ -35,15 +39,6 @@ public class PlayerStatus : IStatus
 		Stats = stats;
 		Resistances = resistances;
 		States = states;
-		Debug.LogError(resistances != null);
-		var uistats = uiManager.Status.Stats;
-
-		uistats.Condition.SetAttribute(Stats.Condition);
-		uistats.Stamina.SetAttribute(Stats.Stamina);
-		uistats.Warmth.SetAttribute(Stats.Warmth);
-		uistats.Fatigue.SetAttribute(Stats.Fatigue);
-		uistats.Hungred.SetAttribute(Stats.Hungred);
-		uistats.Thirst.SetAttribute(Stats.Thirst);
 
 		timeSystem.AddEvent(new TimeEvent()
 		{
@@ -52,7 +47,7 @@ public class PlayerStatus : IStatus
 			triggerTime = new Game.Systems.TimeSystem.Time() { TotalSeconds = 1}
 		});
 	}
-
+	
 	public void RestoreCondition(float value)
 	{
 		Stats.Condition.CurrentValue += value;
@@ -60,6 +55,7 @@ public class PlayerStatus : IStatus
 
 	private void TimeTick()
 	{
+		multiplier = timeSystem.Settings.freaquanceTime.TotalSeconds;
 		State currentState = States.CurrentState;
 
 		if (currentState == State.Standing)
@@ -87,56 +83,73 @@ public class PlayerStatus : IStatus
 			SleepingFormule();
 		}
 
+		TemperatureFormules();
+
 		ConditionFormules();
 	}
 
 	private void StandingFormule()
 	{
-		float mult = timeSystem.Settings.freaquanceTime.TotalSeconds;
-
-		Stats.Fatigue.CurrentValue -= mult * (Stats.Fatigue.MaxValue / (8f * 3600f));//100% / 8h or 12.5%/h
-		Stats.Thirst.CurrentValue -= mult * (Stats.Thirst.MaxValue / (8f * 3600f));//100% / 8h
-		Stats.Hungred.CurrentValue -= mult * (125f / (1f * 3600f));//125f kcal/h
+		Stats.Fatigue.CurrentValue -= multiplier * (Stats.Fatigue.MaxValue / (8f * 3600f));//100% / 8h or 12.5%/h
+		Stats.Thirst.CurrentValue -= multiplier * (Stats.Thirst.MaxValue / (8f * 3600f));//100% / 8h
+		Stats.Hungred.CurrentValue -= multiplier * (125f / (1f * 3600f));//125f kcal/h
 	}
 	private void WalkingFormule()
 	{
-		float mult = timeSystem.Settings.freaquanceTime.TotalSeconds;
-
-		Stats.Fatigue.CurrentValue -= mult * (Stats.Fatigue.MaxValue / (7f * 3600f));//100% / 7h
-		Stats.Thirst.CurrentValue -= mult * (Stats.Thirst.MaxValue / (8f * 3600f));//100% / 8h or 12.5%/h
-		Stats.Hungred.CurrentValue -= mult * (200f / (1f * 3600f));//200 cal/h
+		Stats.Fatigue.CurrentValue -= multiplier * (Stats.Fatigue.MaxValue / (7f * 3600f));//100% / 7h
+		Stats.Thirst.CurrentValue -= multiplier * (Stats.Thirst.MaxValue / (8f * 3600f));//100% / 8h or 12.5%/h
+		Stats.Hungred.CurrentValue -= multiplier * (200f / (1f * 3600f));//200 cal/h
 	}
 	private void SprintingFormule()
 	{
-		float mult = timeSystem.Settings.freaquanceTime.TotalSeconds;
-
-		Stats.Fatigue.CurrentValue -= mult * (Stats.Fatigue.MaxValue / (1f * 3600f));//100% / 1h
-		Stats.Thirst.CurrentValue -= mult * (Stats.Thirst.MaxValue / (8f * 3600f));//100% / 8h or 12.5%/h
-		Stats.Hungred.CurrentValue -= mult * (400f / (1f * 3600f));//400 cal/h
+		Stats.Fatigue.CurrentValue -= multiplier * (Stats.Fatigue.MaxValue / (1f * 3600f));//100% / 1h
+		Stats.Thirst.CurrentValue -= multiplier * (Stats.Thirst.MaxValue / (8f * 3600f));//100% / 8h or 12.5%/h
+		Stats.Hungred.CurrentValue -= multiplier * (400f / (1f * 3600f));//400 cal/h
 	}
 	private void ClimbingFormule()
 	{
-		float mult = timeSystem.Settings.freaquanceTime.TotalSeconds;
-
-		Stats.Fatigue.CurrentValue -= mult * (0);//100% / 1h
-		Stats.Thirst.CurrentValue -= mult * (0);//100% / 8h or 12.5%/h
-		Stats.Hungred.CurrentValue -= mult * (0);//400 cal/h
+		Stats.Fatigue.CurrentValue -= multiplier * (0);//100% / 1h
+		Stats.Thirst.CurrentValue -= multiplier * (0);//100% / 8h or 12.5%/h
+		Stats.Hungred.CurrentValue -= multiplier * (0);//400 cal/h
 	}
 	private void SleepingFormule()
 	{
-		float mult = timeSystem.Settings.freaquanceTime.TotalSeconds;
-
-		Stats.Fatigue.CurrentValue += mult * (Stats.Fatigue.MaxValue / (12f * 3600f));//100% / 12h or ~8.33%/h
-		Stats.Thirst.CurrentValue -= mult * (Stats.Thirst.MaxValue / (12f * 3600f));//100% / 12h or ~8.33%/h
-		Stats.Hungred.CurrentValue -= mult * (75f / 3600f);//75 kcal/h
+		Stats.Fatigue.CurrentValue += multiplier * (Stats.Fatigue.MaxValue / (12f * 3600f));//100% / 12h or ~8.33%/h
+		Stats.Thirst.CurrentValue -= multiplier * (Stats.Thirst.MaxValue / (12f * 3600f));//100% / 12h or ~8.33%/h
+		Stats.Hungred.CurrentValue -= multiplier * (75f / 3600f);//75 kcal/h
 	}
 	private void RestingFormule()
 	{
-		float mult = timeSystem.Settings.freaquanceTime.TotalSeconds;
+		Stats.Fatigue.CurrentValue += multiplier * (Stats.Fatigue.MaxValue / (36f * 3600f));//100% / 36h
+		Stats.Thirst.CurrentValue -= multiplier * (Stats.Thirst.MaxValue / (8f * 3600f));//100% / 8h or 12.5%/h
+		Stats.Hungred.CurrentValue -= multiplier * (100f / (1f * 3600f));//100 kcal/h
+	}
 
-		Stats.Fatigue.CurrentValue += mult * (Stats.Fatigue.MaxValue / (36f * 3600f));//100% / 36h
-		Stats.Thirst.CurrentValue -= mult * (Stats.Thirst.MaxValue / (8f * 3600f));//100% / 8h or 12.5%/h
-		Stats.Hungred.CurrentValue -= mult * (100f / (1f * 3600f));//100 kcal/h
+	private void TemperatureFormules()
+	{
+		if (Resistances.FeelsLike >= 0)
+		{
+			Stats.Warmth.CurrentValue += multiplier * (Stats.Warmth.MaxValue / (5f * 3600f));
+		}
+		else
+		{
+			if (Resistances.TemperatureChevrone0 < Resistances.FeelsLike)
+			{
+				Stats.Warmth.CurrentValue -= multiplier * (Stats.Warmth.MaxValue / (5f * 3600f));//100% / 5h
+			}
+			else if (Resistances.TemperatureChevrone1 < Resistances.FeelsLike && Resistances.FeelsLike <= Resistances.TemperatureChevrone0)
+			{
+				Stats.Warmth.CurrentValue -= multiplier * (Stats.Warmth.MaxValue / (2f * 3600f));//100% / 1h
+			}
+			else if (Resistances.TemperatureChevrone2 < Resistances.FeelsLike && Resistances.FeelsLike <= Resistances.TemperatureChevrone1)
+			{
+				Stats.Warmth.CurrentValue -= multiplier * (Stats.Warmth.MaxValue / (0.5f * 3600f));//100% / 0.5h
+			}
+			else
+			{
+				Stats.Warmth.CurrentValue -= multiplier * (Stats.Warmth.MaxValue / (900f));//100% / 10m
+			}
+		}
 	}
 
 	private void ConditionFormules()
@@ -157,32 +170,5 @@ public class PlayerStatus : IStatus
 		{
 			RestoreCondition(-(Stats.Condition.MaxValue * 0.5f) / 86400f);//-50.0%/d or ~2.08%/h
 		}
-	}
-
-	private void TemperatureFormules()
-	{
-		/*if (resistances.FeelsLike >= 0)
-		{
-			Stats.Warmth.CurrentValue += Stats.Warmth.MaxValue / (5f * 3600f);
-		}
-		else
-		{
-			if (resistances.TemperatureChevrone0 < resistances.FeelsLike)
-			{
-				Stats.Warmth.CurrentValue -= Stats.Warmth.MaxValue / (5f * 3600f);//100% / 5h
-			}
-			else if (resistances.TemperatureChevrone1 < resistances.FeelsLike && resistances.FeelsLike <= resistances.TemperatureChevrone0)
-			{
-				Stats.Warmth.CurrentValue -= Stats.Warmth.MaxValue / (1f * 3600f);//100% / 1h
-			}
-			else if (resistances.TemperatureChevrone2 < resistances.FeelsLike && resistances.FeelsLike <= resistances.TemperatureChevrone1)
-			{
-				Stats.Warmth.CurrentValue -= Stats.Warmth.MaxValue / (0.2f * 3600f);//100% / 0.2h
-			}
-			else
-			{
-				Stats.Warmth.CurrentValue -= Stats.Warmth.MaxValue / (900f);//100% / 10m
-			}
-		}*/
 	}
 }

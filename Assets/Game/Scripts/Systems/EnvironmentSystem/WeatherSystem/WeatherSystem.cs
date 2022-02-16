@@ -124,8 +124,7 @@ namespace Game.Systems.EnvironmentSystem
     [System.Serializable]
     public struct WeatherWind
     {
-        [Space]
-        [Range(-100f, 0)]
+        [Range(-100f, 55f)]
         [Tooltip("Ветер")]
         public float windchill;
         [Range(0, 120f)]

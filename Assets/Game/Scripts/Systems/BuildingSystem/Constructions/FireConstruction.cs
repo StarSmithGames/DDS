@@ -1,11 +1,7 @@
+using Game.Systems.EnvironmentSystem;
 using Game.Systems.IgnitionSystem;
 
-using Newtonsoft.Json.Linq;
-
-using System.Collections;
-
 using UnityEngine;
-using UnityEngine.Assertions;
 
 using Zenject;
 
@@ -33,21 +29,20 @@ namespace Game.Systems.BuildingSystem
 		public bool IsCompleted { get => isCompleted; set => isCompleted = value; }
 		private bool isCompleted = false;
 
-		public bool IsFireEnabled 
-		{
-			get => isFireEnabled;
-			set
-			{
-				isFireEnabled = value;
-				particles.SetActive(isFireEnabled);
-			}
-		}
 		private bool isFireEnabled = false;
 
         [SerializeField] private bool isFireEnableOnAwake = false;
         [SerializeField] private GameObject particles;
+		[SerializeField] private EnvironmentCoverageArea coverageArea;
 
-		public bool IsFireProcess => isFireProcess;
+		public bool IsFireProcess {
+			get => isFireProcess;
+			set
+			{
+				isFireProcess = value;
+				particles.SetActive(isFireProcess);
+			}
+		}
 		private bool isFireProcess = false;
 
 		private TimeSystem.TimeEvent timeEvent;
@@ -67,7 +62,7 @@ namespace Game.Systems.BuildingSystem
 
 			if (IsPlaced)
 			{
-				IsFireEnabled = isFireEnableOnAwake;
+				IsFireProcess = isFireEnableOnAwake;
 				isCompleted = true;
 			}
 			else
@@ -129,26 +124,34 @@ namespace Game.Systems.BuildingSystem
 		public void StartFire(TimeSystem.Time fireDuration)
 		{
 			this.fireDuration = fireDuration;
-			IsFireEnabled = true;
 			isFireProcess = true;
 		}
 
 		private void FireTick()
 		{
-			if (isFireProcess)
+			if (isFireEnableOnAwake)//cheat
 			{
-				fireDuration -= oneSecond;
-
-				if(fireDuration.TotalSeconds == 0)
+				if (IsFireProcess)
 				{
-					StopFire();
+
+				}
+			}
+			else
+			{
+				if (IsFireProcess)
+				{
+					fireDuration -= oneSecond;
+
+					if (fireDuration.TotalSeconds == 0)
+					{
+						StopFire();
+					}
 				}
 			}
 		}
 
 		public void StopFire()
 		{
-			IsFireEnabled = false;
 			isFireProcess = false;
 
 			StartObserve();

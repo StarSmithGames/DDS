@@ -6,7 +6,7 @@ using Zenject;
 
 namespace Game.Entities
 {
-	public class Player : MonoBehaviour
+	public class Player : MonoBehaviour, IEntity
 	{
 		[SerializeField] private PlayerController playerController;
 		[SerializeField] private CameraController cameraController;
@@ -23,6 +23,7 @@ namespace Game.Entities
 		{
 			this.uiManager = uiManager;
 
+			Debug.LogError(status != null);
 			Status = status;
 		}
 
@@ -53,6 +54,21 @@ namespace Game.Entities
 		public void DisableVision()
 		{
 			cameraVision.PauseVision();
+		}
+
+		public void StartObserve()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void Observe()
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public void EndObserve()
+		{
+			throw new System.NotImplementedException();
 		}
 	}
 	[System.Serializable]

@@ -20,6 +20,12 @@ MonoBehaviour:
       fatigue: 100
       hungred: 2500
       thrist: 100
+    resistances:
+      airResistance: 0
+      windResistance: 20
+      temperatureChevrone0: -5
+      temperatureChevrone1: -15
+      temperatureChevrone2: -25
     inventory:
       useRandomItems: 0
       shuffleList: 0

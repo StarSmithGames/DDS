@@ -4899,6 +4899,7 @@ GameObject:
   - component: {fileID: 6476888655505527461}
   - component: {fileID: 114790674198011454}
   - component: {fileID: 5652316711907895074}
+  - component: {fileID: 774776580}
   m_Layer: 0
   m_Name: Campfire0
   m_TagString: Untagged
@@ -5012,11 +5013,43 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2509c85b9a1c4024e89c17d6c812cc5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  constructionData: {fileID: 11400000, guid: 26845f154314f9d4e9114df132c9a9f1, type: 2}
   isPlaced: 1
+  constructionData: {fileID: 11400000, guid: 26845f154314f9d4e9114df132c9a9f1, type: 2}
   coll: {fileID: 6476888655505527461}
   renderers:
   - {fileID: 4819550455808242545}
   - {fileID: 473821923492173592}
   isFireEnableOnAwake: 0
   particles: {fileID: 3723124393099487982}
+  coverageArea: {fileID: 774776580}
+--- !u!114 &774776580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6476888655505527460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01e7cc6d2cf6f624da58b0ebbbe71354, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isEnabled: 1
+  radius: 2.14
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 1
+  coverage:
+    air:
+      airTemperature: 0
+    wind:
+      windchill: 0
+      windSpeed: 0
+      windDirection: {x: 0, y: 0, z: 0}
+      windAngle: 0
+      windSpeedType: 0
+      windDirectionType: 0
+    humidity:
+      humidity: 0
+    precipitation:
+      precipitation: 0

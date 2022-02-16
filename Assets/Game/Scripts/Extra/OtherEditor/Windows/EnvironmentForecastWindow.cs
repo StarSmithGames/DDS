@@ -7,7 +7,6 @@ using Sirenix.Serialization.Editor;
 using Game.Systems.EnvironmentSystem;
 using UnityEditor;
 using System.Linq;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class EnvironmentForecastWindow : OdinEditorWindow
 {
