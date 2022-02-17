@@ -6,7 +6,7 @@ using Zenject;
 
 namespace Game.Entities
 {
-	public class Player : MonoBehaviour, IEntity
+	public class Player : MonoBehaviour, IPlayer
 	{
 		[SerializeField] private PlayerController playerController;
 		[SerializeField] private CameraController cameraController;
@@ -14,16 +14,15 @@ namespace Game.Entities
 		public Transform ItemViewPoint => itemViewPoint;
 		[SerializeField] private Transform itemViewPoint;
 
-		public IStatus Status { get; private set; }
+		public PlayerStatus Status { get; private set; }
 
 		private UIManager uiManager;
 
 		[Inject]
-		private void Construct(UIManager uiManager, IStatus status)
+		private void Construct(UIManager uiManager, PlayerStatus status)
 		{
 			this.uiManager = uiManager;
 
-			Debug.LogError(status != null);
 			Status = status;
 		}
 
@@ -56,20 +55,27 @@ namespace Game.Entities
 			cameraVision.PauseVision();
 		}
 
+		public void Kill()
+		{
+			Freeze();
+			DisableVision();
+		}
+
+
+		#region Hmmm Multiplayer?
 		public void StartObserve()
 		{
 			throw new System.NotImplementedException();
 		}
-
 		public void Observe()
 		{
 			throw new System.NotImplementedException();
 		}
-
 		public void EndObserve()
 		{
 			throw new System.NotImplementedException();
 		}
+		#endregion
 	}
 	[System.Serializable]
 	public class PlayerSettings

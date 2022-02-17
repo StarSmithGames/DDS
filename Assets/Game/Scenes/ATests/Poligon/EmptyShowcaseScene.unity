@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 193238551}
-  m_IndirectSpecularColor: {r: 0.21227714, g: 0.28427374, b: 0.40545338, a: 1}
+  m_IndirectSpecularColor: {r: 0.2123, g: 0.2842997, b: 0.4055015, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -27539,15 +27539,11 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 774776580, guid: 64e3889b2095df84cb5eda9013c99508, type: 3}
-      propertyPath: radius
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 774776580, guid: 64e3889b2095df84cb5eda9013c99508, type: 3}
       propertyPath: targetMask.m_Bits
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 5652316711907895074, guid: 64e3889b2095df84cb5eda9013c99508, type: 3}
-      propertyPath: isFireEnableOnAwake
+      propertyPath: cheatFireEnableOnAwake
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5956387940662396958, guid: 64e3889b2095df84cb5eda9013c99508, type: 3}

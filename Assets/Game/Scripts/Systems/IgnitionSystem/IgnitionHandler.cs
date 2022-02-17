@@ -147,6 +147,8 @@ namespace Game.Systems.IgnitionSystem
 
 					uiManager.Targets.Filler.HideFiller();
 
+					window.UnBlock();
+
 					CloseIgnition();
 				}
 				);
@@ -266,11 +268,11 @@ namespace Game.Systems.IgnitionSystem
 			{
 				if(signal.input == InputType.Escape)
 				{
-					CloseIgnition();
+					OnBackButtonClicked();
 				}
 				else if (signal.input == InputType.IgnitionStartFire)
 				{
-					StartIgnition();
+					OnStartButtonClicked();
 				}
 			}
 		}

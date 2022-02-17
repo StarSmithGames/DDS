@@ -1,5 +1,7 @@
 using Game.Systems.EnvironmentSystem;
 
+using Newtonsoft.Json.Linq;
+
 using Sirenix.OdinInspector;
 
 using System;
@@ -9,14 +11,14 @@ using UnityEngine;
 
 using Zenject;
 
-public class Resistances : IInitializable, IDisposable
+public class Resistances : IModifiable
 {
 	private const int round = 1;
 
 	//если > 0 получаем тепло
 	//если <= 0 теряет тепло
 	[ShowInInspector]
-	public float FeelsLike => (float)Math.Round(AirFeels + WindFeels /*+ clothing*/ + BonusesFeels, round);
+	public float FeelsLike => (float)Math.Round(AirFeels + WindFeels /*+ clothing*/ + ModifyValue, round);
 
 	public float AirFeels
 	{
@@ -36,44 +38,55 @@ public class Resistances : IInitializable, IDisposable
 		}
 	}
 	private float windFeels;
-	public float BonusesFeels
-	{
-		get => bonusesFeels;
-		set
+
+	public float ModifyValue
 		{
-			bonusesFeels = (float)Math.Round(value, round);
+		get
+		{
+			float value = 0;
+			for (int i = 0; i < Modifiers.Count; i++)
+			{
+				value += Modifiers[i].Value;
+			}
+
+			return (float)Math.Round(value, round);
 		}
 	}
-	private float bonusesFeels;
 
 	public float TemperatureChevrone0 => settings.temperatureChevrone0;
 	public float TemperatureChevrone1 => settings.temperatureChevrone1;
 	public float TemperatureChevrone2 => settings.temperatureChevrone2;
 
+	public List<IModifier> Modifiers { get; private set; }
 
 	private UIResistances uiResistances;
-
-	private SignalBus signalBus;
 	private ResistancesSettings settings;
 
 	public Resistances(SignalBus signalBus, ResistancesSettings settings, UIManager uiManager)
 	{
-		this.signalBus = signalBus;
 		this.settings = settings;
 		uiResistances = uiManager.Status.Resistances;
-		Debug.LogError("Construct");
-	}
 
-	public void Initialize()
-	{
-		Debug.LogError("Initialize");
+		Modifiers = new List<IModifier>();
+
 		signalBus?.Subscribe<SignalWeatherChanged>(OnWeatherChanged);
+		//signalBus?.Unsubscribe<SignalWeatherChanged>(OnWeatherChanged);
 	}
 
-	public void Dispose()
+	public void AddModifier(IModifier modifier)
 	{
-		signalBus?.Unsubscribe<SignalWeatherChanged>(OnWeatherChanged);
-		Debug.LogError("Dispose");
+		if (!Modifiers.Contains(modifier))
+		{
+			Modifiers.Add(modifier);
+		}
+	}
+
+	public void RemoveModifier(IModifier modifier)
+	{
+		if (Modifiers.Contains(modifier))
+		{
+			Modifiers.Remove(modifier);
+		}
 	}
 
 	private void OnWeatherChanged(SignalWeatherChanged signal)
@@ -84,7 +97,7 @@ public class Resistances : IInitializable, IDisposable
 		uiResistances.FeelsLike.text = FeelsLike + SymbolCollector.CELSIUS;
 		uiResistances.AirFeels.text = AirFeels + SymbolCollector.CELSIUS;
 		uiResistances.WindFeels.text = WindFeels + SymbolCollector.CELSIUS;
-		uiResistances.BonusesFeels.text = BonusesFeels == 0 ? "-" : BonusesFeels + SymbolCollector.CELSIUS;
+		uiResistances.BonusesFeels.text = ModifyValue == 0 ? "-" : ModifyValue + SymbolCollector.CELSIUS;
 	}
 }
 [System.Serializable]

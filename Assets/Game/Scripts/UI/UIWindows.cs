@@ -44,11 +44,11 @@ public class UIWindows : MonoBehaviour
 
     public void Show(IWindow window)
     {
-        (window as WindowBase).gameObject.SetActive(true);
+        (window as WindowBase).Show();
     }
     public void Hide(IWindow window)
     {
-        (window as WindowBase).gameObject.SetActive(false);
+        (window as WindowBase).Hide();
     }
 
     public void HideAllWindows()
@@ -69,11 +69,16 @@ public class UIWindows : MonoBehaviour
         return Get<T>() as T;
     }
 
+    public bool IsAnyShowing()
+	{
+        return windows.Any((x) => x.IsShowing);
+    }
+
     public bool IsAllHided()
 	{
 		for (int i = 0; i < windows.Count; i++)
 		{
-            if (windows[i].gameObject.activeSelf) return false;
+            if (windows[i].IsShowing) return false;
 		}
         return true;
 	}

@@ -1,10 +1,6 @@
 using Game.Entities;
 using Game.Systems.InventorySystem;
 
-using System;
-using System.ComponentModel;
-using System.Linq;
-
 using UnityEngine;
 
 using Zenject;
@@ -18,6 +14,7 @@ namespace Game.Installers
 
 		public override void InstallBindings()
 		{
+			Container.BindInterfacesAndSelfTo<GameOverHandler>().AsSingle();
 			Container.BindInterfacesAndSelfTo<InteractionHandler>().AsSingle();
 
 			Player p = FindObjectOfType<Player>();
@@ -27,24 +24,26 @@ namespace Game.Installers
 
 			Container.Bind<Camera>().FromInstance(c).AsSingle();
 			Container.Bind<Player>().FromInstance(p).AsSingle();
+
+			Container.DeclareSignal<SignalPlayerDied>();
 		}
 
 		private void BindPlayerStatus()
 		{
 			Container.DeclareSignal<SignalPlayerStateChanged>();
 
-			Container.BindInterfacesAndSelfTo<PlayerStates>().AsSingle();
+			Container.BindInterfacesAndSelfTo<PlayerStates>().AsSingle().WhenInjectedInto<PlayerStatus>();
 
 			Container.BindInstance(settings.inventory).WhenInjectedInto<Inventory>();
-			Container.BindInterfacesTo<Inventory>().AsSingle();
+			Container.BindInterfacesTo<Inventory>().AsSingle().WhenInjectedInto<PlayerStatus>();
 
 			Container.BindInstance(settings.stats).WhenInjectedInto<Stats>();
-			Container.BindInterfacesTo<Stats>().AsSingle();
+			Container.BindInterfacesTo<Stats>().AsSingle().WhenInjectedInto<PlayerStatus>();
 
 			Container.BindInstance(settings.resistances).WhenInjectedInto<Resistances>();
-			Container.BindInterfacesAndSelfTo<Resistances>().AsSingle();
+			Container.BindInterfacesAndSelfTo<Resistances>().AsSingle().WhenInjectedInto<PlayerStatus>();
 
-			Container.BindInterfacesTo<PlayerStatus>().WhenInjectedInto<Player>();
+			Container.BindInterfacesAndSelfTo<PlayerStatus>().AsSingle().WhenInjectedInto<Player>();
 		}
 	}
 }

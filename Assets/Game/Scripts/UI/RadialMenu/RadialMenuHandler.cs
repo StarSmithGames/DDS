@@ -391,7 +391,10 @@ namespace Game.Systems.RadialMenu
 				}
 				else
 				{
-					OpenMenu();
+					if (uiManager.WindowsManager.IsAllHided())
+					{
+						OpenMenu();
+					}
 				}
 			}
 		}

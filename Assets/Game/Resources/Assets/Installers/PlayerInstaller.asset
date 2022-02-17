@@ -79,34 +79,6 @@ MonoBehaviour:
         currentDurability: 100
         currentCalories: 0
         currentMagazineCapacity: 15
-      - useRandom: 0
-        data: {fileID: 11400000, guid: 6ce80efb4973f0840b46f89864fa91fd, type: 2}
-        currentStackSize: 1
-        currentWeight: 0.1
-        currentDurability: 100
-        currentCalories: 0
-        currentMagazineCapacity: 15
-      - useRandom: 0
-        data: {fileID: 11400000, guid: 772c8d68122b7f84fb47bd4cf4b4f5e9, type: 2}
-        currentStackSize: 1
-        currentWeight: 0.25
-        currentDurability: 100
-        currentCalories: 0
-        currentMagazineCapacity: 15
-      - useRandom: 0
-        data: {fileID: 11400000, guid: 772c8d68122b7f84fb47bd4cf4b4f5e9, type: 2}
-        currentStackSize: 1
-        currentWeight: 0.25
-        currentDurability: 100
-        currentCalories: 0
-        currentMagazineCapacity: 15
-      - useRandom: 0
-        data: {fileID: 11400000, guid: b0741ab2887b85440ae58324c0196bc4, type: 2}
-        currentStackSize: 1
-        currentWeight: 0.25
-        currentDurability: 100
-        currentCalories: 0
-        currentMagazineCapacity: 15
       randomSettings:
         isUnique: 0
         useRandomCount: 1

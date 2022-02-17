@@ -5019,7 +5019,7 @@ MonoBehaviour:
   renderers:
   - {fileID: 4819550455808242545}
   - {fileID: 473821923492173592}
-  isFireEnableOnAwake: 0
+  cheatFireEnableOnAwake: 0
   particles: {fileID: 3723124393099487982}
   coverageArea: {fileID: 774776580}
 --- !u!114 &774776580
@@ -5034,22 +5034,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01e7cc6d2cf6f624da58b0ebbbe71354, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isEnabled: 1
-  radius: 2.14
+  radius: 5
   targetMask:
     serializedVersion: 2
-    m_Bits: 1
-  coverage:
-    air:
-      airTemperature: 0
-    wind:
-      windchill: 0
-      windSpeed: 0
-      windDirection: {x: 0, y: 0, z: 0}
-      windAngle: 0
-      windSpeedType: 0
-      windDirectionType: 0
-    humidity:
-      humidity: 0
-    precipitation:
-      precipitation: 0
+    m_Bits: 5

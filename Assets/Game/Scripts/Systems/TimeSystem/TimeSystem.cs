@@ -152,9 +152,9 @@ namespace Game.Systems.TimeSystem
             onEnd?.Invoke();
             StopRewind();
         }
-        private void StopRewind()
+        public void StopRewind()
 		{
-            if (!IsRewindProcess)
+            if (IsRewindProcess)
             {
                 asyncManager.StopCoroutine(timeRewindCoroutine);
                 timeRewindCoroutine = null;
@@ -330,9 +330,9 @@ namespace Game.Systems.TimeSystem
 
 
             if (days != 0) result += days + "D ";
-            if (hours != 0) result += hours + "H ";
-            if (minutes != 0) result += minutes + "M ";
-            if (showSecs && seconds != 0) result += seconds + "S";
+            if (hours != 0) result += (hours < 10 ? "0" + hours : hours.ToString()) + "H ";
+            if (minutes != 0) result += (minutes < 10 ? "0" + minutes : minutes.ToString()) + "M ";
+            if (showSecs && seconds != 0) result += (seconds < 10 ? "0" + seconds : seconds.ToString()) + "S";
 
             result = result == "" ? SymbolCollector.DASH.ToString() : result;
 

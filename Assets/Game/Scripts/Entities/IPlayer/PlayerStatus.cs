@@ -1,17 +1,16 @@
 using Game.Systems.InventorySystem;
 using Game.Systems.TimeSystem;
 
-using System;
-
 using UnityEngine;
 
 using Zenject;
+using Zenject.ReflectionBaking.Mono.Cecil;
 
 using static PlayerStates;
 
 public class PlayerStatus : IStatus
 {
-	public bool IsAlive { get => isAlive; private set => isAlive = value; }
+	public bool IsAlive => isAlive;
 	private bool isAlive = true;
 
 	public IInventory Inventory { get; private set; }
@@ -20,11 +19,14 @@ public class PlayerStatus : IStatus
 	public PlayerStates States { get; private set; }
 
 	private float multiplier;
+	private TimeEvent tick;
 
+	private SignalBus signalBus;
 	private UIManager uiManager;
 	private TimeSystem timeSystem;
 
 	public PlayerStatus(
+		SignalBus signalBus,
 		UIManager uiManager,
 		TimeSystem timeSystem,
 		IInventory inventory,
@@ -32,6 +34,7 @@ public class PlayerStatus : IStatus
 		Resistances resistances,
 		PlayerStates states)
 	{
+		this.signalBus = signalBus;
 		this.uiManager = uiManager;
 		this.timeSystem = timeSystem;
 
@@ -44,13 +47,19 @@ public class PlayerStatus : IStatus
 		{
 			isInfinity = true,
 			onTrigger = TimeTick,
-			triggerTime = new Game.Systems.TimeSystem.Time() { TotalSeconds = 1}
+			triggerTime = new Game.Systems.TimeSystem.Time() { TotalSeconds = 1 }
 		});
 	}
-	
+
 	public void RestoreCondition(float value)
 	{
 		Stats.Condition.CurrentValue += value;
+
+		if(Stats.Condition.CurrentValue == 0)
+		{
+			isAlive = false;
+			signalBus?.Fire<SignalPlayerDied>();
+		}
 	}
 
 	private void TimeTick()
@@ -156,19 +165,19 @@ public class PlayerStatus : IStatus
 	{
 		if (Stats.Warmth.CurrentValue == 0)
 		{
-			RestoreCondition(-(Stats.Condition.MaxValue * 4.5f) / 86400f);//-450.0%/d or ~18.75%/h
+			RestoreCondition(-multiplier * (Stats.Condition.MaxValue * 4.5f) / 86400f);//-450.0%/d or ~18.75%/h
 		}
 		if (Stats.Fatigue.CurrentValue == 0)
 		{
-			RestoreCondition(-(Stats.Condition.MaxValue * 0.25f) / 86400f);//-25.0%/d or ~1.04%/h
+			RestoreCondition(-multiplier * (Stats.Condition.MaxValue * 0.25f) / 86400f);//-25.0%/d or ~1.04%/h
 		}
 		if (Stats.Hungred.CurrentValue == 0)
 		{
-			RestoreCondition(-(Stats.Condition.MaxValue * 0.25f) / 86400f);//-25.0%/d or ~1.04%/h
+			RestoreCondition(-multiplier * (Stats.Condition.MaxValue * 0.25f) / 86400f);//-25.0%/d or ~1.04%/h
 		}
 		if (Stats.Thirst.CurrentValue == 0)
 		{
-			RestoreCondition(-(Stats.Condition.MaxValue * 0.5f) / 86400f);//-50.0%/d or ~2.08%/h
+			RestoreCondition(-multiplier * (Stats.Condition.MaxValue * 0.5f) / 86400f);//-50.0%/d or ~2.08%/h
 		}
 	}
 }

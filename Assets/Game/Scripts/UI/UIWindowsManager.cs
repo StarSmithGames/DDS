@@ -1,5 +1,7 @@
 using Game.Signals;
 
+using System.Linq;
+
 using UnityEngine;
 
 using Zenject;
@@ -24,6 +26,14 @@ public class UIWindowsManager : MonoBehaviour
 	private void OnDestroy()
 	{
         signalBus?.Unsubscribe<SignalUIWindowsBack>(OnWindowsBack);
+    }
+    public bool IsAnyWindowShowing()
+    {
+        return WorldWindows.IsAnyShowing() || BackpackWindows.IsAnyShowing();
+    }
+    public bool IsAllHided()
+	{
+        return WorldWindows.IsAllHided() || BackpackWindows.IsAllHided();
     }
 
     public void Show<T>() where T : IWindow

@@ -9,8 +9,6 @@ public class Stats : IStats
 	public IStat Hungred { get; protected set; }
 	public IStat Thirst { get; protected set; }
 
-	//private List<IStat> stats;
-
 	public Stats(StatsSettings settings, UIManager uiManager)
 	{
 		Condition = new ConditionStat(settings.condtion, 100f);
@@ -21,26 +19,14 @@ public class Stats : IStats
 		Thirst = new ThirstStat(settings.thrist, 100f);
 
 		var uistats = uiManager.Status.Stats;
+
 		uistats.Condition.SetAttribute(Condition);
 		uistats.Stamina.SetAttribute(Stamina);
 		uistats.Warmth.SetAttribute(Warmth);
 		uistats.Fatigue.SetAttribute(Fatigue);
 		uistats.Hungred.SetAttribute(Hungred);
 		uistats.Thirst.SetAttribute(Thirst);
-
-		//stats = new List<IStat>();
-		//stats.Add(Condtion);
-		//stats.Add(Stamina);
-		//stats.Add(Warmth);
-		//stats.Add(Fatigue);
-		//stats.Add(Hungred);
-		//stats.Add(Thrist);
 	}
-
-	//public IStat GetStat<T>() where T : IStat
-	//{
-	//	return stats.OfType<T>().FirstOrDefault();
-	//}
 }
 [System.Serializable]
 public class StatsSettings
