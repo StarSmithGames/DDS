@@ -29,7 +29,7 @@ namespace Game.Systems.EnvironmentSystem
 		{
 			Container.DeclareSignal<SignalWeatherChanged>();
 
-			Container.BindInstance(FindObjectOfType<WindArrow3DUI>(true)).WhenInjectedInto<WindController>();
+			Container.BindInstance(FindObjectOfType<UI3DWindArrow>(true)).WhenInjectedInto<WindController>();
 			Container.BindInterfacesAndSelfTo<WindController>().AsSingle();
 
 			Container.BindInstance(FindObjectOfType<FogNormal>(true)).WhenInjectedInto<FogController>();

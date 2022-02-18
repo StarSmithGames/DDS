@@ -2,12 +2,8 @@ using Game.Entities;
 using Game.Systems.TimeSystem;
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 using Zenject;
-using Zenject.ReflectionBaking.Mono.Cecil;
 
 public class GameOverHandler : IInitializable, IDisposable
 {

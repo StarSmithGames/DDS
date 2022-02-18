@@ -11,7 +11,7 @@ using DG.Tweening;
 
 namespace Game.Systems.BuildingSystem
 {
-	public class BuildingSystem : IInitializable, IDisposable
+	public class BuildingHandler : IInitializable, IDisposable
 	{
 		public bool IsOpened => isOpened;
 		private bool isOpened = false;
@@ -39,7 +39,7 @@ namespace Game.Systems.BuildingSystem
 
 		private bool isDebug = false;
 
-		public BuildingSystem(
+		public BuildingHandler(
 			SignalBus signalBus,
 			BuildingSystemSettings settings,
 			AsyncManager asyncManager,

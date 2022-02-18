@@ -12,7 +12,8 @@ GameObject:
   - component: {fileID: 3394774}
   - component: {fileID: 2365628}
   - component: {fileID: 1489794590672365722}
-  m_Layer: 13
+  - component: {fileID: 3758705641181319828}
+  m_Layer: 0
   m_Name: DeadBush03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,3 +96,20 @@ SphereCollider:
   serializedVersion: 2
   m_Radius: 0.33
   m_Center: {x: -0.13130248, y: 0.4016226, z: 0.19569701}
+--- !u!114 &3758705641181319828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 123050}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 009321ecf95cdf847a179defe87fab62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlaced: 1
+  constructionData: {fileID: 11400000, guid: e0de3249ea35faf4993e388546b162dc, type: 2}
+  coll: {fileID: 1489794590672365722}
+  renderers:
+  - {fileID: 2365628}

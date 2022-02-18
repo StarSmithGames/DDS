@@ -4,6 +4,7 @@ using Game.Systems.IgnitionSystem;
 using Game.Systems.InventorySystem;
 using Game.Systems.InventorySystem.Inspector;
 using Game.Systems.InventorySystem.Transactor;
+using Game.Systems.PassTimeSystem;
 
 using UnityEngine;
 using Zenject;
@@ -26,6 +27,8 @@ namespace Game.Installers
 			BindTransactor();
 			BindBackpack();
 			BindIgnition();
+			BindTimePass();
+
 
 			Container.BindFactory<UIInventorySlot, UIInventorySlot.Factory>()
 					.FromMonoPoolableMemoryPool((x) => x.WithInitialSize(initialSlotFactorySize)
@@ -72,6 +75,11 @@ namespace Game.Installers
 
 
 			Container.BindInterfacesAndSelfTo<IgnitionHandler>().AsSingle();
+		}
+	
+		private void BindTimePass()
+		{
+			Container.BindInterfacesAndSelfTo<PassTimeHandler>().AsSingle();
 		}
 	}
 }

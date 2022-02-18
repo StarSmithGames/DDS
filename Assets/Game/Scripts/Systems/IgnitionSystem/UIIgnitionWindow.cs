@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using Zenject;
+
 namespace Game.Systems.IgnitionSystem
 {
     public class UIIgnitionWindow : WindowBase
@@ -39,6 +41,12 @@ namespace Game.Systems.IgnitionSystem
         [Space]
         [SerializeField] private Button startButton;
         [SerializeField] private Button backButton;
+
+        [Inject]
+        private void Construct(UIManager uiManager)
+		{
+            uiManager.WindowsManager.Register(this);
+        }
 
         public void Block()
 		{

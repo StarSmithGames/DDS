@@ -33,7 +33,7 @@ namespace Game.Systems.RadialMenu
 		private UIManager uiManager;
 		private UIRadialMenuOption.Factory optionFactory;
 		private Player player;
-		private BuildingSystem.BuildingSystem buildingSystem;
+		private BuildingSystem.BuildingHandler buildingSystem;
 
 		public RadialMenuHandler(SignalBus signalBus,
 			RadialMenuSettings settings,
@@ -41,7 +41,7 @@ namespace Game.Systems.RadialMenu
 			UIManager uiManager,
 			UIRadialMenuOption.Factory optionFactory,
 			Player player,
-			BuildingSystem.BuildingSystem buildingSystem)
+			BuildingSystem.BuildingHandler buildingSystem)
 		{
 			this.signalBus = signalBus;
 			this.settings = settings;

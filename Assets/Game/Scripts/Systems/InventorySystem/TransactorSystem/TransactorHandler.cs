@@ -17,12 +17,12 @@ namespace Game.Systems.InventorySystem.Transactor
 		{
 			this.signalBus = signalBus;
 			this.uiManager = uiManager;
-
-			this.window = uiManager.WindowsManager.GetAs<UIItemTransactorWindow>();
 		}
 
 		public void Initialize()
 		{
+			this.window = uiManager.WindowsManager.GetAs<UIItemTransactorWindow>();
+
 			signalBus?.Subscribe<SignalUITransactorAll>(OnTransactionAll);
 			signalBus?.Subscribe<SignalUITransactorGive>(OnTransactionGive);
 			signalBus?.Subscribe<SignalUITransactorBack>(OnTransactionBack);

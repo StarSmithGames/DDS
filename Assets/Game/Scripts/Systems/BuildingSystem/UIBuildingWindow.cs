@@ -13,9 +13,11 @@ namespace Game.Systems.BuildingSystem
 		private SignalBus signalBus;
 
 		[Inject]
-		private void Construct(SignalBus signalBus)
+		private void Construct(SignalBus signalBus, UIManager uiManger)
 		{
 			this.signalBus = signalBus;
+
+			uiManger.WindowsManager.Register(this);
 
 			cancel.onClick.AddListener(OnCancelClicked);
 			place.onClick.AddListener(OnPlaceClicked);

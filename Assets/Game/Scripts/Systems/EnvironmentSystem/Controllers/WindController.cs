@@ -8,9 +8,9 @@ namespace Game.Systems.EnvironmentSystem
 {
 	public class WindController : IInitializable, IDisposable
 	{
-		private WindArrow3DUI windArrow;
+		private UI3DWindArrow windArrow;
 
-		public WindController(WindArrow3DUI windArrow)
+		public WindController(UI3DWindArrow windArrow)
 		{
 			this.windArrow = windArrow;
 		}

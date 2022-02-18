@@ -1,8 +1,10 @@
-
 using Sirenix.OdinInspector;
 
 using System.Collections.Generic;
-
+using System.Linq;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 using Zenject;
@@ -122,6 +124,15 @@ namespace Game.Systems.BuildingSystem
 			{
 				Intersections.Remove(other);
 			}
+		}
+
+		[Button]
+		private void GetAllRenderers()
+		{
+			renderers = transform.GetComponentsInChildren<Renderer>().ToList();
+#if UNITY_EDITOR
+			EditorUtility.SetDirty(gameObject);
+#endif
 		}
 
 		public class Factory : PlaceholderFactory<ConstructionBlueprint, IConstruction> { }

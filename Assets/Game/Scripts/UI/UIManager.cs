@@ -45,7 +45,7 @@ public class UIManager : MonoBehaviour
 
         Targets.HideAll();
 
-        WindowsManager.HideAllWindows();
+        WindowsManager.HideAll();
 
         if(globalSettings.projectSettings.platform == PlatformType.Desktop)
 		{

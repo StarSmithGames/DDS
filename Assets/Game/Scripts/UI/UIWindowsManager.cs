@@ -1,5 +1,4 @@
-using Game.Signals;
-
+using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
@@ -8,10 +7,7 @@ using Zenject;
 
 public class UIWindowsManager : MonoBehaviour
 {
-    public UIWindows WorldWindows => worldWindows;
-    [SerializeField] private UIWindows worldWindows;
-    public UIWindows BackpackWindows => worldWindows;
-    [SerializeField] private UIWindows backpackWindows;
+    private List<IWindow> windows = new List<IWindow>();
 
     private SignalBus signalBus;
 
@@ -19,83 +15,67 @@ public class UIWindowsManager : MonoBehaviour
     private void Construct(SignalBus signalBus)
 	{
         this.signalBus = signalBus;
-
-        signalBus?.Subscribe<SignalUIWindowsBack>(OnWindowsBack);
     }
 
-	private void OnDestroy()
+	private void OnDestroy() { }
+
+    public void Register(IWindow window)
 	{
-        signalBus?.Unsubscribe<SignalUIWindowsBack>(OnWindowsBack);
+		if (!windows.Contains(window))
+		{
+            windows.Add(window);
+		}
+	}
+    public void UnRegister(IWindow window)
+	{
+        if (windows.Contains(window))
+        {
+            windows.Remove(window);
+        }
     }
+
     public bool IsAnyWindowShowing()
     {
-        return WorldWindows.IsAnyShowing() || BackpackWindows.IsAnyShowing();
+        return windows.Any((x) => x.IsShowing);
     }
     public bool IsAllHided()
 	{
-        return WorldWindows.IsAllHided() || BackpackWindows.IsAllHided();
+        return windows.All((x) => !x.IsShowing);
     }
 
-    public void Show<T>() where T : IWindow
+    public bool IsContains<T>() where T : IWindow
     {
-        UIWindows root = Check<T>();
-        root.Show<T>();
-
-        root.gameObject.SetActive(true);
+        return windows.OfType<T>().Any();
     }
-    public void Hide<T>() where T : IWindow
-    {
-        var w = Check<T>();
-        w.Hide<T>();
 
-		if (w.IsAllHided())
-		{
-            w.gameObject.SetActive(false);
+    public void Show<T>() where T : class, IWindow
+    {
+        GetAs<T>().Show();
+    }
+    public void Hide<T>() where T : class, IWindow
+    {
+        GetAs<T>().Hide();
+    }
+
+    public void HideAll()
+    {
+        for (int i = 0; i < windows.Count; i++)
+        {
+            windows[i].Hide();
         }
     }
 
     public T GetAs<T>() where T : class, IWindow
     {
-        return Check<T>().GetAs<T>();
+        return Get<T>() as T;
     }
-
-    public void ShowWorld<T>() where T : IWindow
+    public IWindow Get<T>() where T : IWindow
     {
-        worldWindows.Show<T>();
-
-        if (!worldWindows.gameObject.activeSelf)
-        {
-            worldWindows.gameObject.SetActive(true);
+		if (IsContains<T>())
+		{
+            return windows.Where((window) => window is T).FirstOrDefault();
         }
-    }
 
-    public void ShowBackpack<T>() where T : IWindow
-    {
-        backpackWindows.Show<T>();
-
-        if (!backpackWindows.gameObject.activeSelf)
-        {
-            backpackWindows.gameObject.SetActive(true);
-        }
-    }
-
-    public void HideAllWindows()
-    {
-        WorldWindows.HideAllWindows();
-        BackpackWindows.HideAllWindows();
-    }
-
-    private UIWindows Check<T>() where T : IWindow
-    {
-        if (worldWindows.IsContains<T>()) return worldWindows;
-        if (backpackWindows.IsContains<T>()) return backpackWindows;
-
-        throw new System.Exception("UIWINDOWS CHEK ERROR");
-	}
-
-    private void OnWindowsBack(SignalUIWindowsBack signal)
-	{
-        signal.root.HideAllWindows();
-        signal.root.gameObject.SetActive(false);
+        throw new System.Exception("UIWindowsManager DOESN'T CONTAINS WINDOW ERROR");
     }
 }

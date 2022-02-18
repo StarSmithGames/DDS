@@ -26,10 +26,12 @@ namespace Game.Systems.InventorySystem.Transactor
         private LocalizationSystem.LocalizationSystem localization;
 
         [Inject]
-        private void Construct(SignalBus signalBus, LocalizationSystem.LocalizationSystem localization)
+        private void Construct(SignalBus signalBus, UIManager uiManager, LocalizationSystem.LocalizationSystem localization)
         {
             this.signalBus = signalBus;
             this.localization = localization;
+
+            uiManager.WindowsManager.Register(this);
 
             inscreaseButton.onClick.AddListener(ButtonIncreaseClicked);
             decreaseButton.onClick.AddListener(ButtonDecreaseClicked);

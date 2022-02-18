@@ -12,6 +12,7 @@ public class UIDeathWindow : WindowBase
 	[Inject]
 	private void Construct(UIManager uiManager)
 	{
+		uiManager.WindowsManager.Register(this);
 	}
 
 	public override void Show()
