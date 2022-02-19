@@ -15,9 +15,10 @@ namespace Game.Systems.LocalizationSystem
 
 		private SignalBus signalBus;
 
-		public LocalizationSystem(SignalBus signalBus)
+		public LocalizationSystem(SignalBus signalBus, SystemLanguage defaultLanguage)
 		{
 			this.signalBus = signalBus;
+			this.defaultLanguage = defaultLanguage;
 		}
 
 		public void Initialize()
@@ -37,19 +38,19 @@ namespace Game.Systems.LocalizationSystem
 			signalBus?.Fire(new SignalLocalizationChanged() { language = language });
 		}
 
-		//public string _(string key)
-		//{
-		//	if (assets[currentLanguage].TryGetValue(key, out string translation))
-		//	{
-		//		return translation;
-		//	}
+		public string _(string key)
+		{
+			if (assets[CurrentLanguage.ToString()].TryGetValue(key, out string translation))
+			{
+				return translation;
+			}
 
-		//	if (assets[defaultLanguage].TryGetValue(key, out string translationDefault))
-		//	{
-		//		return translationDefault;
-		//	}
+			if (assets[defaultLanguage.ToString()].TryGetValue(key, out string translationDefault))
+			{
+				return translationDefault;
+			}
 
-		//	return "";
-		//}
+			return "";
+		}
 	}
 }

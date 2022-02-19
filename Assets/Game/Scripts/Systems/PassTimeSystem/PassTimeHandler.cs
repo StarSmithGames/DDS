@@ -13,11 +13,13 @@ namespace Game.Systems.PassTimeSystem
 
 		private UIManager uiManager;
 		private Player player;
+		private LocalizationSystem.LocalizationSystem localization;
 
-		public PassTimeHandler(UIManager uiManager, Player player)
+		public PassTimeHandler(UIManager uiManager, Player player, LocalizationSystem.LocalizationSystem localization)
 		{
 			this.uiManager = uiManager;
 			this.player = player;
+			this.localization = localization;
 		}
 
 		public void Initialize()
@@ -40,6 +42,12 @@ namespace Game.Systems.PassTimeSystem
 
 			passTimeWindow.Show();
 		}
+
+		private void Localize()
+		{
+			//localization.
+		}
+
 
 		private void OnCanceled()
 		{
