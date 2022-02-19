@@ -11,6 +11,8 @@ namespace Game.Systems.RadialMenu
 {
 	public class UIRadialMenuOption : PoolableObject
 	{
+		public UnityAction<UIRadialMenuOption> onButtonClicked;
+
 		[OnValueChanged("OnValueChanged")]
 		[SerializeField] private Color accentColor;
 		[SerializeField] private Color selectedColor;
@@ -21,10 +23,11 @@ namespace Game.Systems.RadialMenu
 
 		public float Rotation { get; set; }
 
-		public bool IsEmpty => isEmpty;
-		private bool isEmpty = false;
+		public bool IsEmpty { get; private set; }
 
-		private bool isCanSetColor = true;
+		public RadialMenuOptionData Data => data;
+		private RadialMenuOptionData data;
+
 
 		private UnityAction action;
 
@@ -41,22 +44,37 @@ namespace Game.Systems.RadialMenu
 		private void OnDestroy()
 		{
 			button.onClick.RemoveAllListeners();
+
+			onButtonClicked = null;
 		}
 
-		public void SetOption(Sprite sprite, UnityAction action = null, bool isInteractable = true, bool isCanSetColor = true)
+		public void SetData(RadialMenuOptionData data)
 		{
-			isEmpty = sprite == null;
-			icon.enabled = !isEmpty;
-			icon.sprite = sprite;
+			this.data = data;
 
-			this.action = action;
+			UpdateOption();
+		}
 
-			button.interactable = isInteractable;
-			
-			this.isCanSetColor = isCanSetColor;
-			if (isCanSetColor)
+		private void UpdateOption()
+		{
+			IsEmpty = data == null;
+
+			if (data == null)
 			{
-				icon.color = isInteractable ? accentColor : disabledColor;
+				icon.enabled = false;
+				button.interactable = false;
+				
+				return;
+			}
+
+			icon.sprite = data.GetIcon();
+			icon.enabled = icon.sprite != null;
+
+			button.interactable = !data.IsEmpty();
+
+			if (data.IsCanSetColor())
+			{
+				icon.color = data.IsEmpty() ? disabledColor : accentColor;
 			}
 			else
 			{
@@ -66,61 +84,54 @@ namespace Game.Systems.RadialMenu
 
 		public bool InvokeAction()
 		{
-			if(action == null)
-				return false;
-
-			action.Invoke();
+			if (Data == null) return false;
+			
+			OnButtonClicked();
+			
 			return true;
 		}
 
 		public void Select()
 		{
+			transform.DOScale(1.35f, 0.1f);
+
 			if (button.interactable)
 			{
-				if (isCanSetColor)
+				if (data.IsCanSetColor())
 				{
 					icon.color = selectedColor;
 				}
-
-				transform.DOScale(1.35f, 0.1f);
 			}
 			else
 			{
-				if (isCanSetColor)
+				if (data.IsCanSetColor())
 				{
 					icon.color = disabledColor;
 				}
 			}
 		}
 
-		public void UnSelect()
+		public void Diselect()
 		{
 			if (button.interactable)
 			{
-				if (isCanSetColor)
+				if (data.IsCanSetColor())
 				{
 					icon.color = accentColor;
 				}
+			}
 
-				if(transform.localScale != Vector3.one)
-				{
-					transform.DOScale(1f, 0.1f);
-				}
+			if (transform.localScale != Vector3.one)
+			{
+				transform.DOScale(1f, 0.1f);
 			}
 		}
+
 
 		private void OnButtonClicked()
 		{
+			onButtonClicked?.Invoke(this);
 		}
-
-		private void OnValueChanged()
-		{
-			if(icon != null)
-			{
-				icon.color = accentColor;
-			}
-		}
-
 
 		public class Factory : PlaceholderFactory<UIRadialMenuOption> { }
 	}

@@ -133,6 +133,7 @@ namespace Game.Systems.InventorySystem
 
 		public bool IsConsumable => data == null ? false : data is ConsumableItemData;
 		public bool IsConsumableDrink => IsConsumable ? data is DrinkItemData : false;
+		public bool IsConsumableFood => IsConsumable ? data is FoodItemData : false;
 
 		public bool IsFireItem => data == null ? false : data is FireItemData;
 		public bool IsFireStarter => IsFireItem ? data is FireStarterData : false;

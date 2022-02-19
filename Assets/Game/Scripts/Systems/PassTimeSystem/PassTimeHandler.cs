@@ -1,4 +1,7 @@
+using DG.Tweening;
+
 using Game.Entities;
+using Game.Managers.InputManger;
 using Game.Systems.BuildingSystem;
 
 using System;
@@ -9,45 +12,79 @@ namespace Game.Systems.PassTimeSystem
 {
 	public class PassTimeHandler : IInitializable, IDisposable
 	{
-		private UIPassTimeModalWindow passTimeWindow;
+		private UIPassTimeWindow passTimeWindow;
 
+		private SignalBus signalBus;
 		private UIManager uiManager;
 		private Player player;
-		private LocalizationSystem.LocalizationSystem localization;
+		
 
-		public PassTimeHandler(UIManager uiManager, Player player, LocalizationSystem.LocalizationSystem localization)
+		public PassTimeHandler(SignalBus signalBus, UIManager uiManager, Player player, LocalizationSystem.LocalizationSystem localization)
 		{
+			this.signalBus = signalBus;
 			this.uiManager = uiManager;
 			this.player = player;
-			this.localization = localization;
 		}
 
 		public void Initialize()
 		{
-			passTimeWindow = uiManager.WindowsManager.GetAs<UIPassTimeModalWindow>();
+			passTimeWindow = uiManager.WindowsManager.GetAs<UIPassTimeWindow>();
 			passTimeWindow.onCanceled += OnCanceled;
+
+			passTimeWindow.PassTab.onPassTimeClicked += OnPassTimeClicked;
+			passTimeWindow.SleepTab.onPassTimeClicked += OnPassTimeClicked;
+
+			signalBus?.Subscribe<SignalInputUnPressed>(OnInputUnPressed);
 		}
 
 		public void Dispose()
 		{
 			passTimeWindow.onCanceled -= OnCanceled;
+
+			passTimeWindow.PassTab.onPassTimeClicked -= OnPassTimeClicked;
+			passTimeWindow.SleepTab.onPassTimeClicked -= OnPassTimeClicked;
+
+			signalBus?.Unsubscribe<SignalInputUnPressed>(OnInputUnPressed);
 		}
 
 		public void SetConstruction(PassTimeConstruction construction)
 		{
-			player.Freeze();
-			player.DisableVision();
-
 			passTimeWindow.SetData((construction.ConstructionData as PassTimeConstructionData).warmthBonus);
-
-			passTimeWindow.Show();
+			OpenPassTime();
 		}
 
-		private void Localize()
+		public void OpenPassTime(PassTimeType type = PassTimeType.None)
 		{
-			//localization.
+			passTimeWindow.SetType(type);
+
+			passTimeWindow.PassTab.SetData();
+			passTimeWindow.SleepTab.SetData();
+			passTimeWindow.Enable(true);
+			passTimeWindow.Show();
+
+			Sequence sequence = DOTween.Sequence();//open animation
+			sequence
+				.AppendInterval(0.1f)
+				.AppendCallback(() =>
+				{
+					player.Freeze();
+					player.DisableVision();
+				});
 		}
 
+		private void OnPassTimeClicked()
+		{
+			passTimeWindow.Enable(false);
+
+			if (passTimeWindow.IsSleepTab)
+			{
+
+			}
+			else
+			{
+
+			}
+		}
 
 		private void OnCanceled()
 		{
@@ -55,5 +92,20 @@ namespace Game.Systems.PassTimeSystem
 			player.UnFreeze();
 			player.EnableVision();
 		}
+
+		private void OnInputUnPressed(SignalInputUnPressed signal)
+		{
+			if (signal.input == InputType.Escape && passTimeWindow.IsShowing)
+			{
+				OnCanceled();
+			}
+		}
+	}
+
+	public enum PassTimeType 
+	{
+		None,
+		OnlyPassTime,
+		FirstPassTime,
 	}
 }

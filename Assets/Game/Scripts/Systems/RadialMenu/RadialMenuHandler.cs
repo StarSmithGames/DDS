@@ -12,6 +12,7 @@ using System.Linq;
 using Zenject;
 using Game.Systems.BuildingSystem;
 using Game.Systems.InventorySystem;
+using Game.Systems.PassTimeSystem;
 
 namespace Game.Systems.RadialMenu
 {
@@ -20,7 +21,6 @@ namespace Game.Systems.RadialMenu
 		public bool IsOpened => isOpened;
 		private bool isOpened = false;
 
-		private bool isBlocked = false;
 		private bool isOutOfZone = false;
 
 		private UIRadialMenu menu;
@@ -33,7 +33,8 @@ namespace Game.Systems.RadialMenu
 		private UIManager uiManager;
 		private UIRadialMenuOption.Factory optionFactory;
 		private Player player;
-		private BuildingSystem.BuildingHandler buildingSystem;
+		private BuildingHandler buildingHandler;
+		private PassTimeHandler passTimeHandler;
 
 		public RadialMenuHandler(SignalBus signalBus,
 			RadialMenuSettings settings,
@@ -41,7 +42,8 @@ namespace Game.Systems.RadialMenu
 			UIManager uiManager,
 			UIRadialMenuOption.Factory optionFactory,
 			Player player,
-			BuildingSystem.BuildingHandler buildingSystem)
+			BuildingSystem.BuildingHandler buildingHandler,
+			PassTimeHandler passTimeHandler)
 		{
 			this.signalBus = signalBus;
 			this.settings = settings;
@@ -49,7 +51,8 @@ namespace Game.Systems.RadialMenu
 			this.uiManager = uiManager;
 			this.optionFactory = optionFactory;
 			this.player = player;
-			this.buildingSystem = buildingSystem;
+			this.buildingHandler = buildingHandler;
+			this.passTimeHandler = passTimeHandler;
 
 			this.menu = uiManager.RadialMenu;
 		}
@@ -93,6 +96,7 @@ namespace Game.Systems.RadialMenu
 				for (int i = 0; i < options.Count; i++)
 				{
 					if (options[i].IsEmpty) continue;
+					if (options[i].Data.IsEmpty()) continue;
 
 					float rotation = options[i].Rotation;
 
@@ -134,7 +138,7 @@ namespace Game.Systems.RadialMenu
 			{
 				for (int i = 0; i < options.Count; i++)
 				{
-					options[i].UnSelect();
+					options[i].Diselect();
 				}
 			}
 			else
@@ -147,7 +151,7 @@ namespace Game.Systems.RadialMenu
 					}
 					else
 					{
-						options[i].UnSelect();
+						options[i].Diselect();
 					}
 				}
 			}
@@ -169,7 +173,7 @@ namespace Game.Systems.RadialMenu
 					player.Freeze();
 
 					menu.transform.localScale = Vector3.zero;
-					StartOptions();
+					SetMenu(settings.primaryMenu);
 					menu.SetActive(true);
 					isOpened = true;
 				})
@@ -231,6 +235,7 @@ namespace Game.Systems.RadialMenu
 				for (int i = diff - 1; i >= 0; i--)
 				{
 					var option = options[i];
+					option.onButtonClicked -= OnOptionClicked;
 					options.Remove(option);
 					option.DespawnIt();
 				}
@@ -244,6 +249,8 @@ namespace Game.Systems.RadialMenu
 					option.transform.position = Vector3.zero;
 					option.transform.localScale = Vector3.one;
 
+					option.onButtonClicked += OnOptionClicked;
+
 					options.Add(option);
 				}
 			}
@@ -252,20 +259,86 @@ namespace Game.Systems.RadialMenu
 		{
 			for (int i = 0; i < options.Count; i++)
 			{
-				options[i].SetOption(null);
+				options[i].SetData(null);
 			}
 		}
 
-		private void StartOptions()
+		private void SetMenu(RadialMenuData menu)
 		{
-			UpdateRadialMenu(settings.primaryOptions.Count);
+			UpdateRadialMenu(menu.options.Count);
 
-			for (int i = 0; i < options.Count; i++)
+			for (int i = 0; i < menu.options.Count; i++)
 			{
-				CheckOptionType(options[i], settings.primaryOptions[i]);
+				options[i].SetData(menu.options[i].optionType == RadialMenuOptionType.None ? null : menu.options[i]);
 			}
+		}
 
-			isBlocked = false;
+		private void OnOptionClicked(UIRadialMenuOption option)
+		{
+			RadialMenuOptionType type = option.Data.optionType;
+
+			switch (type)
+			{
+				case RadialMenuOptionType.GoToDrink:
+				case RadialMenuOptionType.GoToFood:
+				{
+					List<Item> items = player.Status.Inventory.Items
+						.Where((item) => type == RadialMenuOptionType.GoToDrink ? item.IsConsumableDrink : item.IsConsumableFood).ToList();
+
+					if (items.Count > 0)
+					{
+						int itemsCount = items.Count > 12 ? 12 : items.Count;
+						UpdateRadialMenu(12);
+
+						//if > 12 берём 7-back 6-right
+						for (int i = 0; i < options.Count; i++)
+						{
+							if (i < itemsCount)
+							{
+								options[i].SetData(new RadialMenuOptionData()
+								{ 
+									optionType = RadialMenuOptionType.Drink,
+									item = items[i],
+								});
+							}
+							else
+							{
+								options[i].SetData(null);
+							}
+						}
+					}
+
+					break;
+				}
+				case RadialMenuOptionType.GoTo:
+				{
+					SetMenu(option.Data.radialMenu);
+					break;
+				}
+
+				case RadialMenuOptionType.Drink:
+				case RadialMenuOptionType.Eat:
+				{
+					CloseMenu();
+					Debug.LogError("Drink - Eat");
+
+					break;
+				}
+
+				case RadialMenuOptionType.Build:
+				{
+					CloseMenu();
+					buildingHandler.SetBlueprint(option.Data.blueprint);
+					break;
+				}
+
+				case RadialMenuOptionType.OpenPassTime:
+				{
+					CloseMenu();
+					passTimeHandler.OpenPassTime(PassTimeType.OnlyPassTime);
+					break;
+				}
+			}
 		}
 
 		private void TryInvokeOption()
@@ -283,88 +356,6 @@ namespace Game.Systems.RadialMenu
 			}
 		}
 
-		private void CheckOptionType(UIRadialMenuOption option, RadialMenuOptionData data)
-		{
-			switch (data.optionType)
-			{
-				case RadialMenuOptionType.Drink:
-				{
-					List<Item> items = player.Status.Inventory.Items.Where((item) => item.IsConsumableDrink).ToList();
-
-					if (items.Count > 0)
-					{
-						option.SetOption(data.optionIcon, () =>
-						{
-							int itemsCount = items.Count > 12 ? 12 : items.Count;
-							UpdateRadialMenu(12);
-
-							//if > 12 берём 7-back 6-right
-							for (int i = 0; i < options.Count; i++)
-							{
-								if (i < itemsCount)
-								{
-									options[i].SetOption(items[i].ItemData.itemSprite, () =>
-									{
-										Debug.LogError("DRINk IT");
-										isBlocked = true;
-										CloseMenu();
-									}, isCanSetColor: false);
-								}
-								else
-								{
-									options[i].SetOption(null);
-								}
-							}
-						});
-					}
-					else
-					{
-						option.SetOption(data.optionIcon, CloseMenu, isInteractable: false);
-					}
-					break;
-				}
-				case RadialMenuOptionType.CampCrafting:
-				{
-					if(data.campBlueprints.Count > 0)
-					{
-						option.SetOption(data.optionIcon, () =>
-						{
-							int itemsCount = data.campBlueprints.Count > 12 ? 12 : data.campBlueprints.Count;
-							UpdateRadialMenu(12);
-
-							for (int i = 0; i < options.Count; i++)
-							{
-								if (i < itemsCount)
-								{
-									var index = i;
-									options[i].SetOption(data.campBlueprints[i].icon, () =>
-									{
-
-										buildingSystem.SetBlueprint(data.campBlueprints[index]);
-										isBlocked = true;
-										CloseMenu();
-									}, isCanSetColor: false);
-								}
-								else
-								{
-									options[i].SetOption(null);
-								}
-							}
-						});
-					}
-					else
-					{
-						option.SetOption(data.optionIcon, CloseMenu, isInteractable: false);
-					}
-					break;
-				}
-				default:
-				{
-					option.SetOption(data.optionIcon, CloseMenu, isInteractable: false);
-					break;
-				}
-			}
-		}
 
 		private void OnRadialMenuButtonClicked()
 		{
@@ -405,7 +396,7 @@ namespace Game.Systems.RadialMenu
 				CloseMenu();
 			}
 
-			if (isOpened && !isBlocked && !isOutOfZone)
+			if (isOpened && !isOutOfZone)
 			{
 				TryInvokeOption();
 			}

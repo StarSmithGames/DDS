@@ -1,4 +1,7 @@
-public struct SignalInputUnPressed
+namespace Game.Managers.InputManger
 {
-	public InputType input;
+	public struct SignalInputUnPressed
+	{
+		public InputType input;
+	}
 }

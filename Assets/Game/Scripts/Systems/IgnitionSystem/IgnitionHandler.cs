@@ -12,6 +12,7 @@ using Game.Systems.InventorySystem;
 using System.Collections.Generic;
 using UnityEditor.PackageManager.UI;
 using UnityEngine.Events;
+using Game.Managers.InputManger;
 
 namespace Game.Systems.IgnitionSystem
 {

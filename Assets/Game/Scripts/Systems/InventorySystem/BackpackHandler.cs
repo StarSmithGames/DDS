@@ -1,4 +1,5 @@
 using Game.Entities;
+using Game.Managers.InputManger;
 using Game.Signals;
 using Game.Systems.InventorySystem.Transactor;
 
