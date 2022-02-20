@@ -75,88 +75,6 @@ namespace Game.Systems.RadialMenu
 			signalBus?.Unsubscribe<SignalInputUp>(OnInputUp);
 		}
 
-		public void Tick()
-		{
-			if (!isOpened) return;
-
-			Vector3 screenBounds = new Vector3((float)Screen.width / 2f, (float)Screen.height / 2f, 0f);
-			Vector3 direction = inputManager.InputPosition - screenBounds;
-
-			bool isInner = direction.magnitude <= 130f;
-			bool isOutter = direction.magnitude >= 600f;
-			isOutOfZone = isInner || isOutter;
-
-			float mouseRotation = Mathf.Atan2(direction.x, direction.y) * 57.29578f;
-			if (mouseRotation < 0f) mouseRotation += 360f;
-
-			//Нахождение ближайшей опции
-			if(!(isOutOfZone))
-			{
-				float difference = 9999;
-				for (int i = 0; i < options.Count; i++)
-				{
-					if (options[i].IsEmpty) continue;
-					if (options[i].Data.IsEmpty()) continue;
-
-					float rotation = options[i].Rotation;
-
-					if (Mathf.Abs(rotation - mouseRotation) < difference)
-					{
-						nearestOption = options[i];
-						difference = Mathf.Abs(rotation - mouseRotation);
-					}
-				}
-			}
-
-			//Поворот курсора и снап
-			menu.Cursor.FillAmount = isOutOfZone ? 0 : 1f / (float)options.Count;
-			float cursorRotation = -(mouseRotation - menu.Cursor.FillAmount * 180f);
-			if(nearestOption != null)
-			{
-				if (settings.isSnap) cursorRotation = -(nearestOption.Rotation - menu.Cursor.FillAmount * 180f);
-				menu.Cursor.transform.localRotation = Quaternion.Euler(0, 0, cursorRotation);
-			}
-
-
-			//Наклон меню
-			if (settings.useTilt)
-			{
-				if (isOutOfZone)
-				{
-					menu.transform.localRotation = Quaternion.identity;
-				}
-				else
-				{
-					float x = direction.x / screenBounds.x;
-					float y = direction.y / screenBounds.y;
-					menu.transform.localRotation = Quaternion.Euler(new Vector3(x, y, 0) * -settings.tiltAmount);
-				}
-			}
-
-			//Выбор опции - перекраска
-			if (isOutOfZone)
-			{
-				for (int i = 0; i < options.Count; i++)
-				{
-					options[i].Diselect();
-				}
-			}
-			else
-			{
-				for (int i = 0; i < options.Count; i++)
-				{
-					if (options[i] == nearestOption)
-					{
-						options[i].Select();
-					}
-					else
-					{
-						options[i].Diselect();
-					}
-				}
-			}
-		}
-
 		public void OpenMenu()
 		{
 			if (isOpened) return;
@@ -199,6 +117,91 @@ namespace Game.Systems.RadialMenu
 					menu.SetActive(false);
 					isOpened = false;
 				});
+		}
+
+		#region Update
+		public void Tick()
+		{
+			if (!isOpened) return;
+
+			Vector3 screenBounds = new Vector3((float)Screen.width / 2f, (float)Screen.height / 2f, 0f);
+			Vector3 direction = inputManager.InputPosition - screenBounds;
+
+			bool isInner = direction.magnitude <= 130f;
+			bool isOutter = direction.magnitude >= 600f;
+			isOutOfZone = isInner || isOutter;
+
+			float mouseRotation = Mathf.Atan2(direction.x, direction.y) * 57.29578f;
+			if (mouseRotation < 0f) mouseRotation += 360f;
+
+			//Нахождение ближайшей опции
+			if(!(isOutOfZone))
+			{
+				float difference = 9999;
+				for (int i = 0; i < options.Count; i++)
+				{
+					//игнорирование не валидных опций
+					UIRadialMenuOption option = options[i];
+					if (option.IsNull) continue;
+					if (option.IsEmpty) continue;
+					if (!option.IsValid) continue;
+
+					float rotation = option.Rotation;
+
+					if (Mathf.Abs(rotation - mouseRotation) < difference)
+					{
+						nearestOption = option;
+						difference = Mathf.Abs(rotation - mouseRotation);
+					}
+				}
+			}
+
+			//Поворот курсора и снап
+			menu.Cursor.FillAmount = isOutOfZone ? 0 : 1f / (float)options.Count;
+			float cursorRotation = -(mouseRotation - menu.Cursor.FillAmount * 180f);
+			if(nearestOption != null)
+			{
+				if (settings.isSnap) cursorRotation = -(nearestOption.Rotation - menu.Cursor.FillAmount * 180f);
+				menu.Cursor.transform.localRotation = Quaternion.Euler(0, 0, cursorRotation);
+			}
+
+			//Наклон меню
+			if (settings.useTilt)
+			{
+				if (isOutOfZone)
+				{
+					menu.transform.localRotation = Quaternion.identity;
+				}
+				else
+				{
+					float x = direction.x / screenBounds.x;
+					float y = direction.y / screenBounds.y;
+					menu.transform.localRotation = Quaternion.Euler(new Vector3(x, y, 0) * -settings.tiltAmount);
+				}
+			}
+
+			//Выбор опции - перекраска
+			if (isOutOfZone)
+			{
+				for (int i = 0; i < options.Count; i++)
+				{
+					options[i].Diselect();
+				}
+			}
+			else
+			{
+				for (int i = 0; i < options.Count; i++)
+				{
+					if (options[i] == nearestOption)
+					{
+						options[i].Select();
+					}
+					else
+					{
+						options[i].Diselect();
+					}
+				}
+			}
 		}
 
 		private void UpdateRadialMenu(int optionsCount)
@@ -269,10 +272,54 @@ namespace Game.Systems.RadialMenu
 
 			for (int i = 0; i < menu.options.Count; i++)
 			{
-				options[i].SetData(menu.options[i].optionType == RadialMenuOptionType.None ? null : menu.options[i]);
+				var data = menu.options[i].optionType == RadialMenuOptionType.None ? null : menu.options[i];
+				options[i].SetData(data, CheckOptionValid(data));
+			}
+		}
+		#endregion
+
+		private void TryInvokeOption()
+		{
+			if (nearestOption != null)
+			{
+				if (!nearestOption.InvokeAction())
+				{
+					CloseMenu();
+				}
+			}
+			else
+			{
+				CloseMenu();
 			}
 		}
 
+		/// <summary>
+		/// Проверка на валидность служит для определения, может ли опция функционировать, хороший пример с GoToDrink и GoToFood
+		/// </summary>
+		/// <returns></returns>
+		private bool CheckOptionValid(RadialMenuOptionData data)
+		{
+			if (data == null) return false;
+
+			RadialMenuOptionType type = data.optionType;
+
+			switch (type)
+			{
+				case RadialMenuOptionType.GoToDrink:
+				case RadialMenuOptionType.GoToFood:
+				{
+					return player.Status.Inventory.Items
+						.Where((item) => type == RadialMenuOptionType.GoToDrink ? item.IsConsumableDrink : item.IsConsumableFood)
+						.ToList().Count > 0;
+				}
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Событие которое должно происходить после выбора опции
+		/// </summary>
 		private void OnOptionClicked(UIRadialMenuOption option)
 		{
 			RadialMenuOptionType type = option.Data.optionType;
@@ -299,7 +346,7 @@ namespace Game.Systems.RadialMenu
 								{ 
 									optionType = RadialMenuOptionType.Drink,
 									item = items[i],
-								});
+								}, true);
 							}
 							else
 							{
@@ -340,22 +387,6 @@ namespace Game.Systems.RadialMenu
 				}
 			}
 		}
-
-		private void TryInvokeOption()
-		{
-			if (nearestOption != null)
-			{
-				if (!nearestOption.InvokeAction())
-				{
-					CloseMenu();
-				}
-			}
-			else
-			{
-				CloseMenu();
-			}
-		}
-
 
 		private void OnRadialMenuButtonClicked()
 		{

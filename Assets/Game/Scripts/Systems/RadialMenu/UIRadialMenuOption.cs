@@ -23,21 +23,16 @@ namespace Game.Systems.RadialMenu
 
 		public float Rotation { get; set; }
 
+		public bool IsNull { get; private set; }
 		public bool IsEmpty { get; private set; }
+		public bool IsValid { get; private set; }
 
 		public RadialMenuOptionData Data => data;
 		private RadialMenuOptionData data;
 
-
-		private UnityAction action;
-
-		private SignalBus signalBus;
-
 		[Inject]
-		private void Construct(SignalBus signalBus)
+		private void Construct()
 		{
-			this.signalBus = signalBus;
-
 			button.onClick.AddListener(OnButtonClicked);
 		}
 
@@ -48,18 +43,20 @@ namespace Game.Systems.RadialMenu
 			onButtonClicked = null;
 		}
 
-		public void SetData(RadialMenuOptionData data)
+		public void SetData(RadialMenuOptionData data, bool isValid = false)
 		{
 			this.data = data;
+
+			IsNull = data == null;
+			IsEmpty = data?.IsEmpty() ?? true;
+			IsValid = isValid;
 
 			UpdateOption();
 		}
 
 		private void UpdateOption()
 		{
-			IsEmpty = data == null;
-
-			if (data == null)
+			if (IsNull)
 			{
 				icon.enabled = false;
 				button.interactable = false;
@@ -70,11 +67,11 @@ namespace Game.Systems.RadialMenu
 			icon.sprite = data.GetIcon();
 			icon.enabled = icon.sprite != null;
 
-			button.interactable = !data.IsEmpty();
+			button.interactable = !IsEmpty && IsValid;
 
 			if (data.IsCanSetColor())
 			{
-				icon.color = data.IsEmpty() ? disabledColor : accentColor;
+				icon.color = IsEmpty || !IsValid ? disabledColor : accentColor;
 			}
 			else
 			{
@@ -82,18 +79,11 @@ namespace Game.Systems.RadialMenu
 			}
 		}
 
-		public bool InvokeAction()
-		{
-			if (Data == null) return false;
-			
-			OnButtonClicked();
-			
-			return true;
-		}
-
 		public void Select()
 		{
 			transform.DOScale(1.35f, 0.1f);
+
+			if (IsNull) return;
 
 			if (button.interactable)
 			{
@@ -110,9 +100,15 @@ namespace Game.Systems.RadialMenu
 				}
 			}
 		}
-
 		public void Diselect()
 		{
+			if (transform.localScale != Vector3.one)
+			{
+				transform.DOScale(1f, 0.1f);
+			}
+
+			if (IsNull) return;
+
 			if (button.interactable)
 			{
 				if (data.IsCanSetColor())
@@ -120,13 +116,16 @@ namespace Game.Systems.RadialMenu
 					icon.color = accentColor;
 				}
 			}
-
-			if (transform.localScale != Vector3.one)
-			{
-				transform.DOScale(1f, 0.1f);
-			}
 		}
 
+		public bool InvokeAction()
+		{
+			if (IsNull) return false;
+
+			OnButtonClicked();
+
+			return true;
+		}
 
 		private void OnButtonClicked()
 		{
