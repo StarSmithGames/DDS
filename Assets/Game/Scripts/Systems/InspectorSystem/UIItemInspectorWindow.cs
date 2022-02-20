@@ -48,10 +48,8 @@ namespace Game.Systems.InventorySystem.Inspector
 
 		private void UpdateInspector()
 		{
-			var texts = item?.ItemData.GetLocalization(localization.CurrentLanguage) ?? null;
-
-			itemName.text = texts?.itemName ?? "";
-			itemDescription.text = texts?.itemDescription ?? "";
+			itemName.text = item?.ItemData.ItemName ?? "";
+			itemDescription.text = item?.ItemData.ItemDescription ?? "";
 
 			useButton.gameObject.SetActive(item.IsConsumable);
 		}

@@ -10,9 +10,9 @@ namespace Game.Systems.HarvestingSystem
     [CreateAssetMenu(fileName = "HarvestingData", menuName = "Game/Harvestable Items/HarvestingData")]
     public class HarvestingData : ConstructionData
     {
-        Game.Systems.TimeSystem.Time harvestingTime = new TimeSystem.Time() { Minutes = 5 };
+        public TimeSystem.Time harvestingTime = new TimeSystem.Time() { Minutes = 5 };
 
-        public List<Item> yeild = new List<Item>();
+        public List<Item> yields = new List<Item>();
         //add required tool
     }
 }

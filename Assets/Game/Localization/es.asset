@@ -14,17 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: es
   Keys:
-  - ui.passtime.sleep.title
-  - ui.passtime.sleep.description
-  - ui.passtime.sleep.button
-  - ui.passtime.passtime.title
-  - ui.passtime.passtime.description
-  - ui.passtime.passtime.button
-  - ui.passtime.timeLabel
-  - ui.passtime.caloriesLabel
-  - ui.passtime.caloriesBurnedLabel
-  - ui.passtime.warmthBonusLabel
+  - ui.pass_time.sleep.title
+  - ui.pass_time.sleep.description
+  - ui.pass_time.sleep.button
+  - ui.pass_time.pass.title
+  - ui.pass_time.pass.description
+  - ui.pass_time.pass.button
+  - ui.pass_time.time_label
+  - ui.pass_time.calories_label
+  - ui.pass_time.calories_burned_label
+  - ui.pass_time.warmth_bonus_label
+  - ui.harvesting.break_down.info_title
+  - ui.harvesting.carcass_harvesting.info_title
+  - ui.harvesting.yield_title
+  - ui.harvesting.tool_title
   Values:
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 

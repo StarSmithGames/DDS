@@ -1,6 +1,8 @@
 using Game.Systems.BuildingSystem;
 using Game.Systems.LocalizationSystem;
 
+using Newtonsoft.Json.Linq;
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,11 +13,27 @@ using Zenject;
 
 namespace Game.Systems.PassTimeSystem
 {
-	public class UIPassTimeWindow : ModalWindow
+	public class UIPassTimeWindow : WindowBase
 	{
 		public UnityAction onCanceled;
 
-		public bool IsSleepTab => sleepOption.isOn;
+		public UIPassTimeTab CurrentTab {
+			get
+			{
+				if(Type == PassTimeType.Both)
+				{
+					return sleepOption.isOn ? sleepTab : passTab;
+				}
+				else if (Type == PassTimeType.OnlySleep)
+				{
+					return sleepTab;
+				}
+
+				return passTab;
+			}
+		}
+
+		public PassTimeType Type { get; private set; }
 
 		public UIPassTimeTab SleepTab => sleepTab;
 		public UIPassTimeTab PassTab => passTab;
@@ -27,6 +45,8 @@ namespace Game.Systems.PassTimeSystem
 		[SerializeField] private UIPassTimeTab passTab;
 		[Space]
 		[SerializeField] private Button close;
+
+		public bool IsEnable { get; private set; }
 
 		private SignalBus signalBus;
 		private LocalizationSystem.LocalizationSystem localization;
@@ -68,19 +88,27 @@ namespace Game.Systems.PassTimeSystem
 
 		public void SetType(PassTimeType type)
 		{
-			if(type == PassTimeType.None)
+			Type = type;
+
+			if (type == PassTimeType.Both)
 			{
 				sleepOption.gameObject.SetActive(true);
+				passOption.gameObject.SetActive(true);
 				OnSleepTabSelected(true);
+				OnPassTabSelected(true);
+			}
+			else if (type == PassTimeType.OnlySleep)
+			{
+				sleepOption.gameObject.SetActive(false);
+				passOption.gameObject.SetActive(false);
+				OnSleepTabSelected(true);
+				OnPassTabSelected(false);
 			}
 			else if(type == PassTimeType.OnlyPassTime)
 			{
-				OnPassTabSelected(true);
 				sleepOption.gameObject.SetActive(false);
-			}
-			else if(type == PassTimeType.FirstPassTime) 
-			{
-				sleepOption.gameObject.SetActive(true);
+				passOption.gameObject.SetActive(false);
+				OnSleepTabSelected(false);
 				OnPassTabSelected(true);
 			}
 		}
@@ -92,27 +120,31 @@ namespace Game.Systems.PassTimeSystem
 
 			sleepOption.interactable = trigger;
 			passOption.interactable = trigger;
+
+			close.interactable = trigger;
+
+			IsEnable = trigger;
 		}
 
 		private void OnLocalizationChanged()
 		{
-			sleepTab.Title.text = localization._("ui.passtime.sleep.title");
-			sleepTab.Description.text = localization._("ui.passtime.sleep.description");
-			sleepTab.ButtonLabel.text = localization._("ui.passtime.sleep.button");
+			sleepTab.Title.text = localization._("ui.pass_time.sleep.title");
+			sleepTab.Description.text = localization._("ui.pass_time.sleep.description");
+			sleepTab.ButtonLabel.text = localization._("ui.pass_time.sleep.button");
 
-			sleepTab.TimeLabel.text = localization._("ui.passtime.timeLabel");
-			sleepTab.CaloriesLabel.text = localization._("ui.passtime.caloriesLabel");
-			sleepTab.CaloriesBurnedLabel.text = localization._("ui.passtime.caloriesBurnedLabel");
-			sleepTab.WarmthBonusLabel.text = localization._("ui.passtime.warmthBonusLabel");
+			sleepTab.TimeLabel.text = localization._("ui.pass_time.time_label");
+			sleepTab.CaloriesLabel.text = localization._("ui.pass_time.calories_label");
+			sleepTab.CaloriesBurnedLabel.text = localization._("ui.pass_time.calories_burned_label");
+			sleepTab.WarmthBonusLabel.text = localization._("ui.pass_time.warmth_bonus_label");
 
-			passTab.Title.text = localization._("ui.passtime.passtime.title");
-			passTab.Description.text = localization._("ui.passtime.passtime.description");
-			passTab.ButtonLabel.text = localization._("ui.passtime.passtime.button");
+			passTab.Title.text = localization._("ui.pass_time.pass.title");
+			passTab.Description.text = localization._("ui.pass_time.pass.description");
+			passTab.ButtonLabel.text = localization._("ui.pass_time.pass.button");
 
-			passTab.TimeLabel.text = localization._("ui.passtime.timeLabel");
-			passTab.CaloriesLabel.text = localization._("ui.passtime.caloriesLabel");
-			passTab.CaloriesBurnedLabel.text = localization._("ui.passtime.caloriesBurnedLabel");
-			passTab.WarmthBonusLabel.text = localization._("ui.passtime.warmthBonusLabel");
+			passTab.TimeLabel.text = localization._("ui.pass_time.time_label");
+			passTab.CaloriesLabel.text = localization._("ui.pass_time.calories_label");
+			passTab.CaloriesBurnedLabel.text = localization._("ui.pass_time.calories_burned_label");
+			passTab.WarmthBonusLabel.text = localization._("ui.pass_time.warmth_bonus_label");
 		}
 
 		private void OnSleepTabSelected(bool value)

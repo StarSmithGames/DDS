@@ -47,13 +47,11 @@ namespace Game.Systems.InventorySystem
 
         private void UpdateView()
         {
-            var texts = item?.ItemData.GetLocalization(localization.CurrentLanguage) ?? null;
-
             itemName.enabled = item != null;
-            itemName.text = texts?.itemName ?? "";
+            itemName.text = item?.ItemData.ItemName ?? "";
 
             itemDescription.enabled = item != null;
-            itemDescription.text = texts?.itemDescription ?? "";
+            itemDescription.text = item?.ItemData.ItemDescription ?? "";
 
             itemIcon.enabled = item != null;
             itemIcon.sprite = item?.ItemData.itemSprite ?? null;

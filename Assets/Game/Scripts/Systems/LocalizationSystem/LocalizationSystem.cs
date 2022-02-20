@@ -8,6 +8,8 @@ namespace Game.Systems.LocalizationSystem
 {
 	public class LocalizationSystem : IInitializable, IDisposable
 	{
+		public static SystemLanguage CurrentLanguageStatic { get; private set; }
+
 		public SystemLanguage CurrentLanguage { get; private set; }
 
 		private SystemLanguage defaultLanguage = SystemLanguage.English;
@@ -49,6 +51,7 @@ namespace Game.Systems.LocalizationSystem
 		public void SelectLanguage(SystemLanguage language)
 		{
 			CurrentLanguage = language;
+			CurrentLanguageStatic = language;
 
 			signalBus?.Fire(new SignalLocalizationChanged() { language = language });
 		}
@@ -67,8 +70,37 @@ namespace Game.Systems.LocalizationSystem
 
 			return "";
 		}
-	
-		
+
+		// :/
+		public string GetDeclension(int number, string key)
+		{
+			var nominativ = key;
+			var genetiv = key + "_genetiv";
+			var plural = key + "_plural";
+
+			number = number % 100;
+
+			if (number >= 11 && number <= 19)
+			{
+				return plural;
+			}
+
+			var i = number % 10;
+
+			switch (i)
+			{
+				case 1:
+				return nominativ;
+				case 2:
+				case 3:
+				case 4:
+				return genetiv;
+				default:
+				return plural;
+			}
+		}
+
+
 		private SystemLanguage ConvertToSystemLanguage(string language)
 		{
 			switch (language) 

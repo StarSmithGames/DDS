@@ -138,6 +138,8 @@ namespace Game.Systems.InventorySystem
 
 		private void OnInputClicked(SignalInputUnPressed signal)
 		{
+			if (uiManager.WindowsManager.IsAnyWindowShowing()) return;
+
 			if (signal.input == InputType.Escape && playerBackpackWindow.IsShowing)
 			{
 				CloseWindow();

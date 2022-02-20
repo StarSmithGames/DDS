@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf05fa2e701c0c740923afe84a7fbead, type: 3}
   m_Name: HarvestingSystemInstaller
   m_EditorClassIdentifier: 
+  yieldItemPrefab: {fileID: 7633107272137505581, guid: 6db69aceffe90f24bbedba540c561002, type: 3}

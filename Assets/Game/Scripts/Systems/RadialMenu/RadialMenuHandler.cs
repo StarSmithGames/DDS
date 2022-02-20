@@ -401,6 +401,15 @@ namespace Game.Systems.RadialMenu
 		}
 		private void OnInputUnPressed(SignalInputUnPressed signal)
 		{
+			if (uiManager.WindowsManager.IsAnyWindowShowing())
+			{
+				if (isOpened)
+				{
+					CloseMenu();
+				}
+				return;
+			}
+
 			if (signal.input == InputType.Escape && isOpened)
 			{
 				CloseMenu();
@@ -413,10 +422,14 @@ namespace Game.Systems.RadialMenu
 				}
 				else
 				{
-					if (uiManager.WindowsManager.IsAllHided())
-					{
-						OpenMenu();
-					}
+					OpenMenu();
+				}
+			}
+			else
+			{
+				if (isOpened)
+				{
+					CloseMenu();
 				}
 			}
 		}

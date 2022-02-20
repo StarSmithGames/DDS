@@ -78,10 +78,8 @@ namespace Game.Systems.IgnitionSystem
 
             if (!IsEmpty)
             {
-                var texts = currentItem.ItemData.GetLocalization(localization.CurrentLanguage);
-
                 icon.sprite = currentItem.ItemData.itemSprite;
-                itemName.text = texts.itemName;
+                itemName.text = currentItem.ItemData.ItemName;
                 itemStackSize.text = currentItem.ItemData.isStackable && itemStackSize.enabled ? currentItem.CurrentStackSize + " of " + currentItem.MaximumStackSize : "";
 
                 signalBus?.Fire(new SignalUIIgnitionSlotItemChanged());

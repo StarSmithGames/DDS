@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 using Zenject;
 
+using static UnityEditor.Progress;
+
 namespace Game.Systems.InventorySystem.Transactor
 {
     public class UIItemTransactorWindow : WindowBase
@@ -61,9 +63,7 @@ namespace Game.Systems.InventorySystem.Transactor
 
         private void UpdateTransaction()
         {
-            var texts = item?.ItemData.GetLocalization(localization.CurrentLanguage) ?? null;
-
-            itemName.text = texts?.itemName ?? "";
+            itemName.text = item?.ItemData.ItemName ?? "";
             UpdateTranstitionCount();
         }
 

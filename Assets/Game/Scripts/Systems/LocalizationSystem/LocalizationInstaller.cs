@@ -12,7 +12,7 @@ namespace Game.Systems.LocalizationSystem
 		private const string Assets = "Game/Localization/";
 
 		public SystemLanguage DefaultLanguage = SystemLanguage.English;
-		public List<LocalizationData> localizations = new List<LocalizationData>();
+		[ReadOnly] public List<LocalizationData> localizations = new List<LocalizationData>();
 
 		public override void InstallBindings()
         {

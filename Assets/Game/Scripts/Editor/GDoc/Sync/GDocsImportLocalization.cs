@@ -84,6 +84,8 @@ namespace Game.Editor.GDocs
 					Directory.CreateDirectory("Assets/Game/Localization");
 				}
 
+				List<LocalizationData> datas = new List<LocalizationData>();
+
 				foreach (var item in localizations)
 				{
 					var assetPath = $"Assets/Game/Localization/{item.Key}.asset";
@@ -100,7 +102,12 @@ namespace Game.Editor.GDocs
 					{
 						EditorUtility.CopySerialized(asset, existingSettings);
 					}
+
+					datas.Add(asset);
 				}
+
+				AssetDatabaseExtensions.GetAsset<LocalizationInstaller>("Installers/LocalizationInstaller.asset").localizations = datas;
+
 				AssetDatabase.SaveAssets();
 			}
 			catch (Exception e)

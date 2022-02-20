@@ -141,6 +141,8 @@ namespace Game.Systems.InventorySystem
 		public bool IsFireTinder => IsFireItem ? data is FireTinderData : false;
 		public bool IsFireAccelerant => IsFireItem ? data is FireAccelerantData : false;
 
+		public bool IsStackable => data?.isStackable ?? false;
+
 		public bool IsWeapon => false;
 
 		public Item() { }
@@ -170,13 +172,12 @@ namespace Game.Systems.InventorySystem
 			{
 				if (data != null && data.localizations.Count > 0)
 				{
-					return data.GetLocalization(SystemLanguage.English).itemName;
+					return data.GetLocalization(true).itemName;
 				}
 
 				return "";
 			}
 		}
-		private bool IsStackable => data?.isStackable ?? false;
 		private bool IsInfinityStack => data?.isInfinityStack ?? false;
 		private bool IsInfinityWeight => data?.isInfinityWeight ?? false;
 		private bool IsFloatingWeight => data?.isFloatingWeight ?? false;

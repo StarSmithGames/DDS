@@ -62,7 +62,7 @@ namespace Game.Installers
 			Container.DeclareSignal<SignalUIInventoryDrop>();
 			Container.DeclareSignal<SignalUIInventorySlotClick>();
 
-			Container.Bind<int>().FromInstance(initialSlotFactorySize).WhenInjectedInto<UIInventory>();
+			Container.BindInstance(initialSlotFactorySize).WhenInjectedInto<UIInventory>();
 
 			Container.BindInterfacesAndSelfTo<BackpackHandler>().AsSingle();
 		}

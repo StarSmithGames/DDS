@@ -43,8 +43,7 @@ namespace Game.Systems.InventorySystem
 
 		public void StartObserve()
 		{
-			var texts = item.ItemData.GetLocalization(localization.CurrentLanguage);
-			uiManager.Targets.ShowTargetInformation(texts.itemName);
+			uiManager.Targets.ShowTargetInformation(item.ItemData.ItemName);
 		}
 		public void Observe()
 		{

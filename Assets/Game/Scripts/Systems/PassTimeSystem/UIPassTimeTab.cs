@@ -38,7 +38,15 @@ namespace Game.Systems.PassTimeSystem
 		[SerializeField] private Button passTime;
 		[SerializeField] private TMPro.TextMeshProUGUI buttonLabel;
 
-		public int Hours => hours;
+		public int Hours 
+		{
+			get => hours;
+			set
+			{
+				hours = value;
+				time.text = hours.ToString();
+			}
+		}
 		private int hours = 1;
 
 		[Inject]
@@ -62,7 +70,7 @@ namespace Game.Systems.PassTimeSystem
 
 		public void SetData()
 		{
-			UpdateUI();
+			Hours = 8;
 		}
 
 		public void Enable(bool trigger)
@@ -72,28 +80,19 @@ namespace Game.Systems.PassTimeSystem
 			passTime.interactable = trigger;
 		}
 
-		private void UpdateUI()
-		{
-			time.text = hours.ToString();
-		}
-
 		private void OnLeftClicked()
 		{
-			if(hours - 1 >= 1)
+			if(Hours - 1 >= 1)
 			{
-				hours -= 1;
-
-				UpdateUI();
+				Hours -= 1;
 			}
 		}
 
 		private void OnRightClicked()
 		{
-			if(hours + 1 <= 24)
+			if(Hours + 1 <= 24)
 			{
-				hours += 1;
-
-				UpdateUI();
+				Hours += 1;
 			}
 		}
 

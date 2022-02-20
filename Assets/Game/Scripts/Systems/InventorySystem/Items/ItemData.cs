@@ -10,6 +10,32 @@ namespace Game.Systems.InventorySystem
 		[PreviewField]
 		public Sprite itemSprite;
 
+		public string ItemName
+		{
+			get
+			{
+				if (localizations.Count > 0)
+				{
+					return GetLocalization().itemName;
+				}
+
+				return "";
+			}
+		}
+
+		public string ItemDescription
+		{
+			get
+			{
+				if (localizations.Count > 0)
+				{
+					return GetLocalization().itemDescription;
+				}
+
+				return "";
+			}
+		}
+
 		[ListDrawerSettings(ListElementLabelName = "Tittle")]
 		[InfoBox("@LocalizationInfo", InfoMessageType.Warning)]
 		public List<Localization> localizations = new List<Localization>();
@@ -53,8 +79,14 @@ namespace Game.Systems.InventorySystem
 		private float MinimumWeight => isFloatingWeight ? baseWeight + 0.15f : 0.01f;
 
 
-		public Localization GetLocalization(SystemLanguage language)
+		public Localization GetLocalization(bool isEnglish = false)
 		{
+			if (isEnglish)
+			{
+				return localizations.Find((x) => x.language == SystemLanguage.English) ?? localizations[0];
+			}
+
+			SystemLanguage language = LocalizationSystem.LocalizationSystem.CurrentLanguageStatic;
 			return localizations.Find((x) => x.language == language) ?? localizations[0];
 		}
 

@@ -3,8 +3,11 @@ using DG.Tweening;
 using Game.Entities;
 using Game.Managers.InputManger;
 using Game.Systems.BuildingSystem;
+using Game.Systems.TimeSystem;
 
 using System;
+
+using UnityEngine;
 
 using Zenject;
 
@@ -17,13 +20,14 @@ namespace Game.Systems.PassTimeSystem
 		private SignalBus signalBus;
 		private UIManager uiManager;
 		private Player player;
-		
+		private TimeSystem.TimeSystem timeSystem;
 
-		public PassTimeHandler(SignalBus signalBus, UIManager uiManager, Player player, LocalizationSystem.LocalizationSystem localization)
+		public PassTimeHandler(SignalBus signalBus, UIManager uiManager, Player player, TimeSystem.TimeSystem timeSystem)
 		{
 			this.signalBus = signalBus;
 			this.uiManager = uiManager;
 			this.player = player;
+			this.timeSystem = timeSystem;
 		}
 
 		public void Initialize()
@@ -53,7 +57,7 @@ namespace Game.Systems.PassTimeSystem
 			OpenPassTime();
 		}
 
-		public void OpenPassTime(PassTimeType type = PassTimeType.None)
+		public void OpenPassTime(PassTimeType type = PassTimeType.Both)
 		{
 			passTimeWindow.SetType(type);
 
@@ -72,30 +76,43 @@ namespace Game.Systems.PassTimeSystem
 				});
 		}
 
-		private void OnPassTimeClicked()
-		{
-			passTimeWindow.Enable(false);
-
-			if (passTimeWindow.IsSleepTab)
-			{
-
-			}
-			else
-			{
-
-			}
-		}
-
-		private void OnCanceled()
+		public void ClosePassTime()
 		{
 			passTimeWindow.Hide();
 			player.UnFreeze();
 			player.EnableVision();
 		}
 
+		private void OnPassTimeClicked()
+		{
+			passTimeWindow.Enable(false);
+
+			UIPassTimeTab tab = passTimeWindow.CurrentTab;
+
+			timeSystem.Pause();
+
+			var from = timeSystem.GlobalTime;
+			var to = from + new TimeSystem.Time() { Hours = tab.Hours };
+
+			int fromHours = tab.Hours;
+			int toHours = 0;
+
+			timeSystem.StartRewind(from, to, 3f,
+				onProgress : (float progress)=> 
+				{
+					tab.Hours = (int)Mathf.Lerp(fromHours, toHours, progress);
+				},
+				onEnd : ClosePassTime);
+		}
+
+		private void OnCanceled()
+		{
+			ClosePassTime();
+		}
+
 		private void OnInputUnPressed(SignalInputUnPressed signal)
 		{
-			if (signal.input == InputType.Escape && passTimeWindow.IsShowing)
+			if (signal.input == InputType.Escape && passTimeWindow.IsShowing && passTimeWindow.IsEnable)
 			{
 				OnCanceled();
 			}
@@ -104,8 +121,8 @@ namespace Game.Systems.PassTimeSystem
 
 	public enum PassTimeType 
 	{
-		None,
+		Both,
+		OnlySleep,
 		OnlyPassTime,
-		FirstPassTime,
 	}
 }
