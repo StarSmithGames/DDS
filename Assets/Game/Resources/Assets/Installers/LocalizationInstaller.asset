@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f615dcb1c2a88e4e81c38b8ac8763be, type: 3}
   m_Name: LocalizationInstaller
   m_EditorClassIdentifier: 
-  DefaultLanguage: 30
+  DefaultLanguage: 10
   localizations:
   - {fileID: 11400000, guid: 739d6d44abd6a9e439b456d50dd01257, type: 2}
   - {fileID: 11400000, guid: 018aebd3a1ec6c74da1d790b876af96b, type: 2}
