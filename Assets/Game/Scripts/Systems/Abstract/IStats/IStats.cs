@@ -6,6 +6,4 @@ public interface IStats
 	IStat Fatigue { get; }
 	IStat Hungred { get; }
 	IStat Thirst { get; }
-
-	//IStat GetStat<T>() where T : IStat;
 }

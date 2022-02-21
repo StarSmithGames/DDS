@@ -130,6 +130,7 @@ public class CameraVision : MonoBehaviour
 	{
 		isVisionPaused = true;
 		CurrentEntity = null;
+		interaction.SetTarget(null);
 		uiManager.Targets.HideTarget();
 	}
 	public void UnPauseVision()

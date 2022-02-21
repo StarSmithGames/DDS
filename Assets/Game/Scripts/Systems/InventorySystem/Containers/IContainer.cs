@@ -1,5 +1,8 @@
-public interface IContainer : IEntity, IInteractable, ISearchable
+namespace Game.Systems.InventorySystem
 {
-	public ContainerData ContainerData { get; }
-	public IInventory Inventory { get; }
+	public interface IContainer : IEntity, IInteractable, ISearchable
+	{
+		public ContainerData ContainerData { get; }
+		public IInventory Inventory { get; }
+	}
 }

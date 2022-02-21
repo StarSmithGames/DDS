@@ -1,9 +1,10 @@
 using Game.Entities;
 using Game.Signals;
-using Game.Systems.InspectorSystem.Signals;
-using Game.Systems.InventorySystem.Signals;
-using Game.Systems.RadialMenu;
-using Game.Systems.TransactorSystem.Signals;
+using Game.Systems.IgnitionSystem;
+using Game.Systems.InventorySystem;
+using Game.Systems.InventorySystem.Inspector;
+using Game.Systems.InventorySystem.Transactor;
+using Game.Systems.PassTimeSystem;
 
 using UnityEngine;
 using Zenject;
@@ -25,6 +26,9 @@ namespace Game.Installers
 			BindInspector();
 			BindTransactor();
 			BindBackpack();
+			BindIgnition();
+			BindTimePass();
+
 
 			Container.BindFactory<UIInventorySlot, UIInventorySlot.Factory>()
 					.FromMonoPoolableMemoryPool((x) => x.WithInitialSize(initialSlotFactorySize)
@@ -58,9 +62,24 @@ namespace Game.Installers
 			Container.DeclareSignal<SignalUIInventoryDrop>();
 			Container.DeclareSignal<SignalUIInventorySlotClick>();
 
-			Container.Bind<int>().FromInstance(initialSlotFactorySize).WhenInjectedInto<UIInventory>();
+			Container.BindInstance(initialSlotFactorySize).WhenInjectedInto<UIInventory>();
 
 			Container.BindInterfacesAndSelfTo<BackpackHandler>().AsSingle();
+		}
+
+		private void BindIgnition()
+		{
+			Container.DeclareSignal<SignalUIIgnitionBack>();
+			Container.DeclareSignal<SignalUIIgnitionStartFire>();
+			Container.DeclareSignal<SignalUIIgnitionSlotItemChanged>();
+
+
+			Container.BindInterfacesAndSelfTo<IgnitionHandler>().AsSingle();
+		}
+	
+		private void BindTimePass()
+		{
+			Container.BindInterfacesAndSelfTo<PassTimeHandler>().AsSingle();
 		}
 	}
 }

@@ -13,11 +13,11 @@ namespace Game.Systems.BuildingSystem
 			Container.DeclareSignal<SignalBuildingCancel>();
 			Container.DeclareSignal<SignalBuildingBuild>();
 
-			Container.BindFactory<ConstructionBlueprint, IConstruction, ConstructionModel.Factory>().FromFactory<BuildingSystem.Factory>();
+			Container.BindFactory<ConstructionBlueprint, IConstruction, ConstructionModel.Factory>().FromFactory<BuildingHandler.Factory>();
 
 			Container.BindInstance(settings);
 
-			Container.BindInterfacesAndSelfTo<BuildingSystem>().AsSingle();
+			Container.BindInterfacesAndSelfTo<BuildingHandler>().AsSingle();
 		}
     }
 }

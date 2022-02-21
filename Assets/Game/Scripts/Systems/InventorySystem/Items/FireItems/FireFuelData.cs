@@ -1,11 +1,14 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Game/Inventory/Items/Fire/Fuel", fileName = "Fuel")]
-public class FireFuelData : FireItemData
+namespace Game.Systems.InventorySystem
 {
-    [Range(0, 21f)]
-    public float addTemperature = 0;
+    [CreateAssetMenu(menuName = "Game/Inventory/Items/Fire/Fuel", fileName = "Fuel")]
+    public class FireFuelData : FireItemData
+    {
+        [Range(0, 21f)]
+        public float addTemperature = 0;
 
-    //[Tooltip("К времени горения.")]
-    //public Times addFireTime;
+		[Tooltip("Добавочное время к горению огня.")]
+		public TimeSystem.Time addFireTime;
+	}
 }

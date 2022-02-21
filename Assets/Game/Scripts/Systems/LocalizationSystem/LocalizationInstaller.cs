@@ -1,24 +1,33 @@
-using Game.Systems.LocalizationSystem.Signals;
-
 using System.Collections.Generic;
+
 using UnityEngine;
 using Zenject;
+using Sirenix.OdinInspector;
 
 namespace Game.Systems.LocalizationSystem
 {
 	[CreateAssetMenu(fileName = "LocalizationInstaller", menuName = "Installers/LocalizationInstaller")]
 	public class LocalizationInstaller : ScriptableObjectInstaller<LocalizationInstaller>
 	{
-        //public string DefaultId;
-        //public List<LocalizationHandler.LocalizationSettings> localizationSettings = new List<LocalizationHandler.LocalizationSettings>();
+		private const string Assets = "Game/Localization/";
 
-        public override void InstallBindings()
+		public SystemLanguage DefaultLanguage = SystemLanguage.English;
+		[ReadOnly] public List<LocalizationData> localizations = new List<LocalizationData>();
+
+		public override void InstallBindings()
         {
             Container.DeclareSignal<SignalLocalizationChanged>();
 
-            //Container.BindInstance(localizationSettings).WhenInjectedInto<LocalizationHandler>();
-            //Container.BindInstance(DefaultId).WhenInjectedInto<LocalizationSystem>();
+			Container.BindInstance(DefaultLanguage).WhenInjectedInto<LocalizationSystem>();
+			Container.BindInstance(localizations).WhenInjectedInto<LocalizationSystem>();
             Container.BindInterfacesAndSelfTo<LocalizationSystem>().AsSingle();
         }
-    }
+
+
+		[Button]
+		private void SetLanguage(SystemLanguage language = SystemLanguage.English)
+		{
+			Container.Resolve<LocalizationSystem>().SelectLanguage(language);
+		}
+	}
 }

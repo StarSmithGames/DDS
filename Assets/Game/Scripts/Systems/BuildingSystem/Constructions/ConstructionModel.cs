@@ -1,6 +1,10 @@
+using Sirenix.OdinInspector;
 
 using System.Collections.Generic;
-
+using System.Linq;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 using Zenject;
@@ -9,15 +13,12 @@ namespace Game.Systems.BuildingSystem
 {
 	public class ConstructionModel : MonoBehaviour, IConstruction
 	{
-		[SerializeField] private ConstructionData constructionData;
-		public ConstructionData ConstructionData => constructionData;
+		public virtual bool IsCreated { get => isCreated; set => isCreated = value; }
+		protected bool isCreated = false;
 
-		public Transform Transform => transform;
-
-		public List<Collider> Intersections { get; private set; }
-		public bool IsIntersectsColliders { get => Intersections.Count > 0; }
-		[SerializeField] private bool isPlaced = true;
-		public bool IsPlaced
+		[InfoBox("Всегда true если объект стоит в мире.", InfoMessageType.Warning)]
+		[SerializeField] [ReadOnly] protected bool isPlaced = true;
+		public virtual bool IsPlaced
 		{
 			get => isPlaced;
 			set
@@ -31,14 +32,23 @@ namespace Game.Systems.BuildingSystem
 			}
 		}
 
-		[SerializeField] private Collider coll;
+		[SerializeField] protected ConstructionData constructionData;
+		public ConstructionData ConstructionData => constructionData;
+
+		public Transform Transform => transform;
+
+		public List<Collider> Intersections { get; private set; }
+		public bool IsIntersectsColliders { get => Intersections.Count > 0; }
+
+
+		[SerializeField] protected Collider coll;
 		[SerializeField] private List<Renderer> renderers = new List<Renderer>();
 
 		private List<Material> materials = new List<Material>();
 
-		private UIManager uiManager;
-		private LocalizationSystem.LocalizationSystem localization;
-		private LayerMask ignoringLayers;
+		protected UIManager uiManager;
+		protected LocalizationSystem.LocalizationSystem localization;
+		protected LayerMask ignoringLayers;
 
 		[Inject]
 		private void Construct(UIManager uiManager, LocalizationSystem.LocalizationSystem localization, BuildingSystemSettings buildingSettings)
@@ -55,12 +65,12 @@ namespace Game.Systems.BuildingSystem
 			Intersections = new List<Collider>();
 		}
 
-		public void Interact()
+		public virtual void Interact()
 		{
 			Debug.LogError("Interact");
 		}
 
-		public void StartObserve()
+		public virtual void StartObserve()
 		{
 			if (IsPlaced)
 			{
@@ -71,7 +81,7 @@ namespace Game.Systems.BuildingSystem
 
 		public virtual void Observe() { }
 
-		public void EndObserve()
+		public virtual void EndObserve()
 		{
 			if (IsPlaced)
 			{
@@ -114,6 +124,15 @@ namespace Game.Systems.BuildingSystem
 			{
 				Intersections.Remove(other);
 			}
+		}
+
+		[Button]
+		private void GetAllRenderers()
+		{
+			renderers = transform.GetComponentsInChildren<Renderer>().ToList();
+#if UNITY_EDITOR
+			EditorUtility.SetDirty(gameObject);
+#endif
 		}
 
 		public class Factory : PlaceholderFactory<ConstructionBlueprint, IConstruction> { }

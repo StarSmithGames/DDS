@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3352456225814111767}
   - component: {fileID: 676285846959330013}
   - component: {fileID: 1324720287648658183}
-  - component: {fileID: 7027953687512255713}
+  - component: {fileID: 8612634543642644177}
   m_Layer: 0
   m_Name: SleepingBag0
   m_TagString: Untagged
@@ -96,7 +96,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.008827959, y: 0.020086192, z: 0.0013349223}
   m_Center: {x: -0.0000026701018, y: 0.00011732567, z: 0.00065816246}
---- !u!114 &7027953687512255713
+--- !u!114 &8612634543642644177
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -105,10 +105,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1324720287648658184}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6afe00f9d9caeb24bbdf74b9a78b2305, type: 3}
+  m_Script: {fileID: 11500000, guid: 21234df8f4f745346ad1c94411a29665, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  constructionData: {fileID: 11400000, guid: eb90b941567a15242b0f5c505954ef79, type: 2}
+  isPlaced: 1
+  constructionData: {fileID: 11400000, guid: 3e4851586905c154ca32613b25a7d0d9, type: 2}
   coll: {fileID: 1324720287648658183}
   renderers:
   - {fileID: 676285846959330013}

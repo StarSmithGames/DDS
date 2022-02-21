@@ -1,4 +1,4 @@
-using Game.Systems.LocalizationSystem;
+using Game.Systems.InventorySystem.Inspector;
 
 using Sirenix.OdinInspector;
 
@@ -6,57 +6,57 @@ using UnityEngine;
 
 using Zenject;
 
-/// <summary>
-/// Физическое представление Item.
-/// </summary>
-public class ItemModel : PoolableObject, IEntity, IInteractable
+namespace Game.Systems.InventorySystem
 {
-	[SerializeField] private Item item;
-	public Item Item => item;
-
-	[SerializeField] private Collider coll;
-
-	private InspectorHandler itemInspector;
-	private UIManager uiManager;
-	private LocalizationSystem localization;
-
-	[Inject]
-	private void Construct(InspectorHandler itemInspector, UIManager uiManager, LocalizationSystem localization)
+	/// <summary>
+	/// Физическое представление Item.
+	/// </summary>
+	public class ItemModel : PoolableObject, IEntity, IInteractable
 	{
-		this.itemInspector = itemInspector;
-		this.uiManager = uiManager;
-		this.localization = localization;
-	}
+		[SerializeField] private Item item;
+		public Item Item => item;
 
-	public void Interact()
-	{
-		itemInspector.SetItem(this);
-	}
+		[SerializeField] private Collider coll;
 
-	public void Enable(bool trigger)
-	{
-		if (coll == null) coll = GetComponent<Collider>();
-		coll.enabled = trigger;
-	}
+		private InspectorHandler itemInspector;
+		private UIManager uiManager;
+		private LocalizationSystem.LocalizationSystem localization;
 
-	public void StartObserve()
-	{
-		var texts = item.ItemData.GetLocalization(localization.CurrentLanguage);
-		uiManager.Targets.ShowTargetInformation(texts.itemName);
-	}
-	public void Observe()
-	{
-	}
-	public void EndObserve()
-	{
-		uiManager.Targets.HideTargetInformation();
-	}
+		[Inject]
+		private void Construct(InspectorHandler itemInspector, UIManager uiManager, LocalizationSystem.LocalizationSystem localization)
+		{
+			this.itemInspector = itemInspector;
+			this.uiManager = uiManager;
+			this.localization = localization;
+		}
 
-	[Button]
-	private void SavePositionAndRoation()
-	{
-		//Item.ItemData.prefabPossitionOffsetView = transform.position;
-	}
+		public void Interact()
+		{
+			itemInspector.SetItem(this);
+		}
 
-	
+		public void Enable(bool trigger)
+		{
+			if (coll == null) coll = GetComponent<Collider>();
+			coll.enabled = trigger;
+		}
+
+		public void StartObserve()
+		{
+			uiManager.Targets.ShowTargetInformation(item.ItemData.ItemName);
+		}
+		public void Observe()
+		{
+		}
+		public void EndObserve()
+		{
+			uiManager.Targets.HideTargetInformation();
+		}
+
+		[Button]
+		private void SavePositionAndRoation()
+		{
+			//Item.ItemData.prefabPossitionOffsetView = transform.position;
+		}
+	}
 }

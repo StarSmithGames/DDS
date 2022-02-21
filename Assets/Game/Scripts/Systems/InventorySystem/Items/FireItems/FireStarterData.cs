@@ -1,17 +1,17 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Game/Inventory/Items/Fire/Starter", fileName = "Starter")]
-public class FireStarterData : FireItemData
+namespace Game.Systems.InventorySystem
 {
-    public bool isMathces = false;
-
-    [Tooltip("Сколько секунд розжигать.")]
-    [Min(1f)]
-    public float holdTime;
-
-    //[Tooltip("Время на розжиг")]
-    //public Times kindleTime;
-
-    //[Tooltip("К времени горения.")]
-    //public Times addFireTime;
+    [CreateAssetMenu(menuName = "Game/Inventory/Items/Fire/Starter", fileName = "Starter")]
+    public class FireStarterData : FireItemData
+    {
+        [Tooltip("Время отведённое на розжиг.")]
+        public TimeSystem.Time ignitionTime = new TimeSystem.Time() { Seconds = 300 };
+        [Min(1f)]
+        [Tooltip("Сколько секунд розжигать.")]
+        public float holdTime;
+        [Space]
+        [Tooltip("Добавочное время к горению огня.")]
+		public TimeSystem.Time addFireTime;
+	}
 }

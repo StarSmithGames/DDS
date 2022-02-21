@@ -1,1 +1,0 @@
-public interface IEntity : IObservable { }

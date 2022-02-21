@@ -1,6 +1,6 @@
 public class Modifier : IModifier
 {
-	public float Value { get; private set; }
+	public float Value { get; set; }
 
 	public Modifier(float value)
 	{

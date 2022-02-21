@@ -4,33 +4,36 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ContainerData", menuName = "Game/Inventory/Containers/ContainerData")]
-public class ContainerData : ScriptableObject
+namespace Game.Systems.InventorySystem
 {
-    [ListDrawerSettings(ListElementLabelName = "Tittle")]
-    [InfoBox("@LocalizationInfo", InfoMessageType.Warning)]
-    public List<Localization> localizations = new List<Localization>();
-
-    public bool useBasicInteraction = true;
-    [HideIf("useBasicInteraction")]
-    public InteractionSettings interact;
-    public InteractionSettings inspect;
-    [Space]
-    public InventorySettings inventory;
-
-    public Localization GetLocalization(SystemLanguage language)
+    [CreateAssetMenu(fileName = "ContainerData", menuName = "Game/Inventory/Containers/ContainerData")]
+    public class ContainerData : ScriptableObject
     {
-        return localizations.Find((x) => x.language == language) ?? localizations[0];
-    }
+        [ListDrawerSettings(ListElementLabelName = "Tittle")]
+        [InfoBox("@LocalizationInfo", InfoMessageType.Warning)]
+        public List<Localization> localizations = new List<Localization>();
 
-    private string LocalizationInfo => "Required :\n" + SystemLanguage.English.ToString();
-    [System.Serializable]
-    public class Localization
-	{
-        public SystemLanguage language = SystemLanguage.English;
+        public bool useBasicInteraction = true;
+        [HideIf("useBasicInteraction")]
+        public InteractionSettings interact;
+        public InteractionSettings inspect;
+        [Space]
+        public InventorySettings inventory;
 
-        public string containerName;
+        public Localization GetLocalization(SystemLanguage language)
+        {
+            return localizations.Find((x) => x.language == language) ?? localizations[0];
+        }
 
-        private string Tittle => language.ToString() + " " + (!(string.IsNullOrEmpty(containerName) || string.IsNullOrWhiteSpace(containerName)));
+        private string LocalizationInfo => "Required :\n" + SystemLanguage.English.ToString();
+        [System.Serializable]
+        public class Localization
+        {
+            public SystemLanguage language = SystemLanguage.English;
+
+            public string containerName;
+
+            private string Tittle => language.ToString() + " " + (!(string.IsNullOrEmpty(containerName) || string.IsNullOrWhiteSpace(containerName)));
+        }
     }
 }

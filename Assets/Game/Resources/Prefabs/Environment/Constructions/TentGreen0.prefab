@@ -91,6 +91,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2746032184524375858}
   - component: {fileID: 3265124116355472777}
+  - component: {fileID: 531048393}
   m_Layer: 0
   m_Name: TentGreen0
   m_TagString: Untagged
@@ -131,6 +132,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2.6, y: 1.5, z: 2.63}
   m_Center: {x: 0, y: 0.75, z: 0}
+--- !u!114 &531048393
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3265124116355472776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21234df8f4f745346ad1c94411a29665, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlaced: 1
+  constructionData: {fileID: 11400000, guid: c6122fde573a979429cd0c9c3d6347d5, type: 2}
+  coll: {fileID: 3265124116355472777}
+  renderers:
+  - {fileID: 2202584918479975958}
+  - {fileID: 5343804760672617160}
+  - {fileID: 6144141473882327463}
+  - {fileID: 8230124230608928045}
+  - {fileID: 3714634617470386691}
+  - {fileID: 3291164405142470556}
 --- !u!1 &4414390070481079464
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 655c4197bd76ecf4896b179201aaf98d, type: 3}
+  m_Script: {fileID: 11500000, guid: 8e98c150230c67744a606cac9f13e55d, type: 3}
   m_Name: Campfire
   m_EditorClassIdentifier: 
   localizations:
@@ -17,5 +17,16 @@ MonoBehaviour:
     constructionName: Campfire
   useBasicInteraction: 1
   interact:
-    interactionType: 4
-    holdDuration: 0.5
+    interactionType: 0
+    holdDuration: 0
+  minIgnitionTime: 1
+  maxIgnitionTime: 5
+  maxTemperature: 80
+  maxFireTime:
+    days: 0
+    hours: 12
+    minutes: 0
+    seconds: 0
+    currentState: 0
+    totalSeconds: 43200
+  isWindProtection: 0

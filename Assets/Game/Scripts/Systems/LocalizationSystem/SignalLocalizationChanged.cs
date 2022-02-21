@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Systems.LocalizationSystem.Signals
+namespace Game.Systems.LocalizationSystem
 {
 	public struct SignalLocalizationChanged
 	{

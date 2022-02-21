@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class UITargetInformation : MonoBehaviour
 {
+	public bool IsActive => gameObject.activeSelf;
+
 	[SerializeField] private GameObject topContent;
 	[SerializeField] private TMPro.TextMeshProUGUI targetName;
 	[SerializeField] private GameObject separator;

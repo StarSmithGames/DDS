@@ -1,4 +1,4 @@
-namespace Game.Systems.InventorySystem.Signals
+namespace Game.Systems.InventorySystem
 {
 	public struct SignalUIInventorySlotClick
 	{

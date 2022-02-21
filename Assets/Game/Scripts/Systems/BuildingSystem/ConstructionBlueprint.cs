@@ -10,5 +10,6 @@ namespace Game.Systems.BuildingSystem
 		public Sprite icon;
 		[AssetList]
 		public ConstructionModel model;
+		public bool isInteractAfterBuilding = true;
 	}
 }

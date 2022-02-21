@@ -2,22 +2,25 @@ using UnityEngine;
 
 using Zenject;
 
-public class UIPlayerInventoryWindow : WindowBase
+namespace Game.Systems.InventorySystem
 {
-	public UIInventory Inventory => inventory;
-	[SerializeField] private UIInventory inventory;
-
-	public UIInventory Container => container;
-	[SerializeField] private UIInventory container;
-
-	public UIItemViewer ItemViewer => itemViewer;
-	[SerializeField] private UIItemViewer itemViewer;
-
-	private SignalBus signalBus;
-
-	[Inject]
-	private void Construct(SignalBus signalBus)
+	public class UIPlayerInventoryWindow : WindowBase
 	{
-		this.signalBus = signalBus;
+		public UIInventory Inventory => inventory;
+		[SerializeField] private UIInventory inventory;
+
+		public UIInventory Container => container;
+		[SerializeField] private UIInventory container;
+
+		public UIItemViewer ItemViewer => itemViewer;
+		[SerializeField] private UIItemViewer itemViewer;
+
+		private SignalBus signalBus;
+
+		[Inject]
+		private void Construct(SignalBus signalBus)
+		{
+			this.signalBus = signalBus;
+		}
 	}
 }

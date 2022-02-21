@@ -12,4 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f615dcb1c2a88e4e81c38b8ac8763be, type: 3}
   m_Name: LocalizationInstaller
   m_EditorClassIdentifier: 
-  DefaultId: 
+  DefaultLanguage: 10
+  localizations:
+  - {fileID: 11400000, guid: 739d6d44abd6a9e439b456d50dd01257, type: 2}
+  - {fileID: 11400000, guid: 018aebd3a1ec6c74da1d790b876af96b, type: 2}
+  - {fileID: 11400000, guid: 996c91df215c32140b0982f95629fcc3, type: 2}
+  - {fileID: 11400000, guid: 56cd1cdbfe54c584faa882d99bbc9d33, type: 2}
+  - {fileID: 11400000, guid: a9f435d88c845bf4d8905fa5ec184a31, type: 2}
+  - {fileID: 11400000, guid: b9c0debf79343474fbb731f1f6bd6bad, type: 2}
+  - {fileID: 11400000, guid: b499fd4ca14588f468d1e96869c341ce, type: 2}
+  - {fileID: 11400000, guid: c5cd3b03d566c714ab40a94ac90bc430, type: 2}
+  - {fileID: 11400000, guid: 2abab06ffa0847e49950d63a2851f80a, type: 2}
+  - {fileID: 11400000, guid: 1acba517c05624948b5b656e1ded0e0d, type: 2}

@@ -22,8 +22,9 @@ namespace Game.Systems.TimeSystem
 
         public bool IsTimeProcess => timeCoroutine != null;
         private Coroutine timeCoroutine = null;
-        public bool IsPaused => isPaused;
-        private bool isPaused = false;
+        public bool IsPaused { get; private set; }
+        public bool IsRewindProcess => timeRewindCoroutine != null;
+        private Coroutine timeRewindCoroutine = null;
 
         public TimeSettings Settings => settings;
 
@@ -43,8 +44,6 @@ namespace Game.Systems.TimeSystem
             this.settings = settings;
 
             globalTime = settings.useRandom? settings.random.GetRandomStart() : settings.startTime;
-            settings.freaquanceTime.ConvertSeconds();
-
             seconds = new WaitForSeconds(1f / settings.timeScale);
         }
 
@@ -56,10 +55,12 @@ namespace Game.Systems.TimeSystem
         public void Dispose()
 		{
             StopCycle();
+
+            timeEvents = null;
         }
 
-		#region TimeCycle
-		public void StartCycle()
+        #region TimeCycle
+        private void StartCycle()
 		{
 			if (!IsTimeProcess)
 			{
@@ -68,10 +69,10 @@ namespace Game.Systems.TimeSystem
 		}
         private IEnumerator TimeCycle()
 		{
-			while (true)
-			{
-				while (isPaused)
-				{
+            while (true)
+            {
+                while (IsPaused)
+                {
                     yield return null;
                 }
 
@@ -83,15 +84,6 @@ namespace Game.Systems.TimeSystem
 
             StopCycle();
         }
-        public void PauseCycle()
-		{
-            isPaused = true;
-
-        }
-        public void UnPauseCycle()
-		{
-            isPaused = false;
-        }
         private void StopCycle()
 		{
             if (IsTimeProcess)
@@ -102,7 +94,75 @@ namespace Game.Systems.TimeSystem
         }
 		#endregion
 
-        public void AddEvent(TimeEvent timeEvent)
+        public void Pause()
+		{
+            IsPaused = true;
+        }
+
+        public void UnPause()
+		{
+            IsPaused = false;
+        }
+
+        #region Rewind
+        UnityAction onStart = null;
+        UnityAction<float> onProgress = null;
+        UnityAction onEnd = null;
+        UnityAction onBreak = null;
+		public void StartRewind(Time from, Time to, float waitRealTime, UnityAction onStart = null, UnityAction<float> onProgress = null, UnityAction onEnd = null, UnityAction onBreak = null)
+		{
+			if (!IsRewindProcess)
+			{
+                this.onStart = onStart;
+                this.onProgress = onProgress;
+                this.onEnd = onEnd;
+                this.onBreak = onBreak;
+
+                timeRewindCoroutine = asyncManager.StartCoroutine(Rewind((int)from.TotalSeconds, (int)to.TotalSeconds, waitRealTime));
+            }
+        }
+        private IEnumerator Rewind(int from, int to, float wait)
+		{
+            onStart?.Invoke();
+
+            float t = UnityEngine.Time.deltaTime;
+
+            Pause();
+
+            while (t < wait)
+			{
+                float progress = t / wait;
+
+                globalTime.TotalSeconds = Mathf.Lerp(from, to, progress);
+
+                t += UnityEngine.Time.deltaTime;
+
+                TryInvokeEvents();
+
+                onProgress?.Invoke(progress);
+
+                yield return null;
+            }
+
+            globalTime.TotalSeconds = to;
+            TryInvokeEvents();
+
+            UnPause();
+
+            onEnd?.Invoke();
+            StopRewind();
+        }
+        public void StopRewind()
+		{
+            if (IsRewindProcess)
+            {
+                asyncManager.StopCoroutine(timeRewindCoroutine);
+                timeRewindCoroutine = null;
+            }
+        }
+		#endregion
+
+		public void AddEvent(TimeEvent timeEvent)
 		{
             timeEvents.Add(timeEvent);
         }
@@ -126,43 +186,8 @@ namespace Game.Systems.TimeSystem
                 }
 			}
 		}
-
-        private void OnGUI()
-        {
-            GUI.Box(new Rect(150, 150, 100, 30), globalTime.ConvertTime().ToString());
-        }
     }
-
-    [System.Serializable]
-    public class TimeSettings
-	{
-        [Tooltip("Time Scale = 1f / timeScale - Течение времени относительно реального.")]
-        [Min(0.0f)]
-        public float timeScale = 12f;
-
-        public bool useRandom = false;
-
-        [ShowIf("useRandom")]
-        public RandomTimeSettings random;
-
-        [HideIf("useRandom")]
-        public Time startTime;
-        [Tooltip("Насколько будет менятся время за один тик.")]
-        public Time freaquanceTime;
-    }
-    [System.Serializable]
-    public class RandomTimeSettings
-	{
-        public Time GetRandomStart()
-		{
-            Time time = new Time();
-            time.Seconds = UnityEngine.Random.Range(0, 60);
-            time.Minutes = UnityEngine.Random.Range(0, 60);
-            time.Hours = UnityEngine.Random.Range(0, 23);
-            return time;
-		}
-	}
-
+    
     [System.Serializable]
     public struct Time
     {
@@ -181,10 +206,10 @@ namespace Game.Systems.TimeSystem
         [SerializeField] private int days;
         public int Hours
 		{
-            get => days;
+            get => hours;
 			set
 			{
-                days = value;
+                hours = value;
                 ConvertSeconds();
             }
 		}
@@ -225,7 +250,7 @@ namespace Game.Systems.TimeSystem
         {
             get
             {
-                if (hours >= 6 && hours <= 12)
+                if (hours >= 5 && hours <= 12)
                 {
                     return TimeState.Morning;
                 }
@@ -233,7 +258,7 @@ namespace Game.Systems.TimeSystem
                 {
                     return TimeState.Afternoon;
                 }
-                else if (hours > 17 && hours <= 20)
+                else if (hours > 17 && hours <= 22)
                 {
                     return TimeState.Evening;
                 }
@@ -242,35 +267,39 @@ namespace Game.Systems.TimeSystem
             }
         }
 
+
         [ReadOnly] [SerializeField] private float totalSeconds;//max 2147483647 ~ 24855 дней
-        /// <summary>
-        /// Пепед тем как использовать надо убедится что выполнен ConvertSeconds()
-        /// </summary>
         public float TotalSeconds
         {
             get => totalSeconds;
-            set => totalSeconds = value;
+            set
+            {
+                totalSeconds = value;
+
+                ConvertTime();
+            }
         }
 
         public int TotalMinutes => (int)totalSeconds / 60;
         public int TotalHours => TotalMinutes / 60;
         public int TotalDays => TotalHours / 24;
 
-        public float CurrentDayPercent => (hours * 3600) / 86400f;
+        public float CurrentDayPercent => (totalSeconds % 86400f) / 86400f;
         public float DaysPercent => totalSeconds / 86400f;
 
         public static Time operator +(Time currTime, Time addTime)
         {
-            currTime.totalSeconds += addTime.totalSeconds;
+            currTime.TotalSeconds += addTime.TotalSeconds;
 
             return currTime;
         }
         public static Time operator -(Time currTime, Time addTime)
         {
-            float result = currTime.totalSeconds;
+            float result = currTime.TotalSeconds;
             result -= addTime.totalSeconds;
             result = Mathf.Abs(result);
-            currTime.totalSeconds = result;
+            currTime.TotalSeconds = result;
+
             return currTime;
         }
 
@@ -301,9 +330,9 @@ namespace Game.Systems.TimeSystem
 
 
             if (days != 0) result += days + "D ";
-            if (hours != 0) result += hours + "H ";
-            if (minutes != 0) result += minutes + "M ";
-            if (showSecs && seconds != 0) result += seconds + "S";
+            if (hours != 0) result += (hours < 10 ? "0" + hours : hours.ToString()) + "H ";
+            if (minutes != 0) result += (minutes < 10 ? "0" + minutes : minutes.ToString()) + "M ";
+            if (showSecs && seconds != 0) result += (seconds < 10 ? "0" + seconds : seconds.ToString()) + "S";
 
             result = result == "" ? SymbolCollector.DASH.ToString() : result;
 
@@ -364,7 +393,6 @@ namespace Game.Systems.TimeSystem
     public enum TimeState
     {
         Morning,
-        Noon,
         Afternoon,
         Evening,
         Night,

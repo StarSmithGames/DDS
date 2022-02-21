@@ -1,8 +1,5 @@
 using Sirenix.OdinInspector;
 
-using System.Collections.Generic;
-using System.Linq;
-
 public class Stats : IStats
 {
 	public IStat Condition { get; protected set; }
@@ -12,9 +9,7 @@ public class Stats : IStats
 	public IStat Hungred { get; protected set; }
 	public IStat Thirst { get; protected set; }
 
-	//private List<IStat> stats;
-
-	public Stats(StatsSettings settings)
+	public Stats(StatsSettings settings, UIManager uiManager)
 	{
 		Condition = new ConditionStat(settings.condtion, 100f);
 		Stamina = new StaminaStat(settings.stamina, 100f);
@@ -23,19 +18,15 @@ public class Stats : IStats
 		Hungred = new HungredStat(settings.hungred, 2500f);
 		Thirst = new ThirstStat(settings.thrist, 100f);
 
-		//stats = new List<IStat>();
-		//stats.Add(Condtion);
-		//stats.Add(Stamina);
-		//stats.Add(Warmth);
-		//stats.Add(Fatigue);
-		//stats.Add(Hungred);
-		//stats.Add(Thrist);
-	}
+		var uistats = uiManager.Status.Stats;
 
-	//public IStat GetStat<T>() where T : IStat
-	//{
-	//	return stats.OfType<T>().FirstOrDefault();
-	//}
+		uistats.Condition.SetAttribute(Condition);
+		uistats.Stamina.SetAttribute(Stamina);
+		uistats.Warmth.SetAttribute(Warmth);
+		uistats.Fatigue.SetAttribute(Fatigue);
+		uistats.Hungred.SetAttribute(Hungred);
+		uistats.Thirst.SetAttribute(Thirst);
+	}
 }
 [System.Serializable]
 public class StatsSettings

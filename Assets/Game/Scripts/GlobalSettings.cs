@@ -1,5 +1,7 @@
 using UnityEngine;
 using Sirenix.OdinInspector;
+using Game.Systems.InventorySystem.Inspector;
+using Game.Systems.LocalizationSystem;
 
 [CreateAssetMenu(menuName = "GlobalSettings", fileName = "GlobalData")]
 public class GlobalSettings : ScriptableObject
@@ -17,8 +19,6 @@ public class GlobalSettings : ScriptableObject
     public InspectorHandler.Settings inspectorSettings;
     [Tooltip("Используется для ItemViewer")]
     public TransformTransition.Settings transitionSettings;
-    [Space]
-    public SkySettings skySettings;
 }
 [System.Serializable]
 public class ProjectSettings
