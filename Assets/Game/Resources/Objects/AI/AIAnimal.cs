@@ -24,9 +24,6 @@ public class AIAnimal : MonoBehaviour
 
 	public NavMeshAgent NavMeshAgent => navMeshAgent;
 
-	public float wanderInnerRadius;
-	public float wanderOuterRadius;
-
 	[SerializeField] private float gravity = -13.0f;
 	[Space]
 	[SerializeField] private Animator animator;
@@ -186,10 +183,6 @@ public class AIAnimal : MonoBehaviour
 
 	private void OnDrawGizmosSelected()
 	{
-		Gizmos.color = Color.green;
-		Gizmos.DrawWireSphere(transform.position, wanderInnerRadius);
-		Gizmos.DrawWireSphere(transform.position, wanderOuterRadius);
-
 		Gizmos.color = Color.red;
 		Gizmos.DrawSphere(currentDestination, 0.25f);
 
@@ -235,29 +228,9 @@ public class AIGoToBehavior : AIBehavior
 
 	public override IEnumerator Execute()
 	{
-		ai.CurrentState = AIState.Walk;
-		ai.MoveRootMotion();
+		
 
 		yield return null;
-	}
-
-	public bool SetDestination(Vector3 destination)
-	{
-		if (IsPathValid(destination))
-		{
-			ai.NavMeshAgent.SetDestination(destination);
-
-			return true;
-		}
-		return false;
-	}
-
-	public bool IsPathValid(Vector3 destination)
-	{
-		NavMeshPath path = new NavMeshPath();
-		ai.NavMeshAgent.CalculatePath(destination, path);
-
-		return path.status == NavMeshPathStatus.PathComplete;
 	}
 }
 
@@ -274,7 +247,7 @@ public class AISeekBehavior : AIBehavior
 
 	public override IEnumerator Execute()
 	{
-		goToBehavior.SetDestination(target.position);
+		//goToBehavior.SetDestination(target.position);
 
 		yield return goToBehavior.Execute();
 	}
@@ -292,16 +265,6 @@ public class AIWanderBehavior : AIBehavior
 	public override IEnumerator Execute()
 	{
 		yield return null;
-	}
-
-	protected void GenerateDestination(Vector3 origin, float innerRadius, float outerRadius)
-	{
-		Vector3 currentDestination = RandomExtensions.RandomPointInAnnulus(origin, innerRadius, outerRadius);
-		//currentDestination.y = Terrain.activeTerrain.SampleHeight(currentDestination);
-		if (!goToBehavior.SetDestination(currentDestination))
-		{
-			GenerateDestination(origin, innerRadius, outerRadius);
-		}
 	}
 }
 
