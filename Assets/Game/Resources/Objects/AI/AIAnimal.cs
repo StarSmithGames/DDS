@@ -7,20 +7,22 @@ using UnityEngine.AI;
 
 using Zenject;
 
+using static AIAnimal;
+
 public class AIAnimal : MonoBehaviour
 {
-	public Transform destinationTest;
-
 	public AIState CurrentState
 	{
 		get => currentState;
-		protected set
+		set
 		{
 			currentState = value;
 			animator.SetBool(isIdleHash, currentState == AIState.Idle);
 		}
 	}
 	private AIState currentState;
+
+	public NavMeshAgent NavMeshAgent => navMeshAgent;
 
 	public float wanderInnerRadius;
 	public float wanderOuterRadius;
@@ -83,7 +85,7 @@ public class AIAnimal : MonoBehaviour
 	{
 		while (isAlive)
 		{
-			yield return GoTo();
+			yield return null;
 		}
 		//death
 		StopBrain();
@@ -99,19 +101,6 @@ public class AIAnimal : MonoBehaviour
 		}
 	}
 	#endregion
-
-	protected virtual IEnumerator GoTo()
-    {
-		if (destinationTest != null)
-		{
-			currentDestination = destinationTest.position;
-			navMeshAgent.SetDestination(currentDestination);
-			CurrentState = AIState.Walk;
-			MoveAIRootMotion();
-
-			yield return null;
-		}
-	}
 
 
 	private void Update()
@@ -138,46 +127,42 @@ public class AIAnimal : MonoBehaviour
 	float currentSpeed = 0;
 	float currentAngle = 0;
 
-	//Seek, Flee
-	protected void MoveAIRootMotion()
+	public void MoveRootMotion()
 	{
 		Vector3 desiredDiff = navMeshAgent.destination - transform.position;
 		Vector3 direction = Quaternion.Inverse(transform.rotation) * desiredDiff.normalized;
 		float angleBtwTarget = Mathf.Atan2(direction.x, direction.z) * 180.0f / Mathf.PI;//-180 to 180
 		float targetSpeed = 0;
 
+		currentAngle = Mathf.Clamp(angleBtwTarget, -45, 45);
+
 		switch (CurrentState)
 		{
 			case AIState.Idle:
 			{
 				targetSpeed = 0f;
-				currentAngle = Mathf.Clamp(angleBtwTarget, -45, 45);
 				break;
 			}
 			case AIState.Walk:
 			{
 				targetSpeed = 0.333f;
-				currentAngle = Mathf.Clamp(angleBtwTarget, -45, 45);
 				break;
 			}
 			case AIState.Trot:
 			{
 				targetSpeed = 0.666f;
-				currentAngle = Mathf.Clamp(angleBtwTarget, -45, 45);
 				break;
 			}
 			case AIState.Run:
 			{
 				targetSpeed = 1f;
-				currentAngle = Mathf.Clamp(angleBtwTarget, -45, 45);
 				break;
 			}
 		}
 		//
 		if (Mathf.Abs(angleBtwTarget) > 90 || navMeshAgent.remainingDistance < navMeshAgent.stoppingDistance && !navMeshAgent.pathPending)//если угол до цели больше, то останавливаемся//достиг цели
 		{
-			targetSpeed = 0f;
-			currentSpeed = Mathf.Max(currentSpeed - 0.5f * Time.deltaTime, targetSpeed);
+			currentSpeed = Mathf.Max(currentSpeed - 0.5f * Time.deltaTime, 0);
 		}
 		else
 		{
@@ -195,27 +180,9 @@ public class AIAnimal : MonoBehaviour
 		animator.SetFloat(directionHash, currentAngle);//Direction
 	}
 
-	protected void GenerateDestination(Vector3 origin, float innerRadius, float outerRadius)
-	{
-		currentDestination = RandomExtensions.RandomPointInAnnulus(origin, innerRadius, outerRadius);
-		//currentDestination.y = Terrain.activeTerrain.SampleHeight(currentDestination);
-		if (CheckPath(navMeshAgent, currentDestination))
-		{
-			navMeshAgent.SetDestination(currentDestination);
-		}
-		else
-		{
-			GenerateDestination(origin, innerRadius, outerRadius);
-		}
-	}
 
-	protected bool CheckPath(NavMeshAgent agent, Vector3 destination)
-	{
-		NavMeshPath path = new NavMeshPath();
-		agent.CalculatePath(destination, path);
 
-		return path.status == NavMeshPathStatus.PathComplete;
-	}
+	
 
 	private void OnDrawGizmosSelected()
 	{
@@ -247,5 +214,105 @@ public class AIAnimal : MonoBehaviour
 		Walk,
 		Trot,
 		Run,
+	}
+}
+
+public abstract class AIBehavior
+{
+	protected AIAnimal ai;
+
+	public AIBehavior(AIAnimal ai)
+	{
+		this.ai = ai;
+	}
+
+	public abstract IEnumerator Execute();
+}
+
+public class AIGoToBehavior : AIBehavior
+{
+	public AIGoToBehavior(AIAnimal ai) : base(ai) { }
+
+	public override IEnumerator Execute()
+	{
+		ai.CurrentState = AIState.Walk;
+		ai.MoveRootMotion();
+
+		yield return null;
+	}
+
+	public bool SetDestination(Vector3 destination)
+	{
+		if (IsPathValid(destination))
+		{
+			ai.NavMeshAgent.SetDestination(destination);
+
+			return true;
+		}
+		return false;
+	}
+
+	public bool IsPathValid(Vector3 destination)
+	{
+		NavMeshPath path = new NavMeshPath();
+		ai.NavMeshAgent.CalculatePath(destination, path);
+
+		return path.status == NavMeshPathStatus.PathComplete;
+	}
+}
+
+public class AISeekBehavior : AIBehavior
+{
+	private Transform target;
+	private AIGoToBehavior goToBehavior;
+
+	public AISeekBehavior(AIAnimal ai, Transform target) : base(ai)
+	{
+		this.target = target;
+		goToBehavior = new AIGoToBehavior(ai);
+	}
+
+	public override IEnumerator Execute()
+	{
+		goToBehavior.SetDestination(target.position);
+
+		yield return goToBehavior.Execute();
+	}
+}
+
+public class AIWanderBehavior : AIBehavior
+{
+	private AIGoToBehavior goToBehavior;
+
+	public AIWanderBehavior(AIAnimal ai) : base(ai)
+	{
+		goToBehavior = new AIGoToBehavior(ai);
+	}
+
+	public override IEnumerator Execute()
+	{
+		yield return null;
+	}
+
+	protected void GenerateDestination(Vector3 origin, float innerRadius, float outerRadius)
+	{
+		Vector3 currentDestination = RandomExtensions.RandomPointInAnnulus(origin, innerRadius, outerRadius);
+		//currentDestination.y = Terrain.activeTerrain.SampleHeight(currentDestination);
+		if (!goToBehavior.SetDestination(currentDestination))
+		{
+			GenerateDestination(origin, innerRadius, outerRadius);
+		}
+	}
+}
+
+public class AIFleeBehavior : AIBehavior
+{
+	public AIFleeBehavior(AIAnimal ai) : base(ai)
+	{
+	}
+
+	public override IEnumerator Execute()
+	{
+		throw new System.NotImplementedException();
 	}
 }
