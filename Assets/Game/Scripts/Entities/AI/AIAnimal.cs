@@ -1,53 +1,25 @@
-using CMF;
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 using Zenject;
 
-using static AIAnimal;
-
-public class AIAnimal : MonoBehaviour
+public class AIAnimal : AI
 {
-	public AIState CurrentState
-	{
-		get => currentState;
-		set
-		{
-			currentState = value;
-			animator.SetBool(isIdleHash, currentState == AIState.Idle);
-		}
-	}
-	private AIState currentState;
+	protected float currentSpeed = 0;
+	protected float currentAngle = 0;
 
-	public NavMeshAgent NavMeshAgent => navMeshAgent;
-
-	[SerializeField] private float gravity = -13.0f;
-	[Space]
-	[SerializeField] private Animator animator;
-	[SerializeField] private NavMeshAgent navMeshAgent;
-	[SerializeField] private CharacterController characterController;
-
-	bool isAlive = true;
+	protected Vector3 rootMotion;
 
 	protected int idleIndex = 0;
 	protected int deathIndex = 0;
 
 	protected int isIdleHash = -1;
-	protected int idleIndexHash = -1;
+	protected int isDeadHash = -1;
 	protected int velocityHash = -1;
 	protected int directionHash = -1;
-
+	protected int idleIndexHash = -1;
 	protected int deathIndexHash = -1;
-
-	private Coroutine brainCoroutine = null;
-	public bool IsBrainProccess => brainCoroutine != null;
-
-	protected Vector3 currentDestination;
-
-	private Vector3 rootMotion;
 
 	[Inject]
 	private void Construct()
@@ -56,49 +28,11 @@ public class AIAnimal : MonoBehaviour
 		navMeshAgent.angularSpeed = 0;
 
 		isIdleHash = Animator.StringToHash("IsIdle");
+		isDeadHash = Animator.StringToHash("IsDead");
 		idleIndexHash = Animator.StringToHash("Idle");
 		velocityHash = Animator.StringToHash("Velocity");
 		directionHash = Animator.StringToHash("Direction");
-
-		//viewsTargers = view.visibleTargets;
 	}
-
-	private void Start()
-	{
-		StartBrain();
-	}
-
-	#region Brain
-	private void StartBrain()
-	{
-		if (!IsBrainProccess)
-		{
-			//view.StartView();
-
-			brainCoroutine = StartCoroutine(Brain());
-		}
-	}
-	private IEnumerator Brain()
-	{
-		while (isAlive)
-		{
-			yield return null;
-		}
-		//death
-		StopBrain();
-	}
-	private void StopBrain()
-	{
-		if (IsBrainProccess)
-		{
-			StopCoroutine(brainCoroutine);
-			brainCoroutine = null;
-
-			//StartCoroutine(Death());
-		}
-	}
-	#endregion
-
 
 	private void Update()
 	{
@@ -110,7 +44,6 @@ public class AIAnimal : MonoBehaviour
 		rootMotion = Vector3.zero;
 	}
 
-
 	private void OnAnimatorMove()
 	{
 		navMeshAgent.nextPosition = transform.position;
@@ -121,41 +54,50 @@ public class AIAnimal : MonoBehaviour
 		transform.rotation = animator.rootRotation;
 	}
 
-	float currentSpeed = 0;
-	float currentAngle = 0;
+	protected override void Death()
+	{
+		animator.SetFloat(deathIndexHash, deathIndex);
+		animator.SetBool(isDeadHash, true);
+	}
+
+	public override void MoveTick()
+	{
+		MoveRootMotion();
+	}
 
 	public void MoveRootMotion()
 	{
 		Vector3 desiredDiff = navMeshAgent.destination - transform.position;
 		Vector3 direction = Quaternion.Inverse(transform.rotation) * desiredDiff.normalized;
 		float angleBtwTarget = Mathf.Atan2(direction.x, direction.z) * 180.0f / Mathf.PI;//-180 to 180
-		float targetSpeed = 0;
+		float targetSpeed = 0.333f;
 
 		currentAngle = Mathf.Clamp(angleBtwTarget, -45, 45);
 
-		switch (CurrentState)
-		{
-			case AIState.Idle:
-			{
-				targetSpeed = 0f;
-				break;
-			}
-			case AIState.Walk:
-			{
-				targetSpeed = 0.333f;
-				break;
-			}
-			case AIState.Trot:
-			{
-				targetSpeed = 0.666f;
-				break;
-			}
-			case AIState.Run:
-			{
-				targetSpeed = 1f;
-				break;
-			}
-		}
+		//switch (CurrentState)
+		//{
+		//	case AIState.Idle:
+		//	{
+		//		targetSpeed = 0f;
+		//		break;
+		//	}
+		//	case AIState.Walk:
+		//	{
+		//		targetSpeed = 0.333f;
+		//		break;
+		//	}
+		//	case AIState.Trot:
+		//	{
+		//		targetSpeed = 0.666f;
+		//		break;
+		//	}
+		//	case AIState.Run:
+		//	{
+		//		targetSpeed = 1f;
+		//		break;
+		//	}
+		//}
+
 		//
 		if (Mathf.Abs(angleBtwTarget) > 90 || navMeshAgent.remainingDistance < navMeshAgent.stoppingDistance && !navMeshAgent.pathPending)//если угол до цели больше, то останавливаемся//достиг цели
 		{
@@ -177,18 +119,9 @@ public class AIAnimal : MonoBehaviour
 		animator.SetFloat(directionHash, currentAngle);//Direction
 	}
 
-
-
-	
-
 	private void OnDrawGizmosSelected()
 	{
-		Gizmos.color = Color.red;
-		Gizmos.DrawSphere(currentDestination, 0.25f);
-
 		if (navMeshAgent == null) return;
-		Gizmos.color = Color.red;
-		Gizmos.DrawWireSphere(Application.isPlaying ? currentDestination : transform.position, navMeshAgent.stoppingDistance);
 
 		//path
 		Gizmos.color = Color.red;
@@ -198,84 +131,5 @@ public class AIAnimal : MonoBehaviour
 		{
 			Gizmos.DrawLine(corners[i], corners[i + 1]);
 		}
-	}
-
-
-	public enum AIState
-	{
-		Idle,
-		Walk,
-		Trot,
-		Run,
-	}
-}
-
-public abstract class AIBehavior
-{
-	protected AIAnimal ai;
-
-	public AIBehavior(AIAnimal ai)
-	{
-		this.ai = ai;
-	}
-
-	public abstract IEnumerator Execute();
-}
-
-public class AIGoToBehavior : AIBehavior
-{
-	public AIGoToBehavior(AIAnimal ai) : base(ai) { }
-
-	public override IEnumerator Execute()
-	{
-		
-
-		yield return null;
-	}
-}
-
-public class AISeekBehavior : AIBehavior
-{
-	private Transform target;
-	private AIGoToBehavior goToBehavior;
-
-	public AISeekBehavior(AIAnimal ai, Transform target) : base(ai)
-	{
-		this.target = target;
-		goToBehavior = new AIGoToBehavior(ai);
-	}
-
-	public override IEnumerator Execute()
-	{
-		//goToBehavior.SetDestination(target.position);
-
-		yield return goToBehavior.Execute();
-	}
-}
-
-public class AIWanderBehavior : AIBehavior
-{
-	private AIGoToBehavior goToBehavior;
-
-	public AIWanderBehavior(AIAnimal ai) : base(ai)
-	{
-		goToBehavior = new AIGoToBehavior(ai);
-	}
-
-	public override IEnumerator Execute()
-	{
-		yield return null;
-	}
-}
-
-public class AIFleeBehavior : AIBehavior
-{
-	public AIFleeBehavior(AIAnimal ai) : base(ai)
-	{
-	}
-
-	public override IEnumerator Execute()
-	{
-		throw new System.NotImplementedException();
 	}
 }

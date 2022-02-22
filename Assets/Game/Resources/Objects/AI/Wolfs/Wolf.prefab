@@ -786,9 +786,11 @@ GameObject:
   m_Component:
   - component: {fileID: 7805580211188064660}
   - component: {fileID: 7859051432665535436}
-  - component: {fileID: 7801944558117398299}
   - component: {fileID: 7801944558117398300}
   - component: {fileID: 7801944558117398301}
+  - component: {fileID: 9157829993694157506}
+  - component: {fileID: 2906448226184671566}
+  - component: {fileID: 2497094500815313899}
   m_Layer: 0
   m_Name: Wolf
   m_TagString: Untagged
@@ -832,27 +834,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &7801944558117398299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7801944558117398302}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46fc5c58f5c83664ab0a6de7179db1c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  destinationTest: {fileID: 0}
-  wanderInnerRadius: 2.32
-  wanderOuterRadius: 11.24
-  gravity: -13
-  acceleration: 1
-  deceleration: 0.5
-  animator: {fileID: 7859051432665535436}
-  navMeshAgent: {fileID: 7801944558117398300}
-  characterController: {fileID: 7801944558117398301}
 --- !u!195 &7801944558117398300
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -867,7 +848,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 0
-  m_StoppingDistance: 1.89
+  m_StoppingDistance: 2
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -893,6 +874,71 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &9157829993694157506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7801944558117398302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca644bcbf9134d141b462c3325771638, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  settings:
+    viewRadius: 20
+    farthestZone: 15
+    nearestZone: 10
+    viewAngle: 180
+    farthestAngle: 90
+    nearestAngle: 90
+    targetMask:
+      serializedVersion: 2
+      m_Bits: 5
+    obstacleMask:
+      serializedVersion: 2
+      m_Bits: 0
+  delay: 0.25
+--- !u!114 &2906448226184671566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7801944558117398302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd66b2837fa66bc4e9aa83e745728412, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gravity: -13
+  animator: {fileID: 7859051432665535436}
+  navMeshAgent: {fileID: 7801944558117398300}
+  characterController: {fileID: 7801944558117398301}
+  fov: {fileID: 9157829993694157506}
+--- !u!114 &2497094500815313899
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7801944558117398302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 643f98c93dee3344996667cad0a9555b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ai: {fileID: 2906448226184671566}
+  behavior:
+    behavior: 0
+  aligment:
+    aligment: {x: 0, y: 0}
+  confidence:
+    confidenceLevel: 0
+  wanderSettings:
+    innerRadius: 5
+    outerRadius: 20
 --- !u!1 &7802169332027978940
 GameObject:
   m_ObjectHideFlags: 0
