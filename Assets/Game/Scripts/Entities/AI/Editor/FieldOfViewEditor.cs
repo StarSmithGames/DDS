@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
+using Sirenix.OdinInspector.Editor;
+
 [CustomEditor(typeof(FieldOfView))]
-public class FieldOfViewEditor : Editor
+public class FieldOfViewEditor : OdinEditor
 {
 	private void OnSceneGUI()
 	{

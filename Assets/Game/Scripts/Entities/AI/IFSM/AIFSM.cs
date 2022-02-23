@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-public class AIBehaviorFSM : IFSM
+public class AIFSM : IFSM
 {
 	public bool IsInTransition => isInTransition;
 	private bool isInTransition = false;
@@ -12,7 +10,7 @@ public class AIBehaviorFSM : IFSM
 
 	private AI ai;
 
-	public AIBehaviorFSM(AI ai)
+	public AIFSM(AI ai)
 	{
 		this.ai = ai;
 

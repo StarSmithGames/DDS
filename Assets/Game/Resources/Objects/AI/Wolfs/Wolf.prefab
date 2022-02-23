@@ -788,9 +788,10 @@ GameObject:
   - component: {fileID: 7859051432665535436}
   - component: {fileID: 7801944558117398300}
   - component: {fileID: 7801944558117398301}
-  - component: {fileID: 9157829993694157506}
+  - component: {fileID: 2316740088905649819}
+  - component: {fileID: 8498198756061909775}
   - component: {fileID: 2906448226184671566}
-  - component: {fileID: 2497094500815313899}
+  - component: {fileID: 9157829993694157506}
   m_Layer: 0
   m_Name: Wolf
   m_TagString: Untagged
@@ -874,6 +875,70 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!114 &2316740088905649819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7801944558117398302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08eca9f7688a0a24685b89133b020c8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _scriptableObjectInstallers: []
+  _monoInstallers:
+  - {fileID: 8498198756061909775}
+  _installerPrefabs: []
+  _autoRun: 1
+  _kernel: {fileID: 0}
+--- !u!114 &8498198756061909775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7801944558117398302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4745720fd2eadb40bbda90a4a718443, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ai: {fileID: 2906448226184671566}
+  animator: {fileID: 7859051432665535436}
+  navMeshAgent: {fileID: 7801944558117398300}
+  characterController: {fileID: 7801944558117398301}
+  fov: {fileID: 9157829993694157506}
+  personality:
+    behavior: 2
+    aligment:
+      aligment: {x: 0, y: 0}
+    confidence:
+      confidenceLevel: 0
+  wanderSettings:
+    testDestination: {fileID: 0}
+    innerRadius: 8
+    outerRadius: 20
+    useNavMeshStoppingDistance: 0
+    stoppingDistance: 2
+  seekSettings:
+    testTarget: {fileID: 0}
+    useNavMeshStoppingDistance: 1
+    stoppingDistance: 2
+--- !u!114 &2906448226184671566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7801944558117398302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd66b2837fa66bc4e9aa83e745728412, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gravity: -13
 --- !u!114 &9157829993694157506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -889,10 +954,10 @@ MonoBehaviour:
   settings:
     viewRadius: 20
     farthestZone: 15
-    nearestZone: 10
+    nearestZone: 8
     viewAngle: 180
-    farthestAngle: 90
-    nearestAngle: 90
+    farthestAngle: 220
+    nearestAngle: 360
     targetMask:
       serializedVersion: 2
       m_Bits: 5
@@ -900,45 +965,6 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 0
   delay: 0.25
---- !u!114 &2906448226184671566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7801944558117398302}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd66b2837fa66bc4e9aa83e745728412, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gravity: -13
-  animator: {fileID: 7859051432665535436}
-  navMeshAgent: {fileID: 7801944558117398300}
-  characterController: {fileID: 7801944558117398301}
-  fov: {fileID: 9157829993694157506}
---- !u!114 &2497094500815313899
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7801944558117398302}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 643f98c93dee3344996667cad0a9555b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ai: {fileID: 2906448226184671566}
-  behavior:
-    behavior: 0
-  aligment:
-    aligment: {x: 0, y: 0}
-  confidence:
-    confidenceLevel: 0
-  wanderSettings:
-    innerRadius: 5
-    outerRadius: 20
 --- !u!1 &7802169332027978940
 GameObject:
   m_ObjectHideFlags: 0

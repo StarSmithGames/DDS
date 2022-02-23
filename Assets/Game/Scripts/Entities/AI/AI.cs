@@ -1,7 +1,3 @@
-using Sirenix.OdinInspector;
-
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,65 +5,80 @@ using Zenject;
 
 public class AI : MonoBehaviour
 {
-	public NavMeshAgent NavMeshAgent => navMeshAgent;
+	protected float gravity = -13.0f;
+	protected Vector3 rootMotion;
 
-	[SerializeField] protected float gravity = -13.0f;
-	[Space]
-	[SerializeField] protected Animator animator;
-	[SerializeField] protected NavMeshAgent navMeshAgent;
-	[SerializeField] protected CharacterController characterController;
-	[SerializeField] protected FieldOfView fov;
+	protected int isIdleHash = -1;
+	protected int isDeadHash = -1;
+	protected int velocityHash = -1;
+	protected int directionHash = -1;
+	protected int idleIndexHash = -1;
+	protected int deathIndexHash = -1;
 
-	protected bool isAlive = true;
+	protected Animator animator;
+	protected NavMeshAgent navMeshAgent;
+	protected CharacterController characterController;
 
-	private Coroutine brainCoroutine = null;
-	public bool IsBrainProccess => brainCoroutine != null;
-
-	protected virtual void Start()
+	[Inject]
+	private void Construct(Animator animator, NavMeshAgent navMeshAgent, CharacterController characterController)
 	{
-		StartBrain();
+		this.animator = animator;
+		this.navMeshAgent = navMeshAgent;
+		this.characterController = characterController;
+		
+		isIdleHash = Animator.StringToHash("IsIdle");
+		isDeadHash = Animator.StringToHash("IsDead");
+		idleIndexHash = Animator.StringToHash("Idle");
+		velocityHash = Animator.StringToHash("Velocity");
+		directionHash = Animator.StringToHash("Direction");
+
+		navMeshAgent.updatePosition = false;
+		navMeshAgent.angularSpeed = 0;
 	}
 
-	private void StartBrain()
+	protected virtual void Update()
 	{
-		if (!IsBrainProccess)
+		if (!characterController.isGrounded)
 		{
-			brainCoroutine = StartCoroutine(Brain());
+			rootMotion.y += gravity * Time.deltaTime;
 		}
-	}
-	private IEnumerator Brain()
-	{
-		while (isAlive)
-		{
-			yield return null;
-		}
-
-		Death();
-
-		StopBrain();
-	}
-	private void StopBrain()
-	{
-		if (IsBrainProccess)
-		{
-			StopCoroutine(brainCoroutine);
-			brainCoroutine = null;
-		}
+		characterController.Move(rootMotion);
+		rootMotion = Vector3.zero;
 	}
 
-	public virtual void MoveTick()
+	protected void OnAnimatorMove()
 	{
+		navMeshAgent.nextPosition = transform.position;
 
+		rootMotion += animator.deltaPosition;
+
+		//transform.position = animator.rootPosition;
+		transform.rotation = animator.rootRotation;
 	}
 
-	protected virtual void Death()
+	public void Move(float velocity, float direction)
 	{
-		Debug.LogError("Is Dead");
+		animator.SetFloat(velocityHash, velocity);//, 0.25f, Time.deltaTime);//Velocity
+		animator.SetFloat(directionHash, direction);
 	}
 
-	[Button]
-	private void DeathButton()
+	public void SetIdleIndex(int index, bool isIdle = true)
 	{
-		isAlive = false;
+		animator.SetBool(isIdleHash, isIdle);
+		animator.SetInteger(idleIndexHash, index);
+	}
+
+	public void SetDeathIndex(int index, bool isDied = true)
+	{
+		animator.SetBool(isDeadHash, isDied);
+		animator.SetFloat(deathIndexHash, index);
+	}
+
+	//-180 to 180
+	public float CalculateAngleToDesination()
+	{
+		Vector3 desiredDiff = navMeshAgent.destination - transform.position;
+		Vector3 direction = Quaternion.Inverse(transform.rotation) * desiredDiff.normalized;
+		return Mathf.Atan2(direction.x, direction.z) * 180.0f / Mathf.PI;
 	}
 }

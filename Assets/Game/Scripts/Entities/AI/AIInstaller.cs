@@ -1,43 +1,90 @@
 using Sirenix.OdinInspector;
 
-using System.Collections;
-using System.Collections.Generic;
-
-using UnityEditor;
-
 using UnityEngine;
+using UnityEngine.AI;
 
-public class AIPersonality : MonoBehaviour
+using Zenject;
+
+public class AIInstaller : MonoInstaller
 {
 	[SerializeField] private AI ai;
-	[SerializeField] private AIBehavior behavior;
-	[SerializeField] private AIAligment aligment;
-	[SerializeField] private AIConfidence confidence;
-	[SerializeField] private AIFactionRelations relations;
 	[Space]
+	[SerializeField] protected Animator animator;
+	[SerializeField] protected NavMeshAgent navMeshAgent;
+	[SerializeField] protected CharacterController characterController;
+	[Space]
+	[SerializeField] protected FieldOfView fov;
+	[Space]
+	[SerializeField] private AIPersonality personality;
 	[SerializeField] private AIWanderState.Settings wanderSettings;
-	//SeekFlee
-	public IFSM FSM => fsm;
-	private IFSM fsm;
+	[SerializeField] private AIFollowState.Settings seekSettings;
 
-	private AIWanderState wanderState;
-
-	private void Awake()
+	public override void InstallBindings()
 	{
-		fsm = new AIBehaviorFSM(ai);
+		Container.BindInstance(ai);
+		Container.BindInstance(animator);
+		Container.BindInstance(navMeshAgent);
+		Container.BindInstance(characterController);
+		Container.BindInstance(fov);
 
-		wanderState = new AIWanderState(fsm, ai, wanderSettings);
+		Container.BindInstance(wanderSettings);
+		Container.BindInstance(seekSettings);
 
-		fsm.SetState(wanderState);
+		Container.BindInterfacesAndSelfTo<AIIdleState>().AsSingle();
+		Container.BindInterfacesAndSelfTo<AIWanderState>().AsSingle();
+		Container.BindInterfacesAndSelfTo<AIFollowState>().AsSingle();
+
+		BindBehavior();
+	}
+
+	private void BindBehavior()
+	{
+		switch (personality.behavior)
+		{
+			case BehaviorType.Passive:
+			{
+				Container.BindInterfacesAndSelfTo<AIPassiveBehavior>().AsSingle();
+				break;
+			}
+			case BehaviorType.Cautious:
+			{
+				Container.BindInterfacesAndSelfTo<AICautiousBehavior>().AsSingle();
+				break;
+			}
+			case BehaviorType.Aggressive:
+			{
+				Container.BindInterfacesAndSelfTo<AIAggressiveBehavior>().AsSingle();
+				break;
+			}
+			case BehaviorType.Companion:
+			{
+				Container.BindInterfacesAndSelfTo<AICompanionBehavior>().AsSingle();
+				break;
+			}
+			case BehaviorType.Pet:
+			{
+				Container.BindInterfacesAndSelfTo<AIPetBehavior>().AsSingle();
+				break;
+			}
+			default:
+			{
+				Container.BindInterfacesAndSelfTo<AIPassiveBehavior>().AsSingle();
+				break;
+			}
+		}
 	}
 }
 
+
 [System.Serializable]
-public class AIBehavior
+public class AIPersonality
 {
 	[InfoBox("@Info")]
 	public BehaviorType behavior = BehaviorType.Passive;
-	
+	public AIAligment aligment;
+	public AIConfidence confidence;
+	public AIFactionRelations relations;
+
 	private string Info
 	{
 		get
@@ -75,6 +122,8 @@ public class AIBehavior
 		}
 	}
 }
+
+
 [System.Serializable]
 public class AIAligment
 {
@@ -102,8 +151,9 @@ public class AIConfidence
 
 public class AIFactionRelations
 {
-	
+
 }
+
 
 public enum BehaviorType
 {
@@ -183,11 +233,11 @@ public enum ConfidenceLevel
 [System.Flags]
 public enum Faction
 {
-	NPC			= 0,
+	NPC = 0,
 
-	Animal		= 10,
-	Predator	= 11,
-	Prey		= 12,
+	Animal = 10,
+	Predator = 11,
+	Prey = 12,
 
 }
 public enum FactionRelations
